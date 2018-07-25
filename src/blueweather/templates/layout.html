@@ -1,146 +1,96 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "web_layout.html" %}
 
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="robots" content="noindex" />
-
-        {% if title %}
-        <title>BlueWeather - {{ title }}</title>
-        {% else %}
-        <title>BlueWeather</title>
-        {% endif %}
+{% block content %}
+<body class="fixed-nav sticky-footer bg-dark" id="page-top">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
         
-        <!-- Favicon -->
-        <link rel="apple-touch-icon" sizes="57x57" href="{{ url_for('static', filename='favicon/apple-icon-57x57.png') }}">
-        <link rel="apple-touch-icon" sizes="60x60" href="{{ url_for('static', filename='favicon/apple-icon-60x60.png') }}">
-        <link rel="apple-touch-icon" sizes="72x72" href="{{ url_for('static', filename='favicon/apple-icon-72x72.png') }}">
-        <link rel="apple-touch-icon" sizes="76x76" href="{{ url_for('static', filename='favicon/apple-icon-76x76.png') }}">
-        <link rel="apple-touch-icon" sizes="114x114" href="{{ url_for('static', filename='favicon/apple-icon-114x114.png') }}">
-        <link rel="apple-touch-icon" sizes="120x120" href="{{ url_for('static', filename='favicon/apple-icon-120x120.png') }}">
-        <link rel="apple-touch-icon" sizes="144x144" href="{{ url_for('static', filename='favicon/apple-icon-144x144.png') }}">
-        <link rel="apple-touch-icon" sizes="152x152" href="{{ url_for('static', filename='favicon/apple-icon-152x152.png') }}">
-        <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon/apple-icon-180x180.png') }}">
-        <link rel="icon" type="image/png" sizes="192x192"  href="{{ url_for('static', filename='favicon/android-icon-192x192.png') }}">
-        <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}">
-        <link rel="icon" type="image/png" sizes="96x96" href="{{ url_for('static', filename='favicon/favicon-96x96.png') }}">
-        <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}">
-        <link rel="manifest" href="/manifest.json">
-        <meta name="msapplication-TileColor" content="#ffffff">
-        <meta name="msapplication-TileImage" content="{{ url_for('static', filename='favicon/ms-icon-144x144.png') }}">
-        <meta name="theme-color" content="#ffffff">
-
-        <!-- {{ url_for('static', filename='') }} -->
-
-        <!-- Bootstrap core CSS-->
-        <link href="{{ url_for('static', filename='startbootstrap-sb-admin/vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
-        <!-- Custom fonts for this template-->
-        <link href="{{ url_for('static', filename='startbootstrap-sb-admin/vendor/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
-        <!-- Page level plugin CSS-->
-        <link href="{{ url_for('static', filename='startbootstrap-sb-admin/vendor/datatables/dataTables.bootstrap4.css') }}" rel="stylesheet">
-        <!-- Custom styles for this template-->
-        <link href="{{ url_for('static', filename='startbootstrap-sb-admin/css/sb-admin.css') }}" rel="stylesheet">
+        <a class="navbar-brand" href="{{ url_for('home') }}">Blue Weather</a>
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
         
-        <!-- Custom styles for this website -->
-        <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
-        
-    </head>
-    <body class="fixed-nav sticky-footer bg-dark" id="page-top">
-        <!-- Navigation -->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
-            
-            <a class="navbar-brand" href="/">Blue Weather</a>
-            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarResponsive">
-                <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
-                    
-                    <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
-                        <a class="nav-link" href="/">
-                            <i class="fa fa-fw fa-dashboard"></i>
-                            <span class="nav-link-text">Dashboard</span>
-                        </a>
-                        <a class="nav-link" href="/weather">
-                            <i class="fa fa-fw fa-area-chart"></i>
-                            <span class="nav-link-text">Weather</span>
-                        </a>
-                        <a class="nav-link" href="/config">
-                            <i class="fa fa-fw fa-cogs"></i>
-                            <span class="nav-link-text">Settings</span>
-                        </a>
-                        <a class="nav-link" href="/start">
-                            <i class="fa fa-fw fa-link"></i>
-                            <span class="nav-link-text">Start Page</span>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
+                
+                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
+                    <a class="nav-link" href="{{ url_for('home') }}">
+                        <i class="fa fa-fw fa-dashboard"></i>
+                        <span class="nav-link-text">Dashboard</span>
+                    </a>
+                    <a class="nav-link" href="{{ url_for('weather') }}">
+                        <i class="fa fa-fw fa-area-chart"></i>
+                        <span class="nav-link-text">Weather</span>
+                    </a>
+                    <a class="nav-link" href="{{ url_for('config') }}">
+                        <i class="fa fa-fw fa-cogs"></i>
+                        <span class="nav-link-text">Settings</span>
+                    </a>
+                </li>
+                
+                
+            </ul>
+            <!-- Hide sidebar -->
+            <ul class="navbar-nav sidenav-toggler">
+                <li class="nav-item">
+                    <a class="nav-link text-center" id="sidenavToggler">
+                    <i class="fa fa-fw fa-angle-left"></i>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Top bar -->
+            <ul class="navbar-nav ml-auto">
+                
+                {% if user and user.logged_in == True %}
+                    {% if user.priv.change_priv == True %}
+                    <li class="nav-item user-loggedin-priv" id="user-change-priv">
+                        <a class="nav-link" href="{{ url_for('privileges') }}">
+                            <i class="fa fa-fw fa-server"></i>
+                            Edit Permissions
                         </a>
                     </li>
-                    
-                    
-                </ul>
-                <!-- Hide sidebar -->
-                <ul class="navbar-nav sidenav-toggler">
-                    <li class="nav-item">
-                        <a class="nav-link text-center" id="sidenavToggler">
-                        <i class="fa fa-fw fa-angle-left"></i>
-                        </a>
-                    </li>
-                </ul>
-
-                <!-- Top bar -->
-                <ul class="navbar-nav ml-auto">
-                    
-                    {% if user and user.logged_in == True %}
-                        {% if user.priv.change_priv == True %}
-                        <li class="nav-item user-loggedin-priv" id="user-change-priv">
-                            <a class="nav-link" href="/user/privileges/">
-                                <i class="fa fa-fw fa-server"></i>
-                                Edit Permissions
-                            </a>
-                        </li>
-                        {% endif %}
-
-                        {% if user.priv.add_user == True %}
-                        <li class="nav-item user-loggedin-priv" id="user-add-user">
-                            <a class="nav-link" href="/user/register/">
-                                <i class="fa fa-fw fa-user-plus"></i>
-                                Create User
-                            </a>
-                        </li>
-                        {% endif %}
-
-                        <li class="nav-item user-loggedin">
-                            <a class="nav-link" href="/user/settings/">
-                                <i class="fa fa-fw fa-user-circle-o"></i>
-                                User Settings
-                            </a>
-                        </li>
-
-                        <li class="nav-item user-loggedin" id="user-logout">
-                            <a class="nav-link" data-toggle="modal" data-target="#exampleModal">
-                                <i class="fa fa-fw fa-sign-out"></i>
-                                Logout
-                            </a>
-                        </li>
-                    {% else %}
-
-                        <li class="nav-item" id="user-login">
-                            <a href="/user/login/" class="nav-link">
-                                <i class="fa fa-fw fa-sign-in"></i>
-                                Login
-                            </a>
-                        </li>
-
                     {% endif %}
 
+                    {% if user.priv.add_user == True %}
+                    <li class="nav-item user-loggedin-priv" id="user-add-user">
+                        <a class="nav-link" href="{{ url_for('register') }}">
+                            <i class="fa fa-fw fa-user-plus"></i>
+                            Create User
+                        </a>
+                    </li>
+                    {% endif %}
 
-                </ul>
-            </div>
-        </nav>
+                    <li class="nav-item user-loggedin">
+                        <a class="nav-link" href="{{ url_for('settings') }}">
+                            <i class="fa fa-fw fa-user-circle-o"></i>
+                            User Settings
+                        </a>
+                    </li>
 
+                    <li class="nav-item user-loggedin" id="user-logout">
+                        <a class="nav-link" data-toggle="modal" data-target="#exampleModal">
+                            <i class="fa fa-fw fa-sign-out"></i>
+                            Logout
+                        </a>
+                    </li>
+                {% else %}
+
+                    <li class="nav-item" id="user-login">
+                        <a href="{{ url_for('login') }}" class="nav-link">
+                            <i class="fa fa-fw fa-sign-in"></i>
+                            Login
+                        </a>
+                    </li>
+
+                {% endif %}
+
+
+            </ul>
+        </div>
+    </nav>
+
+    {% if user and user.logged_in == True %}
         <!-- Logout Modal-->
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -160,46 +110,35 @@
                 </div>
             </div>
         </div>
+    {% endif %}
+    
+    <div class="content-wrapper">
         
-        <div class="content-wrapper">
+        <div class="container-fluid">
+            {% include "messages.html" %}
+
+            <!-- Breadcrumb Page Title -->
+            <ol class="breadcrumb">
+                {% for crumb in breadcrumbs %}
+                    {% if crumb.url %}
+                        <li class="breadcrumb-item">
+                            <a href="{{ crumb.url }}">{{ crumb.name }}</a>
+                        </li>
+                    {% else %}
+                        <li class="breadcrumb-item active">{{ crumb.name }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
             
-            <div class="container-fluid">
-                <!-- Breadcrumb Page Title -->
-                <ol class="breadcrumb">
-                    {% for crumb in breadcrumbs %}
-                        {% if crumb.url %}
-                            <li class="breadcrumb-item">
-                                <a href="{{ crumb.url }}">{{ crumb.name }}</a>
-                            </li>
-                        {% else %}
-                            <li class="breadcrumb-item active">{{ crumb.name }}</li>
-                        {% endif %}
-                    {% endfor %}
-                </ol>
-                
-                
-                <!-- Body -->
-                
-                {% block body %}{% endblock %}
             
-            </div>
+            <!-- Body -->
             
-            <!-- Bootstrap core JavaScript-->
-            <script src="{{ url_for('static', filename='startbootstrap-sb-admin/vendor/jquery/jquery.min.js') }}"></script>
-            <script src="{{ url_for('static', filename='js/includes/moment.min.js') }}"></script>
-            <script src="{{ url_for('static', filename='startbootstrap-sb-admin/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-            <!-- Core plugin JavaScript-->
-            <script src="{{ url_for('static', filename='startbootstrap-sb-admin/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
-            <!-- Page level plugin JavaScript-->
-            <script src="{{ url_for('static', filename='startbootstrap-sb-admin/vendor/chart.js/Chart.min.js') }}"></script>
-            <script src="{{ url_for('static', filename='startbootstrap-sb-admin/vendor/datatables/jquery.dataTables.js') }}"></script>
-            <script src="{{ url_for('static', filename='startbootstrap-sb-admin/vendor/datatables/dataTables.bootstrap4.js') }}"></script>
-            <!-- Custom scripts for all pages-->
-            <script src="{{ url_for('static', filename='startbootstrap-sb-admin/js/sb-admin.min.js') }}"></script>
-            
-            <!-- Custom scripts for this page-->
-            {% block scripts %}{% endblock %}
-            
+            {% block body %}{% endblock %}
+        
         </div>
-    </body>
-</html>
+        
+        
+        
+    </div>
+    <!-- No need to close the body tag, web_layout does that for us -->
+{% endblock content %}

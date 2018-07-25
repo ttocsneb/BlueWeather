@@ -1,0 +1,23 @@
+{% extends "web_layout.html" %}
+
+{% block content %}
+<body class="bg-dark">
+	<div class="container">
+		<div class="card card-login mx-auto mt-5">
+			<div class="card-header">
+				<form action="/">
+                    <button type="submit" class="close" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+				</form>
+				
+				{{ title }}
+			</div>
+			<div class="card-body">
+                {% include "messages.html" %}
+
+				{% block body %}{% endblock %}
+			</div>
+		</div>
+    </div>
+{% endblock content %}
