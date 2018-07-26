@@ -5,7 +5,7 @@ basedir = os.path.dirname(os.path.realpath(__file__))
 
 old = os.path.join(basedir, "blueweather")
 if os.path.exists(old):
-    print ("""
+    print("""
 Found left-overs from old file structure, renaming to
 "blueweather.backup". Please remove this manually (I don't
 dare to do so myself since you might have changes in there

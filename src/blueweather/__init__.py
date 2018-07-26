@@ -1,9 +1,24 @@
 from flask import Flask, render_template, url_for, flash, redirect
-from forms import RegistrationForm, LoginForm
-app = Flask(__name__)
+from flask_sqlalchemy import SQLAlchemy
 
+if __name__ == "__main__":
+    import forms
+else:
+    from . import forms
+
+app = Flask(__name__)
 # TODO: generate a secret key if the secret key doesn't already exist
 app.config['SECRET_KEY'] = 'ec5b916be3348b6c695ced12ade929e9'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), unique=True, nullable=False)
+    password = db.Column(db.String(60), nullable=False)
+
+    def __repr__(self):
+        return "User({id}: '{username}')".format(username=self.username, id=self.id)
 
 # Make the WSGI interface available at the top level so wfastcgi can get it
 wsgi_app = app.wsgi_app
@@ -21,7 +36,7 @@ def home():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    form = RegistrationForm()
+    form = forms.RegistrationForm()
 
     if form.validate_on_submit():
         flash('Account created for {data}'.format(data=form.username.data), 'success')
@@ -32,14 +47,13 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm()
+    form = forms.LoginForm()
 
     if form.validate_on_submit():
         if form.username.data == 'root' and form.password.data == 'password':
             flash('You have been logged in!', 'success')
             return redirect(url_for('home'))
-        else:
-            flash('Username or Password is incorrect', 'danger')
+        flash('Username or Password is incorrect', 'danger')
 
 
     return render_template('login.html', title='Login', form=form)
