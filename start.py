@@ -17,4 +17,6 @@ sys.path.insert(0, os.path.join(basedir, "src"))
 
 import blueweather
 
-blueweather.main()
+debug = True
+
+blueweather.main(debug)

@@ -1,4 +1,4 @@
-{% extends "web_layout.html" %}
+{% extends "layouts/base.html" %}
 
 {% block content %}
 <body class="fixed-nav sticky-footer bg-dark" id="page-top">
@@ -115,7 +115,7 @@
     <div class="content-wrapper">
         
         <div class="container-fluid">
-            {% include "messages.html" %}
+            {% include "/includes/messages.html" %}
 
             <!-- Breadcrumb Page Title -->
             <ol class="breadcrumb">
@@ -140,5 +140,5 @@
         
         
     </div>
-    <!-- No need to close the body tag, web_layout does that for us -->
+    <!-- No need to close the body tag, layouts/base does that for us -->
 {% endblock content %}

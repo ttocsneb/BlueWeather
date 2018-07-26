@@ -1,4 +1,4 @@
-{% extends "web_layout.html" %}
+{% extends "layouts/base.html" %}
 
 {% block content %}
 <body class="bg-dark">
@@ -14,7 +14,7 @@
 				{{ title }}
 			</div>
 			<div class="card-body">
-                {% include "messages.html" %}
+                {% include "/includes/messages.html" %}
 
 				{% block body %}{% endblock %}
 			</div>
