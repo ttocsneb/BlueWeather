@@ -5,13 +5,18 @@
 	<div class="container">
 		<div class="card card-login mx-auto mt-5">
 			<div class="card-header">
-				<form action="/">
-                    <button type="submit" class="close" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-				</form>
-				
+
+				<span>
+				{% if current_user.is_authenticated %}
+					{{ current_user.username }} - 
+				{% endif %}
 				{{ title }}
+				</span>
+
+				<a role="button" class="close" aria-label="Close" href="{{ url_for('home') }}">
+                        <span aria-hidden="true">&times;</span>
+				</a>
+				
 			</div>
 			<div class="card-body">
                 {% include "/includes/messages.html" %}

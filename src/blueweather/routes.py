@@ -1,7 +1,9 @@
-from flask import render_template, url_for, flash, redirect
+from flask import render_template, url_for, flash, redirect, request
+from flask_login import login_user, current_user, logout_user, login_required
 
 from blueweather import forms
-from blueweather import app
+from blueweather.models import User, Permission
+from blueweather import app, db, bcrypt
 
 @app.route('/')
 def home():
@@ -14,36 +16,71 @@ def home():
 
 
 @app.route('/register', methods=['GET', 'POST'])
+@login_required
 def register():
-    form = forms.RegistrationForm()
 
+    if current_user.permissions.add_user is False:
+        flash("You do not have the privileges to access that page :/", "danger")
+        return redirect(url_for('home'))
+
+    form = forms.RegistrationForm()
     if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user = User(username=form.username.data, password=hashed_password)
+
+        # Create the permissions row for the user
+        permissions = Permission(user_id=user.id)
+        user.permissions = permissions
+
+        # Add the rows to the database
+        db.session.add(user)
+        db.session.add(permissions)
+        db.session.commit()
+
         flash('Account created for {data}'.format(data=form.username.data), 'success')
         return redirect(url_for('home'))
 
 
-    return render_template('register.html', title='Register', form=form)
+    return render_template('user/register.html', title='Register', form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = forms.LoginForm()
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
 
+    form = forms.LoginForm()
     if form.validate_on_submit():
-        if form.username.data == 'root' and form.password.data == 'password':
-            flash('You have been logged in!', 'success')
-            return redirect(url_for('home'))
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user, remember=form.remember.data)
+            next_page = request.args.get('next', url_for('home'))
+            return redirect(next_page)
         flash('Username or Password is incorrect', 'danger')
 
 
-    return render_template('login.html', title='Login', form=form)
+    return render_template('user/login.html', title='Login', form=form)
 
-@app.route('/privileges')
-def privileges():
-    return render_template('layouts/user.html', title='privileges')
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
 
 @app.route('/settings')
+@login_required
 def settings():
-    return render_template('layouts/user.html', title='settings')
+    return render_template('user/account.html', title='settings')
+
+@app.route('/privileges')
+@login_required
+def privileges():
+
+    if current_user.permissions.add_user is False:
+        flash("You do not have the privileges to access that page :/", "danger")
+        return redirect(url_for('home'))
+
+    return render_template('layouts/user.html', title='privileges')
+
+
 
 @app.route('/weather')
 def weather():
@@ -58,7 +95,9 @@ def weather():
     ]
     return render_template('layouts/web.html', title='Weather', breadcrumbs=breadcrumb)
 
+
 @app.route('/config')
+@login_required
 def config():
     breadcrumb = [
         {
