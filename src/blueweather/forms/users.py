@@ -23,8 +23,8 @@ class RegistrationForm(FlaskForm):
     def validate_username(self, username):
         user = models.User.query.filter_by(username=username.data).first()
         if user:
-            raise validators.ValidationError('That username is taken.  Please'
-                                             + 'choose a different one.')
+            raise validators.ValidationError('That username is taken. ' +
+                                             'Please choose a different one.')
 
 
 class LoginForm(FlaskForm):

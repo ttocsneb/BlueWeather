@@ -15,6 +15,11 @@
 		"python.linting.pep8Path": "pycodestyle",
 		"python.linting.pep8Args": [
 			"--ignore=E402,W503,E126"
+		],
+
+		"python.linting.flake8Enabled": true,
+		"python.linting.flake8Args": [
+			"--ignore=E402,E126"
 		]
 	}
 }

@@ -1,10 +1,6 @@
-import sys
 import os
 from setuptools import setup, find_packages
 
-
-# sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)),
-#                                 "src"))
 
 with open("README.md", 'r') as fh:
     LONG_DESCRIPTION = fh.read()

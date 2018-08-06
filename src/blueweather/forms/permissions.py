@@ -13,7 +13,7 @@ class SelectUser(FlaskForm):
     submit = wtforms.SubmitField("Edit User")
 
     def getUsers(self) -> list:
-        found_users: list = models.User.query.all()
+        found_users = models.User.query.all()
 
         choices = [(user.id, user.username)
                    for user in found_users
@@ -37,7 +37,7 @@ class EditUser(FlaskForm):
         if self.editor_id is self.user_id:
             raise validators.ValidationError(
                 'You cannot edit your own privileges')
-        num_users: models.User = models.User.query.filter_by(
+        num_users = models.User.query.filter_by(
             id=self.user_id).count()
         if num_users is 0:
             raise validators.ValidationError(
@@ -51,9 +51,9 @@ class EditUser(FlaskForm):
         if self.editor_id is self.user_id:
             return False
 
-        editor_perm: models.Permission = models.Permission.query.filter_by(
+        editor_perm = models.Permission.query.filter_by(
             user_id=self.editor_id).first()
-        permissions: models.Permission = models.Permission.query.filter_by(
+        permissions = models.Permission.query.filter_by(
             user_id=self.user_id).first()
 
         if editor_perm is None or permissions is None:
@@ -65,9 +65,9 @@ class EditUser(FlaskForm):
         return True
 
     def load_defaults(self) -> bool:
-        editor_perm: models.Permission = models.Permission.query.filter_by(
+        editor_perm = models.Permission.query.filter_by(
             user_id=self.editor_id).first()
-        permissions: models.Permission = models.Permission.query.filter_by(
+        permissions = models.Permission.query.filter_by(
             user_id=self.user_id).first()
 
         if editor_perm is None or permissions is None:
@@ -96,9 +96,9 @@ class EditUser(FlaskForm):
     def setPrivileges(self) -> bool:
         if not self.check_valid():
             return False
-        editor_perm: models.Permission = models.Permission.query.filter_by(
+        editor_perm = models.Permission.query.filter_by(
             user_id=self.editor_id).first()
-        permissions: models.Permission = models.Permission.query.filter_by(
+        permissions = models.Permission.query.filter_by(
             user_id=self.user_id).first()
 
         print("Setting Privileges")

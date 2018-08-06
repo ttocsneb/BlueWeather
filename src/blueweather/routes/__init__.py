@@ -1,13 +1,8 @@
 import flask
 from flask import url_for
-import flask_login
 from flask_login import login_required
 
-from blueweather import forms, models
-from blueweather import app, db, bcrypt
-
 routes = flask.Blueprint('routes', __name__)
-from . import users
 
 
 @routes.route('/')
