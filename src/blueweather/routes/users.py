@@ -67,10 +67,50 @@ def logout():
     return flask.redirect(url_for('routes.home'))
 
 
-@routes.route('/settings')
+@routes.route('/account', methods=['GET', 'POST'])
 @login_required
 def settings():
-    return flask.render_template('user/account.html', title='settings')
+
+    tabs = {
+        'tabs': [{'name': 'permission', 'active': True, 'text': 'Permissions'},
+                 {'name': 'password', 'active': False, 'text': 'Password'}],
+        'current': 0
+    }
+
+    permissions = [
+        {'text': 'Create Users',
+         'checked': flask_login.current_user.permissions.add_user},
+        {'text': 'Edit Permissions ',
+         'checked': flask_login.current_user.permissions.change_perm},
+        {'text': 'Edit System Settings',
+         'checked': flask_login.current_user.permissions.change_settings},
+        {'text': 'Reboot System',
+         'checked': flask_login.current_user.permissions.reboot}
+    ]
+
+    change_password = forms.users.ChangePassword()
+
+    if change_password.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(
+            change_password.password.data).decode('utf-8')
+
+        flask_login.current_user.password = hashed_password
+
+        db.session.commit()
+
+        flask.flash('Password Successfully Changed', 'success')
+        return flask.redirect(url_for('routes.settings'))
+
+    if change_password.is_submitted():
+        # Set the current tab to Password if the form was submitted and not
+        # validated
+        tabs['current'] = 1
+        tabs['tabs'][0]['active'] = False
+        tabs['tabs'][1]['active'] = True
+
+    return flask.render_template('user/account.html', title='Account',
+                                 permissions=permissions, tabs=tabs,
+                                 form=change_password)
 
 
 @routes.route('/privileges', methods=['GET', 'POST'])

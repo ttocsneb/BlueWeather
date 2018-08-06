@@ -38,3 +38,15 @@ class LoginForm(FlaskForm):
     remember = wtforms.BooleanField('Remember Me')
 
     submit = wtforms.SubmitField('Login')
+
+
+class ChangePassword(FlaskForm):
+    password = wtforms.PasswordField('New Password', validators=[
+        validators.DataRequired()
+    ])
+    conf_password = wtforms.PasswordField('Confirm Password', validators=[
+        validators.DataRequired(),
+        validators.EqualTo('password')
+    ])
+
+    submit = wtforms.SubmitField('Change Password')
