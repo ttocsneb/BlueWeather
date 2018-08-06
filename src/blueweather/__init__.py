@@ -2,19 +2,42 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
+from flask_wtf.csrf import CsrfProtect
 
 app = Flask(__name__)
 # TODO: generate a secret key if the secret key doesn't already exist
 app.config['SECRET_KEY'] = 'ec5b916be3348b6c695ced12ade929e9'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+
 db = SQLAlchemy(app)
+
 bcrypt = Bcrypt(app)
+
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 
+csrf = CsrfProtect(app)
+
 # prevent circular imports
 from blueweather import routes
+from blueweather import models
+
+
+db.create_all()
+if models.User.query.count() == 0:
+    user = models.User(username='root',
+                       password=bcrypt.generate_password_hash('password'))
+    permissions = models.Permission(user_id=user.id, change_perm=True,
+                                    add_user=True, reboot=True,
+                                    change_settings=True)
+    user.permissions = permissions
+
+    db.session.add(user)
+    db.session.add(permissions)
+    db.session.commit()
+
+app.register_blueprint(routes.routes)
 
 
 def main(debug=False):

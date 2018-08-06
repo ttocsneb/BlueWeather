@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"python.pythonPath": "${workspaceFolder}\\venv\\Scripts\\python.exe",
+		// whitelist flask_sqlalchemy to remove lint errors
+		"python.linting.pylintArgs": [
+			"--rcfile=${workspaceFolder}\\.pylintrc"
+		],
+
+		"python.linting.pep8Enabled": true,
+		"python.linting.pep8Path": "pycodestyle",
+		"python.linting.pep8Args": [
+			"--ignore=E402,W503,E126"
+		]
+	}
+}

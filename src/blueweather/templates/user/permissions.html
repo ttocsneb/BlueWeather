@@ -1,0 +1,51 @@
+{% extends "layouts/user.html" %}
+
+{% block body %}
+<form method="POST" action="">
+    {% if selectUser %}
+        {{ selectUser.hidden_tag() }}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Select User</legend>
+            {% for user in selectUser.users %}
+                <div class="form-check">
+                    <label class="form-check-label">
+                        {{ user }}
+                        {{ user.label }}
+                    </label>
+                </div>
+            {% endfor %}
+            {% if selectUser.users.errors %}
+                {% for error in selectUser.users.errors %}
+                    <span class="text-danger">{{ error }}</span><br>
+                {% endfor %}
+            {% endif %}
+        </fieldset>
+        <div class="form-group">
+            {{ selectUser.submit(class="btn btn-outline-primary") }}
+        </div>
+    {% endif %}
+    {% if editUser %}
+        {{ editUser.hidden_tag() }}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Edit {{ user }}'s Privileges</legend>
+            {% for priv in editUser.privileges %}
+                <div class="form-check">
+                    <label class="form-check-label">
+                        {{ priv.check }}
+                        {{ priv.check.label }}
+                    </label>
+                </div>
+            {% endfor %}
+            {% if editUser.privileges.errors %}
+                {% for error in editUser.privileges.errors %}
+                    <span class="text-danger">{{ error }}</span><br>
+                {% endfor %}
+            {% endif %}
+        </fieldset>
+        <div class="form-group">
+            <a class="btn btn-outline-info" href="{{ url_for('routes.privileges')}}" role="button">Cancel</a>
+            {{ editUser.submit(class="btn btn-outline-warning") }}
+        </div>
+    {% endif %}
+</form>
+{% endblock body %}

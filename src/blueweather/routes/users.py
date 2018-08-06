@@ -1,0 +1,125 @@
+import urllib
+import flask
+from flask import url_for
+import flask_login
+from flask_login import login_required
+
+from blueweather import forms, models
+from blueweather import db, bcrypt
+
+from . import routes
+
+
+@routes.route('/register', methods=['GET', 'POST'])
+@login_required
+def register():
+
+    if flask_login.current_user.permissions.add_user is False:
+        flask.flash("You do not have the privileges to access that page :/",
+                    "danger")
+        return flask.redirect(url_for('routes.home'))
+
+    form = forms.users.RegistrationForm()
+    if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(
+            form.password.data).decode('utf-8')
+        user = models.User(username=form.username.data,
+                           password=hashed_password)
+
+        # Create the permissions row for the user
+        permissions = models.Permission(user_id=user.id)
+        user.permissions = permissions
+
+        # Add the rows to the database
+        db.session.add(user)
+        db.session.add(permissions)
+        db.session.commit()
+
+        flask.flash('Account created for {data}'.format(
+            data=form.username.data), 'success')
+        return flask.redirect(url_for('routes.home'))
+
+    return flask.render_template('user/register.html', title='Register',
+                                 form=form)
+
+
+@routes.route('/login', methods=['GET', 'POST'])
+def login():
+    if flask_login.current_user.is_authenticated:
+        return flask.redirect(url_for('routes.home'))
+
+    form = forms.users.LoginForm()
+    if form.validate_on_submit():
+        user = models.User.query.filter_by(username=form.username.data).first()
+        if user and bcrypt.check_password_hash(user.password,
+                                               form.password.data):
+            flask_login.login_user(user, remember=form.remember.data)
+            next_page = flask.request.args.get('next', url_for('routes.home'))
+            return flask.redirect(next_page)
+        flask.flash('Username or Password is incorrect', 'danger')
+
+    return flask.render_template('user/login.html', title='Login', form=form)
+
+
+@routes.route('/logout')
+def logout():
+    flask_login.logout_user()
+    return flask.redirect(url_for('routes.home'))
+
+
+@routes.route('/settings')
+@login_required
+def settings():
+    return flask.render_template('user/account.html', title='settings')
+
+
+@routes.route('/privileges', methods=['GET', 'POST'])
+@login_required
+def privileges():
+
+    if flask_login.current_user.permissions.add_user is False:
+        flask.flash("You do not have the privileges to access that page :/",
+                    "danger")
+        return flask.redirect(url_for('routes.home'))
+
+    # Edit User
+
+    user = flask.request.args.get('user')
+
+    if user:
+        editUser = forms.permissions.EditUser()
+        if not editUser.load(flask_login.current_user.id, int(user)):
+            flask.flash('You cannot edit that user', category='warning')
+            return flask.redirect(url_for('routes.privileges'))
+
+        user_name = models.User.query.filter_by(id=user).first().username
+
+        if editUser.validate_on_submit():
+            if editUser.setPrivileges(flask_login.current_user.id, user):
+                flask.flash("Successfully edited {user}'s permissions".format(
+                    user=user_name), category='success')
+            else:
+                flask.flash("Could not edit that user's permissions",
+                            category='danger')
+
+            return flask.redirect(url_for('routes.privileges'))
+
+        return flask.render_template("user/permissions.html",
+                                     title='Privileges', user=user_name,
+                                     editUser=editUser)
+
+    # Select User
+
+    selectUser = forms.permissions.SelectUser()
+    selectUser.users.choices = selectUser.getUsers()
+
+    if selectUser.validate_on_submit():
+        user_id = models.User.query.filter_by(
+            id=selectUser.users.data).first().id
+
+        return flask.redirect('{url}?{params}'.format(
+            url=url_for('routes.privileges'), params=urllib.parse.urlencode(
+                {'user': user_id})))
+
+    return flask.render_template('user/permissions.html', title='Privileges',
+                                 selectUser=selectUser)
