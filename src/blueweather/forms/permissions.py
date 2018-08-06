@@ -22,17 +22,13 @@ class SelectUser(FlaskForm):
         return choices
 
 
-class Permission(FlaskForm):
-    check = wtforms.BooleanField()
-
-    def getData(self) -> bool:
-        return self.check.data
-
-
 class EditUser(FlaskForm):
-    privileges = wtforms.FieldList(wtforms.FormField(Permission))
+    change_perm = wtforms.BooleanField(label='Edit Permissions')
+    add_user = wtforms.BooleanField(label='Create Users')
+    change_settings = wtforms.BooleanField(label='Edit System Settings')
+    reboot = wtforms.BooleanField(label='Reboot System')
+
     submit = wtforms.SubmitField('Submit Changes')
-    current_user = wtforms.StringField()
 
     editor_id = 0
     user_id = 0
@@ -47,109 +43,74 @@ class EditUser(FlaskForm):
             raise validators.ValidationError(
                 'The user you are trying to edit does not exist')
 
-    def load(self, editor_id: int, user_id: int) -> bool:
-        editor_perm: models.Permission = models.Permission.query.filter_by(
-            user_id=editor_id).first()
-        permissions: models.Permission = models.Permission.query.filter_by(
-            user_id=user_id).first()
-
-        if editor_id is None or permissions is None:
-            return False
-
+    def load(self, editor_id: int, user_id: int):
         self.editor_id = editor_id
         self.user_id = user_id
-        # Only allow the privileges that the current user has to be changed
 
-        i = 0
-        length = len(self.privileges)
-        orig = length is 0
+    def check_valid(self) -> bool:
+        if self.editor_id is self.user_id:
+            return False
 
-        if editor_perm.add_user:
-            if length <= i:
-                self.privileges.append_entry()
-                length += 1
-            add_user = self.privileges[i]
-            if orig:
-                add_user.check.data = permissions.add_user
-            add_user.check.label = "Create Users"
-            add_user.check.name = 'add_user'
-            i += 1
+        editor_perm: models.Permission = models.Permission.query.filter_by(
+            user_id=self.editor_id).first()
+        permissions: models.Permission = models.Permission.query.filter_by(
+            user_id=self.user_id).first()
 
-        if editor_perm.change_perm:
-            if length <= i:
-                self.privileges.append_entry()
-                length += 1
-            change_perm = self.privileges[i]
-            if orig:
-                change_perm.check.data = permissions.change_perm
-            change_perm.check.label = 'Edit Permissions'
-            change_perm.check.name = 'change_perm'
-            i += 1
+        if editor_perm is None or permissions is None:
+            return False
 
-        if editor_perm.change_settings:
-            if length <= i:
-                self.privileges.append_entry()
-                length += 1
-            change_settings = self.privileges[i]
-            if orig:
-                change_settings.check.data = permissions.change_settings
-            change_settings.check.label = 'Edit System Settings'
-            change_settings.check.name = 'change_settings'
-            i += 1
-
-        if editor_perm.reboot:
-            if length <= i:
-                self.privileges.append_entry()
-                length += 1
-            reboot = self.privileges[i]
-            if orig:
-                reboot.check.data = permissions.reboot
-            reboot.check.label = 'Reboot System'
-            reboot.check.name = 'reboot'
-            i += 1
+        if not editor_perm.change_perm:
+            return False
 
         return True
 
-    def setPrivileges(self, editor_id: int, user_id: int) -> bool:
+    def load_defaults(self) -> bool:
         editor_perm: models.Permission = models.Permission.query.filter_by(
-            user_id=editor_id).first()
+            user_id=self.editor_id).first()
         permissions: models.Permission = models.Permission.query.filter_by(
-            user_id=user_id).first()
+            user_id=self.user_id).first()
 
-        if editor_id is None or permissions is None:
+        if editor_perm is None or permissions is None:
             return False
+
+        # Only allow the privileges that the current user has to be changed
+        if not editor_perm.add_user:
+            del self.add_user
+        else:
+            self.add_user.data = permissions.add_user
+        if not editor_perm.change_perm:
+            del self.change_perm
+        else:
+            self.change_perm.data = permissions.change_perm
+        if not editor_perm.change_settings:
+            del self.change_settings
+        else:
+            self.change_settings.data = permissions.change_settings
+        if not editor_perm.reboot:
+            del self.reboot
+        else:
+            self.reboot.data = permissions.reboot
+
+        return True
+
+    def setPrivileges(self) -> bool:
+        if not self.check_valid():
+            return False
+        editor_perm: models.Permission = models.Permission.query.filter_by(
+            user_id=self.editor_id).first()
+        permissions: models.Permission = models.Permission.query.filter_by(
+            user_id=self.user_id).first()
 
         print("Setting Privileges")
 
-        perm: models.Permission
-        for _ in range(len(self.privileges.entries)):
-            perm = self.privileges.pop_entry()
-            print("{id}={value}".format(id=perm.name, value=perm.getData()))
-            if perm.name == 'add_user':
-                if editor_perm.add_user:
-                    permissions.add_user = perm.getData()
-                    print("add_user: {perm}".format(perm=permissions.add_user))
-                continue
-
-            if perm.name == 'change_perm':
-                if editor_perm.change_perm:
-                    permissions.change_perm = perm.getData()
-                    print("change_perm: {perm}".format(
-                        perm=permissions.change_perm))
-                continue
-
-            if perm.name == 'change_settings':
-                if editor_perm.change_settings:
-                    permissions.change_settings = perm.getData()
-                    print("change_settings: {perm}".format(
-                        perm=permissions.change_settings))
-                continue
-
-            if perm.name == 'reboot':
-                if editor_perm.reboot:
-                    permissions.reboot = perm.getData()
-                    print("reboot: {perm}".format(perm=permissions.reboot))
-                continue
+        if editor_perm.add_user:
+            permissions.add_user = self.add_user.data
+        if editor_perm.change_perm:
+            permissions.change_perm = self.change_perm.data
+        if editor_perm.change_settings:
+            permissions.change_settings = self.change_settings.data
+        if editor_perm.reboot:
+            permissions.reboot = self.reboot.data
 
         db.session.commit()
 

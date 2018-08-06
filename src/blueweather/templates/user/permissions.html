@@ -28,15 +28,39 @@
         {{ editUser.hidden_tag() }}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">Edit {{ user }}'s Privileges</legend>
-            {% for priv in editUser.privileges %}
+            {% if editUser.add_user %}
                 <div class="form-check">
                     <label class="form-check-label">
-                        {{ priv.check }}
-                        {{ priv.check.label }}
+                        {{ editUser.add_user }}
+                        {{ editUser.add_user.label }}
                     </label>
                 </div>
-            {% endfor %}
-            {% if editUser.privileges.errors %}
+            {% endif %}
+            {% if editUser.change_perm %}
+                <div class="form-check">
+                    <label class="form-check-label">
+                        {{ editUser.change_perm }}
+                        {{ editUser.change_perm.label }}
+                    </label>
+                </div>
+            {% endif %}
+            {% if editUser.change_settings %}
+                <div class="form-check">
+                    <label class="form-check-label">
+                        {{ editUser.change_settings }}
+                        {{ editUser.change_settings.label }}
+                    </label>
+                </div>
+            {% endif %}
+            {% if editUser.reboot %}
+                <div class="form-check">
+                    <label class="form-check-label">
+                        {{ editUser.reboot }}
+                        {{ editUser.reboot.label }}
+                    </label>
+                </div>
+            {% endif %}
+            {% if editUser.errors %}
                 {% for error in editUser.privileges.errors %}
                     <span class="text-danger">{{ error }}</span><br>
                 {% endfor %}

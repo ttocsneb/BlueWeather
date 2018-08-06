@@ -88,14 +88,15 @@ def privileges():
 
     if user:
         editUser = forms.permissions.EditUser()
-        if not editUser.load(flask_login.current_user.id, int(user)):
+        editUser.load(flask_login.current_user.id, int(user))
+        if not editUser.check_valid():
             flask.flash('You cannot edit that user', category='warning')
             return flask.redirect(url_for('routes.privileges'))
 
         user_name = models.User.query.filter_by(id=user).first().username
 
         if editUser.validate_on_submit():
-            if editUser.setPrivileges(flask_login.current_user.id, user):
+            if editUser.setPrivileges():
                 flask.flash("Successfully edited {user}'s permissions".format(
                     user=user_name), category='success')
             else:
@@ -103,6 +104,8 @@ def privileges():
                             category='danger')
 
             return flask.redirect(url_for('routes.privileges'))
+
+        editUser.load_defaults()
 
         return flask.render_template("user/permissions.html",
                                      title='Privileges', user=user_name,
