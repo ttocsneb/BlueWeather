@@ -10,7 +10,7 @@ from blueweather import db, bcrypt
 users = flask.Blueprint('users', __name__)
 
 
-@users.route('/register', methods=['GET', 'POST'])
+@users.route('/users/register', methods=['GET', 'POST'])
 @login_required
 def register():
 
@@ -43,7 +43,7 @@ def register():
                                  form=form)
 
 
-@users.route('/login', methods=['GET', 'POST'])
+@users.route('/users/login', methods=['GET', 'POST'])
 def login():
     if flask_login.current_user.is_authenticated:
         return flask.redirect(url_for('main.home'))
@@ -61,13 +61,13 @@ def login():
     return flask.render_template('user/login.html', title='Login', form=form)
 
 
-@users.route('/logout')
+@users.route('/users/logout')
 def logout():
     flask_login.logout_user()
     return flask.redirect(url_for('main.home'))
 
 
-@users.route('/account', methods=['GET', 'POST'])
+@users.route('/users/account', methods=['GET', 'POST'])
 @login_required
 def settings():
 
@@ -113,7 +113,7 @@ def settings():
                                  form=change_password)
 
 
-@users.route('/privileges', methods=['GET', 'POST'])
+@users.route('/users/privileges', methods=['GET', 'POST'])
 @login_required
 def privileges():
 

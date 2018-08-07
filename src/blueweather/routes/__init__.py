@@ -3,6 +3,9 @@ from flask import url_for
 from flask_login import login_required
 
 from . import users
+from . import data
+
+import blueweather.data
 
 main = flask.Blueprint('main', __name__)
 
@@ -14,7 +17,12 @@ def home():
             'name': 'Dashboard'
         }
     ]
-    return flask.render_template('dashboard.html', breadcrumbs=breadcrumb)
+    blueweather.data.setStatusMessage('message', 'Hello World!')
+    status = blueweather.data.getStatus()
+    if len(status['messages']) is 0 and len(status['data']) is 0:
+        status = None
+    return flask.render_template('dashboard.html', breadcrumbs=breadcrumb,
+                                 status=status)
 
 
 @main.route('/weather')

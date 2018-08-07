@@ -11,15 +11,15 @@
 			"--rcfile=${workspaceFolder}\\.pylintrc"
 		],
 
-		"python.linting.pep8Enabled": true,
+		"python.linting.pep8Enabled": false,
 		"python.linting.pep8Path": "pycodestyle",
 		"python.linting.pep8Args": [
-			"--ignore=E402,W503,E126"
+			"--ignore=E402,W503,E126,E722"
 		],
 
 		"python.linting.flake8Enabled": true,
 		"python.linting.flake8Args": [
-			"--ignore=E402,E126"
+			"--ignore=E402,E126,E722"
 		],
 		"python.linting.flake8CategorySeverity.F": "Hint",
 		"python.linting.flake8CategorySeverity.E": "Error",

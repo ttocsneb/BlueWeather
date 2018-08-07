@@ -8,6 +8,7 @@ app = Flask(__name__)
 # TODO: generate a secret key if the secret key doesn't already exist
 app.config['SECRET_KEY'] = 'ec5b916be3348b6c695ced12ade929e9'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
@@ -39,6 +40,7 @@ if models.User.query.count() == 0:
 
 app.register_blueprint(routes.main)
 app.register_blueprint(routes.users.users)
+app.register_blueprint(routes.data.data)
 
 
 def main(debug=False):
