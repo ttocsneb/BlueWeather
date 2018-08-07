@@ -37,12 +37,13 @@ if models.User.query.count() == 0:
     db.session.add(permissions)
     db.session.commit()
 
-app.register_blueprint(routes.routes)
+app.register_blueprint(routes.main)
+app.register_blueprint(routes.users.users)
 
 
 def main(debug=False):
     import os
-    HOST = os.environ.get('SERVER_HOST', 'localhost')
+    HOST = os.environ.get('SERVER_HOST', '0.0.0.0')
     try:
         PORT = int(os.environ.get('SERVER_PORT', '5000'))
     except ValueError:

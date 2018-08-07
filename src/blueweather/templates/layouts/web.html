@@ -5,7 +5,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
         
-        <a class="navbar-brand" href="{{ url_for('routes.home') }}">Blue Weather</a>
+        <a class="navbar-brand" href="{{ url_for('main.home') }}">Blue Weather</a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -14,16 +14,16 @@
             <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
                 
                 <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
-                    <a class="nav-link" href="{{ url_for('routes.home') }}">
+                    <a class="nav-link" href="{{ url_for('main.home') }}">
                         <i class="fa fa-fw fa-dashboard"></i>
                         <span class="nav-link-text">Dashboard</span>
                     </a>
-                    <a class="nav-link" href="{{ url_for('routes.weather') }}">
+                    <a class="nav-link" href="{{ url_for('main.weather') }}">
                         <i class="fa fa-fw fa-area-chart"></i>
                         <span class="nav-link-text">Weather</span>
                     </a>
                     {% if current_user.is_authenticated %}
-                    <a class="nav-link" href="{{ url_for('routes.config') }}">
+                    <a class="nav-link" href="{{ url_for('main.config') }}">
                         <i class="fa fa-fw fa-cogs"></i>
                         <span class="nav-link-text">Settings</span>
                     </a>
@@ -52,7 +52,7 @@
 
                     {% if current_user.permissions.change_perm == True %}
                     <li class="nav-item user-loggedin-priv" id="user-change-priv">
-                        <a class="nav-link" href="{{ url_for('routes.privileges') }}">
+                        <a class="nav-link" href="{{ url_for('users.privileges') }}">
                             <i class="fa fa-fw fa-server"></i>
                             Edit Permissions
                         </a>
@@ -61,7 +61,7 @@
 
                     {% if current_user.permissions.add_user == True %}
                     <li class="nav-item user-loggedin-priv" id="user-add-user">
-                        <a class="nav-link" href="{{ url_for('routes.register') }}">
+                        <a class="nav-link" href="{{ url_for('users.register') }}">
                             <i class="fa fa-fw fa-user-plus"></i>
                             Create User
                         </a>
@@ -71,7 +71,7 @@
 
 
                     <li class="nav-item user-loggedin">
-                        <a class="nav-link" href="{{ url_for('routes.settings') }}">
+                        <a class="nav-link" href="{{ url_for('users.settings') }}">
                             <i class="fa fa-fw fa-user-circle-o"></i>
                             Account
                         </a>
@@ -86,7 +86,7 @@
                 {% else %}
 
                     <li class="nav-item" id="user-login">
-                        <a href="{{ url_for('routes.login') }}" class="nav-link">
+                        <a href="{{ url_for('users.login') }}" class="nav-link">
                             <i class="fa fa-fw fa-sign-in"></i>
                             Login
                         </a>
@@ -114,7 +114,7 @@
                 <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                     <div class="modal-footer">
                         <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                        <a class="btn btn-primary" role="button" href="{{ url_for('routes.logout') }}">Logout</a>
+                        <a class="btn btn-primary" role="button" href="{{ url_for('users.logout') }}">Logout</a>
                     </div>
                 </div>
             </div>

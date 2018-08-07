@@ -2,10 +2,12 @@ import flask
 from flask import url_for
 from flask_login import login_required
 
-routes = flask.Blueprint('routes', __name__)
+from . import users
+
+main = flask.Blueprint('main', __name__)
 
 
-@routes.route('/')
+@main.route('/')
 def home():
     breadcrumb = [
         {
@@ -15,12 +17,12 @@ def home():
     return flask.render_template('dashboard.html', breadcrumbs=breadcrumb)
 
 
-@routes.route('/weather')
+@main.route('/weather')
 def weather():
     breadcrumb = [
         {
             'name': 'Dashboard',
-            'url': url_for('routes.home')
+            'url': url_for('main.home')
         },
         {
             'name': 'weather'
@@ -30,13 +32,13 @@ def weather():
                                  breadcrumbs=breadcrumb)
 
 
-@routes.route('/config')
+@main.route('/config')
 @login_required
 def config():
     breadcrumb = [
         {
             'name': 'Dashboard',
-            'url': url_for('routes.home')
+            'url': url_for('main.home')
         },
         {
             'name': 'config'

@@ -20,6 +20,9 @@
 		"python.linting.flake8Enabled": true,
 		"python.linting.flake8Args": [
 			"--ignore=E402,E126"
-		]
+		],
+		"python.linting.flake8CategorySeverity.F": "Hint",
+		"python.linting.flake8CategorySeverity.E": "Error",
+		"python.linting.flake8CategorySeverity.W": "Warning"
 	}
 }
