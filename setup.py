@@ -28,7 +28,8 @@ INSTALL_REQUIRES = [
     'Flask-Login',
     'Flask-SQLAlchemy',
     'Flask-WTF',
-    'Jinja2'
+    'Jinja2',
+    'yapsy'
 ]
 
 

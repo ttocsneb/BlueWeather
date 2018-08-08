@@ -50,7 +50,7 @@ def updateStatusTable(key: str, data: StatusTable):
 
 
 def getJSONStatus():
-    return json.dumps(_status, sort_keys=True, indent=4, separators=(',', ': '))
+    return json.dumps(_status)
 
 
 def getStatus():

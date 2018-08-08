@@ -1,10 +1,10 @@
 import flask
 
-import blueweather.data
+from blueweather import status as blueStatus
 
 data = flask.Blueprint('data', __name__)
 
 
 @data.route('/data/status', methods=['POST'])
 def status():
-    return blueweather.data.getJSONStatus()
+    return blueStatus.getJSONStatus()

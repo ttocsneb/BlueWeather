@@ -1,8 +1,32 @@
+import logging
+import logging.config
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
+
+
+from blueweather import plugin
+
+logging.config.dictConfig({
+    'version': 1,
+    'formatters': {'default': {
+        'format': '[%(asctime)s] %(levelname)s - %(name)s - %(message)s'
+    }},
+    'handlers': {'wsgi': {
+        'class': 'logging.StreamHandler',
+        'stream': 'ext://flask.logging.wsgi_errors_stream',
+        'formatter': 'default'
+    }},
+    'root': {
+        'level': 'INFO',
+        'handlers': ['wsgi']
+    }
+})
+
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 # TODO: generate a secret key if the secret key doesn't already exist
@@ -20,34 +44,50 @@ login_manager.login_message_category = 'info'
 
 csrf = CSRFProtect(app)
 
+plugin_manager = plugin.PluginManager()
+
 # prevent circular imports
 from blueweather import routes
 from blueweather import models
-
-
-db.create_all()
-if models.User.query.count() == 0:
-    user = models.User(username='root',
-                       password=bcrypt.generate_password_hash('password'))
-    permissions = models.Permission(user_id=user.id, change_perm=True,
-                                    add_user=True, reboot=True,
-                                    change_settings=True)
-    user.permissions = permissions
-
-    db.session.add(user)
-    db.session.add(permissions)
-    db.session.commit()
 
 app.register_blueprint(routes.main)
 app.register_blueprint(routes.users.users)
 app.register_blueprint(routes.data.data)
 
 
+def init_db():
+    db.create_all()
+    if models.User.query.count() == 0:
+        logger.info(
+            "No users exist, creating default user: 'root', pass='password'")
+
+        user = models.User(username='root',
+                           password=bcrypt.generate_password_hash('password'))
+        permissions = models.Permission(user_id=user.id, change_perm=True,
+                                        add_user=True, reboot=True,
+                                        change_settings=True)
+        user.permissions = permissions
+
+        db.session.add(user)
+        db.session.add(permissions)
+        db.session.commit()
+
+
 def main(debug=False):
+
+    init_db()
+    plugin_manager.loadPlugins()
+    plugin_manager.activatePlugins()
+
     import os
     HOST = os.environ.get('SERVER_HOST', '0.0.0.0')
     try:
         PORT = int(os.environ.get('SERVER_PORT', '5000'))
     except ValueError:
         PORT = 5000
+
+    plugin_manager.call(plugin.types.StartupPlugin,
+                        plugin.types.StartupPlugin.on_startup,
+                        HOST, PORT)
+
     app.run(HOST, PORT, debug)
