@@ -2,10 +2,11 @@ import flask
 from flask import url_for
 from flask_login import login_required
 
-from blueweather import status
+import blueweather
+from blueweather import weather
 
 from . import users
-from . import data
+from . import info
 
 
 main = flask.Blueprint('main', __name__)
@@ -18,8 +19,18 @@ def home():
             'name': 'Dashboard'
         }
     ]
-    status.setStatusMessage('message', 'Hello World!')
-    statusCard = status.getStatus()
+    blueweather.status.setStatusMessage('message', 'Hello World!')
+
+    table = weather.status.StatusTable()
+    table.title = "Foo"
+    table.headers = ['foo', 'bar']
+    table.extend([[x, x * 2] for x in range(0, 10)])
+    table.setRowCategory(4, 'info')
+    table[5] = ["Hello World!", "Goodbye"]
+
+    blueweather.status.updateStatusTable('table', table)
+
+    statusCard = blueweather.status.getStatus()
     if len(statusCard['messages']) is 0 and len(statusCard['data']) is 0:
         statusCard = None
     return flask.render_template('dashboard.html', breadcrumbs=breadcrumb,
@@ -27,7 +38,7 @@ def home():
 
 
 @main.route('/weather')
-def weather():
+def data():
     breadcrumb = [
         {
             'name': 'Dashboard',

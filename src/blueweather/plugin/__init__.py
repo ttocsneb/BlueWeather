@@ -14,7 +14,7 @@ class PluginManager:
     plugin_locations = (
         os.path.join(os.path.dirname(dirname), 'plugins'),
         os.path.join(str(Path.home()), 'blueweather', 'plugins')
-    )   
+    )
 
     _plugins = [
         types.BlueWeatherPlugin,

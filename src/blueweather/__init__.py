@@ -9,6 +9,7 @@ from flask_wtf.csrf import CSRFProtect
 
 
 from blueweather import plugin
+from blueweather import weather
 
 logging.config.dictConfig({
     'version': 1,
@@ -45,6 +46,8 @@ login_manager.login_message_category = 'info'
 csrf = CSRFProtect(app)
 
 plugin_manager = plugin.PluginManager()
+status = weather.status.Status()
+
 
 # prevent circular imports
 from blueweather import routes
@@ -52,7 +55,7 @@ from blueweather import models
 
 app.register_blueprint(routes.main)
 app.register_blueprint(routes.users.users)
-app.register_blueprint(routes.data.data)
+app.register_blueprint(routes.info.data)
 
 
 def init_db():
