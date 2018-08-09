@@ -19,7 +19,8 @@ class PluginManager:
     _plugins = [
         types.BlueWeatherPlugin,
         types.StartupPlugin,
-        types.Requests
+        types.RequestsPlugin,
+        types.WeatherPlugin
     ]
 
     def __init__(self):

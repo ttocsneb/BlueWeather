@@ -38,6 +38,9 @@ class StartupPlugin(BlueWeatherPlugin):
     the server.
     """
 
+    def __init__(self):
+        super(StartupPlugin, self).__init__()
+
     def on_startup(self, host, port):
         """
         Called just before the server is actually launched.  Plugins get
@@ -61,10 +64,13 @@ class StartupPlugin(BlueWeatherPlugin):
         pass
 
 
-class Requests(BlueWeatherPlugin):
+class RequestsPlugin(BlueWeatherPlugin):
     """
     The ``RequestsPlugin`` allows hooking into the requests of the website.
     """
+
+    def __init__(self):
+        super(RequestsPlugin, self).__init__()
 
     def before_request(self, path: str, args: dict):
         """
@@ -75,6 +81,24 @@ class Requests(BlueWeatherPlugin):
         :param str path: the path of the url: ``foo/bar``
 
         :param dict args: the url args: ``{'arg1': 'asdf', 'arg2': 'qwerty'}``
+        """
+
+        pass
+
+
+class WeatherPlugin(BlueWeatherPlugin):
+    """
+    Contains all of the necessary hooks for a weatherstation
+    """
+
+    def __init__(self):
+        super(WeatherPlugin, self).__init__()
+
+    def on_status_request(self):
+        """
+        Called when the status should be updated.  You can update the status
+        through ``self._status`` which is a
+        :class:``~blueweather.weather.status.Status``
         """
 
         pass

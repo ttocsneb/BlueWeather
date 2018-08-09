@@ -67,8 +67,8 @@ def before_first_request():
 
 @app.before_request
 def before_request():
-    variables.plugin_manager.call(plugin.types.Requests,
-                                  plugin.types.Requests.before_request,
+    variables.plugin_manager.call(plugin.types.RequestsPlugin,
+                                  plugin.types.RequestsPlugin.before_request,
                                   flask.request.path, flask.request.args)
 
 
