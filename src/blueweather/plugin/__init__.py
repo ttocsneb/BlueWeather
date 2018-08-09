@@ -12,7 +12,7 @@ dirname = os.path.dirname(os.path.relpath(__file__))
 class PluginManager:
 
     plugin_locations = (
-        os.path.join(os.path.dirname(dirname), 'plugins'),
+        os.path.join(dirname, 'plugins'),
         os.path.join(str(Path.home()), 'blueweather', 'plugins')
     )
 

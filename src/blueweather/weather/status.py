@@ -6,6 +6,8 @@ class StatusTable:
     def __init__(self, title=None, data=None):
         self._data = dict()
 
+        self.width = 6
+
         if data:
             self._data = data
         else:
@@ -21,6 +23,14 @@ class StatusTable:
     @title.setter
     def title(self, value: str):
         self._data['title'] = str(value)
+
+    @property
+    def width(self):
+        return self._data['width']
+
+    @width.setter
+    def width(self, value):
+        self._data['width'] = value
 
     @property
     def headers(self):
