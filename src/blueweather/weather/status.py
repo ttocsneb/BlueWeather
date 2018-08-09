@@ -119,7 +119,8 @@ class Status:
     def __init__(self):
         self._status = {'messages': {}, 'data': {}}
 
-    def setStatusMessage(self, key: str, message=None, category='info'):
+    def setStatusMessage(self, key: str, message=None, category='info',
+                         closeable=False):
         """
         Create or remove a status message.  The key should be unique to your
         plugin.  You may have more than one Status message if you like.
@@ -138,9 +139,11 @@ class Status:
             info
             light
             dark
+
+        :param bool closeable: true if the client can close the message
         """
         if message:
-            self._status['messages'][key] = [category, message]
+            self._status['messages'][key] = [category, message, closeable]
         elif key in self._status['messages']:
             del self._status['messages'][key]
 
