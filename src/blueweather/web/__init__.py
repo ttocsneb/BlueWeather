@@ -1,6 +1,7 @@
 import logging
 import logging.config
 
+import flask
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -56,6 +57,19 @@ def init_db():
         db.session.add(user)
         db.session.add(permissions)
         db.session.commit()
+
+
+@app.before_first_request
+def before_first_request():
+    variables.plugin_manager.call(plugin.types.StartupPlugin,
+                                  plugin.types.StartupPlugin.on_after_startup)
+
+
+@app.before_request
+def before_request():
+    variables.plugin_manager.call(plugin.types.Requests,
+                                  plugin.types.Requests.before_request,
+                                  flask.request.path, flask.request.args)
 
 
 def main(debug=False):

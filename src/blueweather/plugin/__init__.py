@@ -18,7 +18,8 @@ class PluginManager:
 
     _plugins = [
         types.BlueWeatherPlugin,
-        types.StartupPlugin
+        types.StartupPlugin,
+        types.Requests
     ]
 
     def __init__(self):
@@ -43,8 +44,12 @@ class PluginManager:
 
     @staticmethod
     def _loadPluginData(plugin: yapsy.PluginInfo):
+        from blueweather import variables
+        obj = plugin.plugin_object
+
         log_name = 'blueweather.plugins.' + os.path.basename(plugin.path)
-        plugin.plugin_object._logger = logging.getLogger(log_name)
+        obj._logger = logging.getLogger(log_name)
+        obj._status = variables.status
 
     def activatePlugins(self):
 
@@ -81,8 +86,7 @@ class PluginManager:
         func_name = func.__name__
         plugin_name = plugin.__name__
 
-        self._logger.info("calling %s.%s()",
-                          plugin_name, func_name)
+        self._logger.debug("calling %s.%s()", plugin_name, func_name)
 
         for pluginInfo in self._manager.getPluginsOfCategory(plugin_name):
             if pluginInfo.is_activated:

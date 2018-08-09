@@ -15,7 +15,7 @@ class BlueWeatherPlugin(IPlugin):
     def __init__(self):
         self.is_activated = False
 
-        self._weather = None
+        self._status = None
         self._logger = None
 
     def activate(self):
@@ -49,6 +49,32 @@ class StartupPlugin(BlueWeatherPlugin):
         ``0.0.0.0``
 
         :param int port: the port the server will listen on
+        """
+
+        pass
+
+    def on_after_startup(self):
+        """
+        Called after the the webserver has started running
+        """
+
+        pass
+
+
+class Requests(BlueWeatherPlugin):
+    """
+    The ``RequestsPlugin`` allows hooking into the requests of the website.
+    """
+
+    def before_request(self, path: str, args: dict):
+        """
+        Called just before the server serves the client
+
+        ``http://blueweather.com/foo/bar?arg1=asdf&arg2=qwerty``
+
+        :param str path: the path of the url: ``foo/bar``
+
+        :param dict args: the url args: ``{'arg1': 'asdf', 'arg2': 'qwerty'}``
         """
 
         pass
