@@ -11,6 +11,12 @@ def status():
     return flask.render_template('includes/status.html', status=statusData)
 
 
+@data.route('/data/weather')
+def weather():
+    weatherData = variables.load_weather()
+    return flask.render_template('includes/weather.html', weather=weatherData)
+
+
 @data.route('/status/remove_message')
 def remove_message():
     if flask.request.args.get('id'):

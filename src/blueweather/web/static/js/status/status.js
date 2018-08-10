@@ -16,3 +16,7 @@ function status_remove(key) {
         }
     });
 }
+
+window.addEventListener("load", function(event) {
+    setInterval(status_update, 15*1000);
+});

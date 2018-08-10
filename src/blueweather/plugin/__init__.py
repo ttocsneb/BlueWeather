@@ -54,6 +54,7 @@ class PluginManager:
         log_name = 'blueweather.plugins.' + os.path.basename(plugin.path)
         obj._logger = logging.getLogger(log_name)
         obj._status = variables.status
+        obj._weather = variables.weather
 
     def activatePlugins(self):
 

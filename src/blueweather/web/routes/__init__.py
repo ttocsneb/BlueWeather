@@ -38,8 +38,10 @@ def data():
             'name': 'weather'
         }
     ]
-    return flask.render_template('layouts/web.html', title='Weather',
-                                 breadcrumbs=breadcrumb)
+
+    weatherCard = variables.load_weather()
+    return flask.render_template('weather.html', title='Weather',
+                                 breadcrumbs=breadcrumb, weather=weatherCard)
 
 
 @main.route('/config')

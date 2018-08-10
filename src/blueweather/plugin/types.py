@@ -16,6 +16,7 @@ class BlueWeatherPlugin(IPlugin):
         self.is_activated = False
 
         self._status = None
+        self._weather = None
         self._logger = None
 
     def activate(self):
@@ -100,5 +101,9 @@ class WeatherPlugin(BlueWeatherPlugin):
         through ``self._status`` which is a
         :class:``~blueweather.weather.status.Status``
         """
+
+        pass
+
+    def on_weather_request(self):
 
         pass

@@ -1,9 +1,11 @@
 from blueweather import plugin
 from blueweather.plugin import types
-from blueweather.weather import status as weatherStatus
+import blueweather.weather.status
+import blueweather.weather.weather
 
 plugin_manager = plugin.PluginManager()
-status = weatherStatus.Status()
+status = blueweather.weather.status.Status()
+weather = blueweather.weather.weather.Weather()
 
 
 def load_status() -> dict:
@@ -12,5 +14,12 @@ def load_status() -> dict:
     """
     plugin_manager.call(types.WeatherPlugin,
                         types.WeatherPlugin.on_status_request,
-                        call_time=1)
+                        call_time=5)
     return status.getStatus()
+
+
+def load_weather() -> dict:
+    plugin_manager.call(types.WeatherPlugin,
+                        types.WeatherPlugin.on_weather_request,
+                        call_time=1)
+    return weather.getWeather()
