@@ -7,8 +7,8 @@ data = flask.Blueprint('data', __name__)
 
 @data.route('/data/status')
 def status():
-    status = variables.load_status()
-    return flask.render_template('includes/status.html', status=status)
+    statusData = variables.load_status()
+    return flask.render_template('includes/status.html', status=statusData)
 
 
 @data.route('/status/remove_message')

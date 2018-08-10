@@ -69,7 +69,8 @@ def before_first_request():
 def before_request():
     variables.plugin_manager.call(plugin.types.RequestsPlugin,
                                   plugin.types.RequestsPlugin.before_request,
-                                  flask.request.path, flask.request.args)
+                                  args=(flask.request.path, flask.request.args)
+                                  )
 
 
 def main(debug=False):
@@ -87,6 +88,6 @@ def main(debug=False):
 
     variables.plugin_manager.call(plugin.types.StartupPlugin,
                                   plugin.types.StartupPlugin.on_startup,
-                                  HOST, PORT)
+                                  args=(HOST, PORT))
 
     app.run(HOST, PORT, debug)

@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import time
 import logging
 
 import yapsy.PluginManager
@@ -27,6 +28,8 @@ class PluginManager:
         self._logger = logging.getLogger(__name__)
 
         self._manager = yapsy.PluginManager.PluginManager()
+
+        self._timers = dict()
 
     def loadPlugins(self):
 
@@ -69,8 +72,8 @@ class PluginManager:
         self._logger.info('%d plugin(s) registered with the system: %s',
                           count, plugins)
 
-    def call(self, plugin: type, func: callable, *args,
-             **kwargs):
+    def call(self, plugin: type, func: callable, args=None, kwargs=None,
+             call_time=0) -> bool:
         """
         Call a mixin function on all plugins.  ``plugin`` should be a class
         from :module:``~blueweather.plugin.types`` and ``func`` should be a
@@ -80,15 +83,30 @@ class PluginManager:
 
         :param callable func: function from ``plugin``
 
-        :param tuple *args: args for the function
+        :param tuple args: args for the function
 
-        :param dict **kwargs: keword args for the function
+        :param dict kwargs: keword args for the function
+
+        :param float call_time: minimum time between each call in seconds
         """
         func_name = func.__name__
         plugin_name = plugin.__name__
 
+        if not args:
+            args = tuple()
+        if not kwargs:
+            kwargs = dict()
+
+        # Check if the last call of the mixin was too soon
+        if call_time > 0:
+            if time.time() - self._timers.get(func_name + plugin_name, 0) \
+                    < call_time:
+                return False
+            self._timers[func_name + plugin_name] = time.time()
+
         self._logger.debug("calling %s.%s()", plugin_name, func_name)
 
+        # Call the the mixin function for each plugin
         for pluginInfo in self._manager.getPluginsOfCategory(plugin_name):
             if pluginInfo.is_activated:
                 try:
@@ -100,3 +118,4 @@ class PluginManager:
                     self._logger.warning("Disabling '%s' due to runtime error",
                                          pluginInfo.name)
                     pluginInfo.plugin_object.deactivate()
+        return True
