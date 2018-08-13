@@ -4,8 +4,6 @@ from flask_login import login_required
 
 from blueweather import variables
 
-from . import info, users
-
 
 main = flask.Blueprint('main', __name__)
 

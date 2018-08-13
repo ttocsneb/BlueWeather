@@ -4,8 +4,9 @@ from flask import url_for
 import flask_login
 from flask_login import login_required
 
-from blueweather.web import forms, models
 from blueweather.web import db, bcrypt
+
+from . import forms, models
 
 users = flask.Blueprint('users', __name__)
 
@@ -19,7 +20,7 @@ def register():
                     "danger")
         return flask.redirect(url_for('main.home'))
 
-    form = forms.users.RegistrationForm()
+    form = forms.RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(
             form.password.data).decode('utf-8')
@@ -48,7 +49,7 @@ def login():
     if flask_login.current_user.is_authenticated:
         return flask.redirect(url_for('main.home'))
 
-    form = forms.users.LoginForm()
+    form = forms.LoginForm()
     if form.validate_on_submit():
         user = models.User.query.filter_by(username=form.username.data).first()
         if user and bcrypt.check_password_hash(user.password,
@@ -88,7 +89,7 @@ def settings():
          'checked': flask_login.current_user.permissions.reboot}
     ]
 
-    change_password = forms.users.ChangePassword()
+    change_password = forms.ChangePassword()
 
     if change_password.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(
@@ -127,7 +128,7 @@ def privileges():
     user = flask.request.args.get('user')
 
     if user:
-        editUser = forms.permissions.EditUser()
+        editUser = forms.EditUser()
         editUser.load(flask_login.current_user.id, int(user))
         if not editUser.check_valid():
             flask.flash('You cannot edit that user', category='warning')
@@ -153,7 +154,7 @@ def privileges():
 
     # Select User
 
-    selectUser = forms.permissions.SelectUser()
+    selectUser = forms.SelectUser()
     selectUser.users.choices = selectUser.getUsers()
 
     if selectUser.validate_on_submit():

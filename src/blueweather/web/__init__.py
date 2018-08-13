@@ -11,45 +11,33 @@ from flask_wtf.csrf import CSRFProtect
 
 from blueweather import variables, plugin
 
+from blueweather.web import config
+
 
 logger = logging.getLogger(__name__)
 
-app = Flask(__name__)
-# TODO: generate a secret key if the secret key doesn't already exist
-app.config['SECRET_KEY'] = 'ec5b916be3348b6c695ced12ade929e9'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
-
-bcrypt = Bcrypt(app)
-
-login_manager = LoginManager(app)
+db = SQLAlchemy()
+bcrypt = Bcrypt()
+login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
-
-csrf = CSRFProtect(app)
-
-
-# prevent circular imports
-from . import routes
-from . import models
-
-
-app.register_blueprint(routes.main)
-app.register_blueprint(routes.users.users)
-app.register_blueprint(routes.info.data)
+csrf = CSRFProtect()
 
 
 def init_db():
+    from .users import models
     db.create_all()
     if models.User.query.count() == 0:
         logger.info(
             "No users exist, creating default user: 'root', pass='password'")
 
+        password_hash = bcrypt.generate_password_hash('password')
+
         user = models.User(username='root',
-                           password=bcrypt.generate_password_hash('password'))
-        permissions = models.Permission(user_id=user.id, change_perm=True,
+                           password=password_hash)
+        permissions = models.Permission(user_id=user.id,
+                                        change_perm=True,
                                         add_user=True, reboot=True,
                                         change_settings=True)
         user.permissions = permissions
@@ -59,23 +47,25 @@ def init_db():
         db.session.commit()
 
 
-@app.before_first_request
-def before_first_request():
-    variables.plugin_manager.call(plugin.types.StartupPlugin,
-                                  plugin.types.StartupPlugin.on_after_startup)
+def start(debug=False):
+    app = Flask(__name__)
+    app.config.from_object(config.Config)
 
+    db.init_app(app)
+    bcrypt.init_app(app)
+    login_manager.init_app(app)
+    csrf.init_app(app)
 
-@app.before_request
-def before_request():
-    variables.plugin_manager.call(plugin.types.RequestsPlugin,
-                                  plugin.types.RequestsPlugin.before_request,
-                                  args=(flask.request.path, flask.request.args)
-                                  )
+    with app.app_context():
+        from .users.routes import users
+        from .util.routes import data
+        from .main.routes import main
+        app.register_blueprint(main)
+        app.register_blueprint(users)
+        app.register_blueprint(data)
 
+        init_db()
 
-def main(debug=False):
-
-    init_db()
     variables.plugin_manager.loadPlugins()
     variables.plugin_manager.activatePlugins()
 
@@ -91,3 +81,5 @@ def main(debug=False):
                                   args=(HOST, PORT))
 
     app.run(HOST, PORT, debug)
+
+    return app

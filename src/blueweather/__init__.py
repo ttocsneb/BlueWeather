@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 def main(debug=False):
     logger.info("Starting BlueWeather")
 
-    web.main(debug)
+    web.start(debug)
 
     variables.plugin_manager.call(types.StartupPlugin,
                                   types.StartupPlugin.on_shutdown)
