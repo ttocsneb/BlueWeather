@@ -39,7 +39,8 @@ class PluginManager:
 
     def loadPlugins(self):
 
-        paths = ', '.join(self.__class__.plugin_locations)
+        paths = ', '.join([os.path.abspath(path)
+                           for path in self.__class__.plugin_locations])
         self._logger.info("loading plugins from %s", paths)
 
         self._manager.getPluginLocator().setPluginPlaces(
@@ -54,7 +55,6 @@ class PluginManager:
 
     @staticmethod
     def _loadPluginData(plugin: yapsy.PluginInfo):
-        from blueweather import variables
         obj = plugin.plugin_object
 
         log_name = 'blueweather.plugins.' + os.path.basename(plugin.path)

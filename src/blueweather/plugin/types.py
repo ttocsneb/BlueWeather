@@ -66,6 +66,13 @@ class StartupPlugin(BlueWeatherPlugin):
 
         pass
 
+    def on_shutdown(self):
+        """
+        Called after the server has shutdown.
+        """
+
+        pass
+
 
 class RequestsPlugin(BlueWeatherPlugin):
     """

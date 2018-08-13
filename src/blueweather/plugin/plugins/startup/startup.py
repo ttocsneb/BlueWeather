@@ -1,6 +1,6 @@
 """
 This is a bit of a weird hack
-It polls the server on startup until it responds with a 200 code. when 
+It polls the server on startup until it responds with a 200 code. when
 this happens,the before_first_request gets called which calls the
 on_after_startup function in the plugins.
 """
