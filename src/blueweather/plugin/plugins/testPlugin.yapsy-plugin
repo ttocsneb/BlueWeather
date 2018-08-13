@@ -1,8 +1,0 @@
-[Core]
-Name = Test Status
-Module = testStation
-
-[Documentation]
-Author = Ben Jacobs
-Version = 1.5
-Description = A test Plugin

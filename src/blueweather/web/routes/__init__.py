@@ -3,13 +3,16 @@ from flask import url_for
 from flask_login import login_required
 
 from blueweather import variables
-from blueweather import weather
 
-from . import users
-from . import info
+from . import info, users
 
 
 main = flask.Blueprint('main', __name__)
+
+
+@main.route('/isDown')
+def isDown():
+    return 'Nope.'
 
 
 @main.route('/')
