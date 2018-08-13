@@ -56,6 +56,13 @@ class PluginManager:
         obj._status = variables.status
         obj._weather = variables.weather
 
+        details = plugin.details
+
+        if 'PluginInfo' in details.sections():
+            info = details['PluginInfo']
+            obj._bundled = True if info.get('Bundled', 'no') == 'yes' \
+                else False
+
     def activatePlugins(self):
 
         plugins = ''
@@ -63,12 +70,17 @@ class PluginManager:
 
         for pluginInfo in self._manager.getPluginsOfCategory(
                 types.BlueWeatherPlugin.__name__):
-            plugins += '\n| {name} ({version}) = {path}'.format(
-                name=pluginInfo.name, version=pluginInfo.version,
-                path=pluginInfo.path)
             count += 1
             pluginInfo.plugin_object.activate()
             self._loadPluginData(pluginInfo)
+
+            bundled = ''
+            if pluginInfo.plugin_object._bundled:
+                bundled = '(bundled) '
+
+            plugins += '\n| {name} ({version}) {bundled}= {path}'.format(
+                name=pluginInfo.name, version=pluginInfo.version,
+                path=pluginInfo.path, bundled=bundled)
 
         self._logger.info('%d plugin(s) registered with the system: %s',
                           count, plugins)

@@ -19,6 +19,8 @@ class BlueWeatherPlugin(IPlugin):
         self._weather = None
         self._logger = None
 
+        self._bundled = False
+
     def activate(self):
         """
         Called at plugin activation.

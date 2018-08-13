@@ -6,3 +6,6 @@ Module = startup
 Author = Ben Jacobs
 Version = 1.0
 Description = indirectly calls the on_after_startup function in the startup mixin.
+
+[PluginInfo]
+Bundled = yes
