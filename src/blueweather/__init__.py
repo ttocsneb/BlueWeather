@@ -1,10 +1,6 @@
 import logging
 import logging.config
 
-import requests
-import threading
-import time
-
 logging.config.dictConfig({
     'version': 1,
     'formatters': {'default': {

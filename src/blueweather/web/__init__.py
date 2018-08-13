@@ -9,7 +9,7 @@ from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
 
 
-from blueweather import plugin, variables
+from blueweather import variables, plugin
 
 
 logger = logging.getLogger(__name__)

@@ -1,10 +1,10 @@
 import os
-from pathlib import Path
 import time
 import logging
 
 import yapsy.PluginManager
 
+from blueweather import variables
 from . import types
 
 dirname = os.path.dirname(os.path.relpath(__file__))
@@ -14,7 +14,7 @@ class PluginManager:
 
     plugin_locations = (
         os.path.join(dirname, 'plugins'),
-        os.path.join(str(Path.home()), 'blueweather', 'plugins')
+        os.path.join(variables.data_dir, 'plugins')
     )
 
     _plugins = [
@@ -28,6 +28,12 @@ class PluginManager:
         self._logger = logging.getLogger(__name__)
 
         self._manager = yapsy.PluginManager.PluginManager()
+
+        ext_dir = self.__class__.plugin_locations[1]
+        if not os.path.exists(ext_dir):
+            self._logger.info("Creating Plugin Directory at %s",
+                              ext_dir)
+            os.makedirs(ext_dir)
 
         self._timers = dict()
 

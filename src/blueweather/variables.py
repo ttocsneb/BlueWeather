@@ -1,3 +1,9 @@
+import os
+from pathlib import Path
+
+# Prevent circular imports from plugin_manager
+data_dir = os.path.join(str(Path.home()), '.blueweather')
+
 from blueweather import plugin
 from blueweather.plugin import types
 import blueweather.weather.status
