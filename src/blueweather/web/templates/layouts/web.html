@@ -126,6 +126,7 @@
         <div class="container-fluid">
             {% include "/includes/messages.html" %}
 
+            {% if breadcrumbs %}
             <!-- Breadcrumb Page Title -->
             <ol class="breadcrumb">
                 {% for crumb in breadcrumbs %}
@@ -138,6 +139,7 @@
                     {% endif %}
                 {% endfor %}
             </ol>
+            {% endif %}
             
             
             <!-- Body -->

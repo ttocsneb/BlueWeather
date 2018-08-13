@@ -28,9 +28,9 @@ class Permission(db.Model):
     change_settings = db.Column(db.Boolean, nullable=False, default=False)
 
     def __repr__(self):
-        return ("Permission({user_id}: change_perm={change_perm}, add_user="
-                + "{add_user}, reboot={reboot}, change_settings="
-                + "{change_settings})").format(
+        return ("Permission({user_id}: change_perm={change_perm}, add_user=" +
+                "{add_user}, reboot={reboot}, change_settings=" +
+                "{change_settings})").format(
                     user_id=self.user_id, change_perm=self.change_perm,
                     add_user=self.add_user, reboot=self.reboot,
                     change_settings=self.change_settings)

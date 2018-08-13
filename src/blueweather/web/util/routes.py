@@ -16,7 +16,8 @@ def before_first_request():
 def before_request():
     variables.plugin_manager.call(plugin.types.RequestsPlugin,
                                   plugin.types.RequestsPlugin.before_request,
-                                  args=(flask.request.path, flask.request.args))
+                                  args=(flask.request.path, flask.request.args)
+                                  )
 
 
 @data.route('/data/status')

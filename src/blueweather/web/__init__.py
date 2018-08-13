@@ -60,9 +60,11 @@ def start(debug=False):
         from .users.routes import users
         from .util.routes import data
         from .main.routes import main
+        from .errors.handlers import errors
         app.register_blueprint(main)
         app.register_blueprint(users)
         app.register_blueprint(data)
+        app.register_blueprint(errors)
 
         init_db()
 

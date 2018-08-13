@@ -16,9 +16,7 @@ users = flask.Blueprint('users', __name__)
 def register():
 
     if flask_login.current_user.permissions.add_user is False:
-        flask.flash("You do not have the privileges to access that page :/",
-                    "danger")
-        return flask.redirect(url_for('main.home'))
+        flask.abort(403)
 
     form = forms.RegistrationForm()
     if form.validate_on_submit():
@@ -119,9 +117,7 @@ def settings():
 def privileges():
 
     if flask_login.current_user.permissions.add_user is False:
-        flask.flash("You do not have the privileges to access that page :/",
-                    "danger")
-        return flask.redirect(url_for('main.home'))
+        flask.abort(403)
 
     # Edit User
 
