@@ -1,8 +1,11 @@
 
-# TODO use a config file
+from blueweather import variables
 
 
 class Config:
-    SECRET_KEY = 'ec5b916be3348b6c695ced12ade929e9'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///site.db'
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    def __init__(self):
+        self.SECRET_KEY = variables.config.web.secret_key
+        self.SQLALCHEMY_DATABASE_URI = variables.config.web.database.uri
+        self.SQLALCHEMY_TRACK_MODIFICATIONS = \
+            variables.config.web.database.track_modifications

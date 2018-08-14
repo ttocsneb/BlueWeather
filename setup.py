@@ -30,7 +30,8 @@ INSTALL_REQUIRES = [
     'Flask-WTF',
     'Jinja2',
     'yapsy',
-    'requests'
+    'requests',
+    'ruamel.yaml'
 ]
 
 

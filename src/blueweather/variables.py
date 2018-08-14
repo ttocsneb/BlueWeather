@@ -8,10 +8,13 @@ from blueweather import plugin
 from blueweather.plugin import types
 import blueweather.weather.status
 import blueweather.weather.weather
+import blueweather.config
+
 
 plugin_manager = plugin.PluginManager()
 status = blueweather.weather.status.Status()
 weather = blueweather.weather.weather.Weather()
+config = blueweather.config.WebConfig(os.path.join(data_dir, 'config.yaml'))
 
 
 def load_status() -> dict:

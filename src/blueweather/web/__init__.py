@@ -49,7 +49,7 @@ def init_db():
 
 def start(debug=False):
     app = Flask(__name__)
-    app.config.from_object(config.Config)
+    app.config.from_object(config.Config())
 
     db.init_app(app)
     bcrypt.init_app(app)
@@ -71,17 +71,11 @@ def start(debug=False):
     variables.plugin_manager.loadPlugins()
     variables.plugin_manager.activatePlugins()
 
-    import os
-    HOST = os.environ.get('SERVER_HOST', '0.0.0.0')
-    try:
-        PORT = int(os.environ.get('SERVER_PORT', '5000'))
-    except ValueError:
-        PORT = 5000
+    HOST = variables.config.web.host
+    PORT = variables.config.web.port
 
     variables.plugin_manager.call(plugin.types.StartupPlugin,
                                   plugin.types.StartupPlugin.on_startup,
                                   args=(HOST, PORT))
 
     app.run(HOST, PORT, debug)
-
-    return app

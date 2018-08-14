@@ -18,6 +18,7 @@ class BlueWeatherPlugin(IPlugin):
         self._status = None
         self._weather = None
         self._logger = None
+        self._config = None
 
         self._bundled = False
 

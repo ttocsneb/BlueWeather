@@ -61,6 +61,7 @@ class PluginManager:
         obj._logger = logging.getLogger(log_name)
         obj._status = variables.status
         obj._weather = variables.weather
+        obj._config = variables.config
 
         details = plugin.details
 
