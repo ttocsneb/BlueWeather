@@ -34,6 +34,8 @@ class WebConfig:
     def getObject(self) -> dict:
         obj = dict()
         obj['secret_key'] = self.secret_key
+        obj['host'] = self.host
+        obj['port'] = self.port
         obj['database'] = self.database.getObject()
         return obj
 
@@ -41,8 +43,6 @@ class WebConfig:
     def loadObject(obj: dict):
         # Convert the database dict to a Database Object
         if 'database' in obj and not isinstance(obj['database'], Database):
-            print(obj)
-            print(obj['database'])
             db = Database.loadObject(obj['database'])
             obj['database'] = db
         return WebConfig(**obj)
