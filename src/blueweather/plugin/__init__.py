@@ -56,6 +56,12 @@ class PluginManager:
     @staticmethod
     def _loadPluginData(plugin: yapsy.PluginInfo):
         obj = plugin.plugin_object
+        details = plugin.details
+
+        if 'PluginInfo' in details.sections():
+            info = details['PluginInfo']
+            obj._bundled = True if info.get('Bundled', 'no') == 'yes' \
+                else False
 
         log_name = 'blueweather.plugins.' + os.path.basename(plugin.path)
         obj._logger = logging.getLogger(log_name)
@@ -65,15 +71,10 @@ class PluginManager:
 
         obj._data_folder = os.path.join(plugin.path, 'data')
         # Create the data folder if it does not yet exist
-        if not os.path.exists(obj._data_folder):
+        if not obj._bundled and not os.path.exists(obj._data_folder):
             os.mkdir(obj._data_folder)
 
-        details = plugin.details
 
-        if 'PluginInfo' in details.sections():
-            info = details['PluginInfo']
-            obj._bundled = True if info.get('Bundled', 'no') == 'yes' \
-                else False
 
     def activatePlugins(self):
 
