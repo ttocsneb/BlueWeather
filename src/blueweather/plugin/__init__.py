@@ -71,9 +71,9 @@ class PluginManager:
 
         # Create the data folder if it does not yet exist
         if not obj._bundled:
+            obj._data_folder = os.path.join(plugin.path, 'data')
             if not os.path.exists(obj._data_folder):
                 os.mkdir(obj._data_folder)
-            obj._data_folder = os.path.join(plugin.path, 'data')
 
 
 
