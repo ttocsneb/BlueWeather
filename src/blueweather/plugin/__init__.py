@@ -64,6 +64,9 @@ class PluginManager:
         obj._config = variables.config
 
         obj._data_folder = os.path.join(plugin.path, 'data')
+        # Create the data folder if it does not yet exist
+        if not os.path.exists(obj._data_folder):
+            os.mkdir(obj._data_folder)
 
         details = plugin.details
 
