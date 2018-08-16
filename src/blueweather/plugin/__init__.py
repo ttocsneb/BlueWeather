@@ -63,6 +63,8 @@ class PluginManager:
         obj._weather = variables.weather
         obj._config = variables.config
 
+        obj._data_folder = os.path.join(plugin.path, 'data')
+
         details = plugin.details
 
         if 'PluginInfo' in details.sections():

@@ -20,6 +20,8 @@ class BlueWeatherPlugin(IPlugin):
         self._logger = None
         self._config = None
 
+        self._data_folder = ''
+
         self._bundled = False
 
     def activate(self):
