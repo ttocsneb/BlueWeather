@@ -2,7 +2,7 @@
 
 {% block body %}
 
-    <div class="row" id="status-content">
+    <div id="status-content">
         {% include "includes/status.html" %}
     </div>
 
@@ -10,5 +10,6 @@
 
 
 {% block scripts %}
+{{ super() }}
 
 {% endblock scripts %}
