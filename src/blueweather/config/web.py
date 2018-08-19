@@ -13,7 +13,7 @@ from .database import Database
 
 class WebConfig:
 
-    def __init__(self, secret_key=None, database=None, host=None, port=None):
+    def __init__(self, secret_key=None, database=None, host=None, port=None, home_page=None):
         if not secret_key:
             secret_key = token_hex(16)
 
@@ -26,16 +26,21 @@ class WebConfig:
         if not port:
             port = 5000
 
+        if not home_page:
+            home_page = '/dashboard'
+
         self.secret_key = str(secret_key)
         self.database = database
         self.host = str(host)
         self.port = int(port)
+        self.home_page = str(home_page)
 
     def getObject(self) -> dict:
         obj = dict()
         obj['secret_key'] = self.secret_key
         obj['host'] = self.host
         obj['port'] = self.port
+        obj['home_page'] = self.home_page
         obj['database'] = self.database.getObject()
         return obj
 

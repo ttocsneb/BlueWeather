@@ -3,6 +3,7 @@ from flask import url_for
 from flask_login import login_required
 
 from blueweather import variables
+from .util import get_web_variables
 
 
 main = flask.Blueprint('main', __name__)
@@ -15,47 +16,49 @@ def isDown():
 
 @main.route('/')
 def home():
-    breadcrumb = [
-        {
-            'name': 'Dashboard'
-        }
-    ]
+    # In the future, I would like to dynamically generate this dict
+    pages = {
+        url_for('main.dashboard'): dashboard,
+        url_for('main.data'): data
+    }
+    page = pages.get(variables.config.web.home_page, None)
+
+    # If the page is not in the default set of pages, just redirect to the page
+    if not page:
+        return flask.redirect(variables.config.web.home_page)
+
+    # Render the page if is a default page
+    return page()
+
+
+@main.route('/dashboard')
+def dashboard():
+
+    web = get_web_variables('main.dashboard', 'Dashboard')
 
     statusCard = variables.load_status()
-    if len(statusCard['messages']) is 0 and len(statusCard['data']) is 0:
+    if len(statusCard['messages']) is 0 and len(statusCard['tables']) is 0:
         statusCard = None
-    return flask.render_template('dashboard.html', breadcrumbs=breadcrumb,
-                                 status=statusCard)
+    return flask.render_template('dashboard.html',
+                                 status=statusCard,
+                                 **web)
 
 
 @main.route('/weather')
 def data():
-    breadcrumb = [
-        {
-            'name': 'Dashboard',
-            'url': url_for('main.home')
-        },
-        {
-            'name': 'weather'
-        }
-    ]
+    web = get_web_variables('main.data', 'Dashboard')
 
     weatherCard = variables.load_weather()
-    return flask.render_template('weather.html', title='Weather',
-                                 breadcrumbs=breadcrumb, weather=weatherCard)
+    if len(weatherCard['tables']) is 0:
+        weatherCard = None
+    return flask.render_template('weather.html',
+                                 weather=weatherCard,
+                                 **web)
 
 
 @main.route('/config')
 @login_required
 def config():
-    breadcrumb = [
-        {
-            'name': 'Dashboard',
-            'url': url_for('main.home')
-        },
-        {
-            'name': 'config'
-        }
-    ]
-    return flask.render_template('layouts/web.html', title='Config',
-                                 breadcrumbs=breadcrumb)
+    web = get_web_variables('main.config', 'Dashboard')
+    return flask.render_template('layouts/web.html',
+                                 **web)
