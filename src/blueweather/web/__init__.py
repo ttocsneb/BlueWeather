@@ -1,7 +1,6 @@
 import logging
 import logging.config
 
-import flask
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -11,7 +10,7 @@ from flask_wtf.csrf import CSRFProtect
 
 from blueweather import variables, plugin
 
-from blueweather.web import config
+from blueweather.web import config, tornado
 
 
 logger = logging.getLogger(__name__)
@@ -71,11 +70,14 @@ def start(debug=False):
     variables.plugin_manager.loadPlugins()
     variables.plugin_manager.activatePlugins()
 
-    HOST = variables.config.web.host
-    PORT = variables.config.web.port
+    host = variables.config.web.host
+    port = variables.config.web.port
 
     variables.plugin_manager.call(plugin.types.StartupPlugin,
                                   plugin.types.StartupPlugin.on_startup,
-                                  args=(HOST, PORT))
+                                  args=(host, port))
 
-    app.run(HOST, PORT, debug)
+    if debug is True:
+        app.run(host, port, debug=True)
+    else:
+        tornado.startServer(host, port, app)

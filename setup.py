@@ -24,6 +24,7 @@ def package_data_dirs(source, sub_folders):
 
 INSTALL_REQUIRES = [
     'Flask',
+    'tornado',
     'Flask-Bcrypt',
     'Flask-Login',
     'Flask-SQLAlchemy',
