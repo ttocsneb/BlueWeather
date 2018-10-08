@@ -65,7 +65,7 @@ class ChangePassword(FlaskForm):
 class SelectUser(FlaskForm):
     users = wtforms.RadioField("Select User", validators=[
         validators.InputRequired("You need to select a user to edit")],
-                               coerce=int)
+        coerce=int)
     submit = wtforms.SubmitField("Edit User")
 
     def getUsers(self) -> list:

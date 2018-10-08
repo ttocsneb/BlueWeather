@@ -10,7 +10,7 @@ from flask_wtf.csrf import CSRFProtect
 
 from blueweather import variables, plugin
 
-from blueweather.web import config, tornado
+from blueweather.web import config, server
 
 
 logger = logging.getLogger(__name__)
@@ -80,4 +80,4 @@ def start(debug=False):
     if debug is True:
         app.run(host, port, debug=True)
     else:
-        tornado.startServer(host, port, app)
+        server.startServer(host, port, app)

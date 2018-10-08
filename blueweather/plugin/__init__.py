@@ -10,6 +10,58 @@ from . import types
 dirname = os.path.dirname(os.path.relpath(__file__))
 
 
+class PluginLoader:
+
+    def __init__(self):
+
+        self.plugin = None
+        self._object = None
+
+    def load(self, plugin: yapsy.PluginInfo):
+        """
+        Load all the important variables to the plugin
+        """
+
+        self.plugin = plugin
+        self._object = plugin.plugin_object
+
+        self._load_base()
+        if issubclass(type(self._object), types.WeatherPlugin):
+            self._load_weather()
+        if issubclass(type(self._object), types.SettingsPlugin):
+            self._load_settings()
+
+    def _load_base(self):
+        details = self.plugin.details
+
+        # Check if the plugin is a bundled plugin
+        if 'PluginInfo' in details.sections():
+            info = details['PluginInfo']
+            self._object._bundled = \
+                True if info.get('Bundled', 'no') == 'yes' else False
+
+        # Create the plugin logger
+        log_name = 'blueweather.plugins.' + os.path.basename(self.plugin.path)
+        self._object._logger = logging.getLogger(log_name)
+
+        # Create the data folder if it does not yet exist
+        if not self._object._bundled:
+            self._object._data_folder = os.path.join(self.plugin.path, 'data')
+            if not os.path.exists(self._object._data_folder):
+                os.mkdir(self._object._data_folder)
+
+    def _load_weather(self):
+
+        # Set the status/weather plugin variables
+        self._object._status = variables.status
+        self._object._weeather = variables.weather
+
+    def _load_settings(self):
+
+        # TODO Set the settings plugin variable
+        pass
+
+
 class PluginManager:
 
     plugin_locations = (
@@ -53,40 +105,18 @@ class PluginManager:
 
         self._manager.collectPlugins()
 
-    @staticmethod
-    def _loadPluginData(plugin: yapsy.PluginInfo):
-        obj = plugin.plugin_object
-        details = plugin.details
-
-        if 'PluginInfo' in details.sections():
-            info = details['PluginInfo']
-            obj._bundled = True if info.get('Bundled', 'no') == 'yes' \
-                else False
-
-        log_name = 'blueweather.plugins.' + os.path.basename(plugin.path)
-        obj._logger = logging.getLogger(log_name)
-        obj._status = variables.status
-        obj._weather = variables.weather
-        obj._config = variables.config
-
-        # Create the data folder if it does not yet exist
-        if not obj._bundled:
-            obj._data_folder = os.path.join(plugin.path, 'data')
-            if not os.path.exists(obj._data_folder):
-                os.mkdir(obj._data_folder)
-
-
-
     def activatePlugins(self):
 
         plugins = ''
         count = 0
 
+        loader = PluginLoader()
+
         for pluginInfo in self._manager.getPluginsOfCategory(
                 types.BlueWeatherPlugin.__name__):
             count += 1
-            pluginInfo.plugin_object.activate()
-            self._loadPluginData(pluginInfo)
+            self.activate(pluginInfo)
+            loader.load(pluginInfo)
 
             bundled = ''
             if pluginInfo.plugin_object._bundled:
@@ -139,10 +169,29 @@ class PluginManager:
                 try:
                     getattr(pluginInfo.plugin_object, func_name)(
                         *args, **kwargs)
-                except Exception as e:
+                except:
                     import traceback
                     traceback.print_exc()
                     self._logger.warning("Disabling '%s' due to runtime error",
                                          pluginInfo.name)
-                    pluginInfo.plugin_object.deactivate()
+                    self.deactivate(pluginInfo)
+                    return False
         return True
+
+    @staticmethod
+    def activate(plugin: yapsy.PluginInfo):
+        """
+        Activate a BlueWeather plugin
+
+        :param yapsy.PluginInfo plugin: plugin to activate
+        """
+        plugin.plugin_object.activate()
+
+    @staticmethod
+    def deactivate(plugin: yapsy.PluginInfo):
+        """
+        Deactivate a BlueWeather plugin
+
+        :param yapsy.PluginInfo plugin: plugin to deactivate
+        """
+        plugin.plugin_object.deactivate()

@@ -7,9 +7,11 @@ from blueweather import variables
 
 _weather = 'clear'
 
+
 def setWeatherIcon(weather: str):
     global _weather
     _weather = weather
+
 
 def get_bread_crumb(url: str):
     if url == variables.config.web.home_page:
@@ -77,7 +79,9 @@ def get_weather_icon(weather: str) -> str:
 
     return 'wi wi-fw wi-day-{}'.format(weather)
 
+
 current = 0
+
 
 def get_side_bar(route: str):
 
@@ -112,6 +116,7 @@ def get_side_bar(route: str):
         })
 
     return sidebar
+
 
 def get_web_variables(route_name: str, title=None) -> dict:
     args = dict()

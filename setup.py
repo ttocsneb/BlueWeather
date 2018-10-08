@@ -61,10 +61,9 @@ def params():
     author_email = 'benjammin1100@gmail.com'
     url = 'https://github.com/ttocsneb/BlueWeather'
 
-    packages = find_packages(where='src')
-    package_dir = {'': 'src'}
+    packages = find_packages()
     package_data = {
-        'blueweather': package_data_dirs('src/blueweather',
+        'blueweather': package_data_dirs('blueweather',
                                          ['static', 'templates'])
     }
 
