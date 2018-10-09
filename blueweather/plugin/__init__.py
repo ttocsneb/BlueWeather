@@ -5,7 +5,6 @@ import re
 
 import yapsy.PluginManager
 
-from blueweather.config.plugin import PluginConfigManagerManager
 from blueweather import variables
 from . import types
 

@@ -6,8 +6,9 @@
         <div class="card mb-2">
             <div class="card-header">
                 {{ card.name }}
-                <button type="button" class="close" data-toggle="collapse" data-target="#{{ card.id }}" aria-expanded="false" aria-controls="{{ card.id }}" aria-label="Collapse">
-                    <i class="fas fa-minus-square"></i>
+                <button type="button" class="close minimize" data-toggle="collapse" data-target="#{{ card.id }}" aria-expanded="false" aria-controls="{{ card.id }}" aria-label="Collapse">
+                    <i class="fas fa-plus-square minimized"></i>
+                    <i class="fas fa-minus-square expanded"></i>
                 </button>
             </div>
             <div class="collapse" id="{{ card.id }}">

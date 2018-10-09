@@ -116,7 +116,7 @@ def settings():
 @login_required
 def privileges():
 
-    if flask_login.current_user.permissions.add_user is False:
+    if flask_login.current_user.permissions.change_perm is False:
         flask.abort(403)
 
     # Edit User

@@ -83,7 +83,7 @@ def get_weather_icon(weather: str) -> str:
 current = 0
 
 
-def get_side_bar(route: str):
+def get_side_bar(route: str = None):
 
     # In the future, I would like to more dynamically generate the sidebar data
 
@@ -105,23 +105,31 @@ def get_side_bar(route: str):
 
     # Login required items
     if flask_login.current_user.is_authenticated:
-        sidebar.append('divider')
+        index = len(sidebar)
+
+        items = False
 
         # settings
-        sidebar.append({
-            'name': 'Settings',
-            'icon': 'fas fa-cogs',
-            'url': flask.url_for('main.config'),
-            'active': route == 'main.config'
-        })
+        if flask_login.current_user.permissions.change_settings:
+            items = True
+            sidebar.append({
+                'name': 'Settings',
+                'icon': 'fas fa-cogs',
+                'url': flask.url_for('main.config'),
+                'active': route == 'main.config'
+            })
+
+        if items:
+            sidebar.insert(index, 'divider')
 
     return sidebar
 
 
-def get_web_variables(route_name: str, title=None) -> dict:
+def get_web_variables(route_name: str = None, title=None) -> dict:
     args = dict()
 
-    args['breadcrumbs'] = get_bread_crumb(flask.url_for(route_name))
+    if route_name:
+        args['breadcrumbs'] = get_bread_crumb(flask.url_for(route_name))
     args['sidebar'] = get_side_bar(route_name)
     if title:
         args['title'] = title

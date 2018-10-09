@@ -1,5 +1,6 @@
 import flask
 from flask import url_for
+import flask_login
 from flask_login import login_required
 
 from blueweather import variables
@@ -61,6 +62,9 @@ def data():
 @main.route('/config')
 @login_required
 def config():
+
+    if flask_login.current_user.permissions.change_settings is False:
+        flask.abort(403)
 
     settings = template.render_templates(template.get_templates('settings'))
 
