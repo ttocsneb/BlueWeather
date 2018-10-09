@@ -11,10 +11,10 @@ import blueweather.weather.weather
 import blueweather.config
 
 
-plugin_manager = plugin.PluginManager()
+config = blueweather.config.WebConfig(os.path.join(data_dir, 'config.yaml'))
 status = blueweather.weather.status.Status()
 weather = blueweather.weather.weather.Weather()
-config = blueweather.config.WebConfig(os.path.join(data_dir, 'config.yaml'))
+plugin_manager = plugin.PluginManager()
 
 
 def load_status() -> dict:

@@ -4,6 +4,7 @@ import logging
 
 import yapsy.PluginManager
 
+from blueweather.config.plugin import PluginConfigManagerManager
 from blueweather import variables
 from . import types
 
@@ -46,7 +47,13 @@ class PluginLoader:
 
         # Create the data folder if it does not yet exist
         if not self._object._bundled:
-            self._object._data_folder = os.path.join(self.plugin.path, 'data')
+            if os.path.isdir(self.plugin.path):
+                self._object._data_folder = os.path.join(
+                    self.plugin.path, 'data')
+            else:
+                self._object._data_folder = os.path.join(
+                    os.path.dirname(self.plugin.path), 'data')
+
             if not os.path.exists(self._object._data_folder):
                 os.mkdir(self._object._data_folder)
 
@@ -58,8 +65,10 @@ class PluginLoader:
 
     def _load_settings(self):
 
-        # TODO Set the settings plugin variable
-        pass
+        plugin_manager = \
+            variables.config.plugin.createPluginManager(
+                self._object, self.plugin.name)
+        self._object._settings = plugin_manager
 
 
 class PluginManager:
@@ -73,10 +82,11 @@ class PluginManager:
         types.BlueWeatherPlugin,
         types.StartupPlugin,
         types.RequestsPlugin,
-        types.WeatherPlugin
+        types.WeatherPlugin,
+        types.SettingsPlugin,
     ]
 
-    def __init__(self):
+    def __init__(self,):
         self._logger = logging.getLogger(__name__)
 
         self._manager = yapsy.PluginManager.PluginManager()
@@ -128,6 +138,8 @@ class PluginManager:
 
         self._logger.info('%d plugin(s) registered with the system: %s',
                           count, plugins)
+
+        variables.config.load()
 
     def call(self, plugin: type, func: callable, args=None, kwargs=None,
              call_time=0) -> bool:

@@ -1,11 +1,13 @@
 """
 Config Package
+
+This is where the yaml configuration lies.
 """
 
 import os
 from ruamel import yaml
 
-from . import web
+from . import web, plugin
 
 
 class Config:
@@ -28,8 +30,6 @@ class Config:
         self._file = file
         self._config = dict()
         self._defaults = defaults
-
-        self.load()
 
     def save(self):
         """
@@ -96,23 +96,25 @@ class WebConfig(Config):
 
     def __init__(self, file):
         super().__init__(file, self._get_defaults)
+        self.web = web.WebConfig()
+        self.plugin = plugin.PluginConfigManagerManager()
 
-        self.web = None
-
-        self._load_config()
+        self.load()
 
     def _get_defaults(self):
-        self.web = web.WebConfig()
-
         conf = dict()
         conf['web'] = self.web.getObject()
+        conf['plugin'] = dict()
         return conf
 
     def _load_config(self):
+
         self.web = web.WebConfig.loadObject(self._config['web'])
+        self.plugin.load()
 
     def _udpate_config(self):
         self._config['web'] = self.web.getObject()
+        self.plugin.save()
 
     def save(self):
         self._udpate_config()

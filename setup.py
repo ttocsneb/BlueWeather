@@ -35,6 +35,8 @@ INSTALL_REQUIRES = [
     'ruamel.yaml'
 ]
 
+EXTRAS_REQUIRE = {}
+
 
 def params():
     name = "BlueWeather"
@@ -46,6 +48,7 @@ def params():
     long_description_content_type = "text/markdown"
 
     install_requires = INSTALL_REQUIRES
+    extras_require = EXTRAS_REQUIRE
 
     classifiers = [
         "Development Status :: 1 - Planning",

@@ -1,9 +1,9 @@
-
+from collections import Mapping
 
 def dict_merge(a, b, leaf_merger=None):
     """
     Recursively deep-merges two dictionaries.
-    Taken from
+    Taken from Octoprint, which was taken from
     https://www.xormedia.com/recursively-merge-dictionaries-in-python/
     Example::
         >>> a = dict(foo="foo", bar="bar", fnord=dict(a=1))
@@ -49,11 +49,11 @@ def dict_merge(a, b, leaf_merger=None):
     if b is None:
         b = dict()
 
-    if not isinstance(b, dict):
+    if not isinstance(b, Mapping):
         return b
     result = deepcopy(a)
     for k, v in b.items():
-        if k in result and isinstance(result[k], dict):
+        if k in result and isinstance(result[k], Mapping):
             result[k] = dict_merge(result[k], v, leaf_merger=leaf_merger)
         else:
             merged = None
@@ -68,65 +68,4 @@ def dict_merge(a, b, leaf_merger=None):
                 merged = deepcopy(v)
 
             result[k] = merged
-    return result
-
-
-def dict_minimal_mergediff(source, target):
-    """
-    Recursively calculates the minimal dict that would be needed to be deep
-    merged with a in order to produce the same result as deep merging a and b.
-    Example::
-        >>> a = dict(foo=dict(a=1, b=2), bar=dict(c=3, d=4))
-        >>> b = dict(bar=dict(c=3, d=5), fnord=None)
-        >>> c = dict_minimal_mergediff(a, b)
-        >>> c == dict(bar=dict(d=5), fnord=None)
-        True
-        >>> dict_merge(a, c) == dict_merge(a, b)
-        True
-    Arguments:
-        source (dict): Source dictionary
-        target (dict): Dictionary to compare to source dictionary and derive
-        diff for
-    Returns:
-        dict: The minimal dictionary to deep merge on ``source`` to get the
-            same result as deep merging ``target`` on ``source``.
-    """
-
-    if not isinstance(source, dict) or not isinstance(target, dict):
-        raise ValueError("source and target must be dictionaries")
-
-    if source == target:
-        # shortcut: if both are equal, we return an empty dict as result
-        return dict()
-
-    from copy import deepcopy
-
-    all_keys = set(source.keys() + target.keys())
-    result = dict()
-    for k in all_keys:
-        if k not in target:
-            # key not contained in b => not contained in result
-            continue
-
-        if k in source:
-            # key is present in both dicts, we have to take a look at the value
-            value_source = source[k]
-            value_target = target[k]
-
-            if value_source != value_target:
-                # we only need to look further if the values are not equal
-
-                if isinstance(value_source, dict) and \
-                        isinstance(value_target, dict):
-                    # both are dicts => deeper down it goes into the rabbit
-                    # hole
-                    result[k] = dict_minimal_mergediff(value_source,
-                                                       value_target)
-                else:
-                    # new b wins over old a
-                    result[k] = deepcopy(value_target)
-
-        else:
-            # key is new, add it
-            result[k] = deepcopy(target[k])
     return result

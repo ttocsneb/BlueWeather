@@ -13,7 +13,8 @@ from .database import Database
 
 class WebConfig:
 
-    def __init__(self, secret_key=None, database=None, host=None, port=None, home_page=None):
+    def __init__(self, secret_key=None, database=None, host=None, port=None,
+                 home_page=None):
         if not secret_key:
             secret_key = token_hex(16)
 

@@ -188,25 +188,6 @@ class SettingsPlugin(BlueWeatherPlugin):
 
         pass
 
-    def on_settings_cleanup(self):
-        """
-        Called after ``on_settings_migrate()`` but before
-        ``on_settings_initialized()``.
-
-        The default implementation minimizes the data persisted on disk to
-        only contain the differences to the defaults
-        """
-
-        from blueweather.config.plugin import NoSettingsPath
-
-        try:
-            config = self._settings.get_all_data(incl_defaults=False,
-                                                 error_on_path=True)
-        except NoSettingsPath:
-            return
-
-        # TODO implement default implementation
-
     def on_settings_save(self, data):
         """
         Saves the settings for the plugin
@@ -217,7 +198,7 @@ class SettingsPlugin(BlueWeatherPlugin):
         :returns dict: The settiongs that differed fromt he defaults
         """
 
-        from blueweather.util import dict_merge, dict_minimal_mergediff
+        from blueweather.util import dict_merge
 
         # Get the current Settings saved on disk
         current = self._settings.get_all_data()
@@ -229,22 +210,13 @@ class SettingsPlugin(BlueWeatherPlugin):
         if self.config_version_key in new_current:
             del new_current[self.config_version_key]
 
-        # Save only the necessary settings
-        diff = dict_minimal_mergediff(self.get_settings_defaults(),
-                                      new_current)
-
         version = self.get_settings_version()
 
-        to_persist = dict(diff)
-        if version:
+        to_persist = new_current
+        if version is not None:
             to_persist[self.config_version_key] = version
 
-        if to_persist:
-            self._settings.set(to_persist)
-        else:
-            self._settings.clean_all_data()
-
-        return diff
+        return to_persist
 
     def on_settings_load(self):
         """
