@@ -1,6 +1,7 @@
 import os
 import time
 import logging
+import re
 
 import yapsy.PluginManager
 
@@ -17,6 +18,8 @@ class PluginLoader:
 
         self.plugin = None
         self._object = None
+
+        self._regex = re.compile(r"[\d\w\-_ ]")
 
     def load(self, plugin: yapsy.PluginInfo):
         """
@@ -35,11 +38,20 @@ class PluginLoader:
     def _load_base(self):
         details = self.plugin.details
 
-        # Check if the plugin is a bundled plugin
+        # Process the PluginInfo settings
         if 'PluginInfo' in details.sections():
             info = details['PluginInfo']
+            # Get whether this is a bundled plugin
             self._object._bundled = \
                 True if info.get('Bundled', 'no') == 'yes' else False
+            # Get the Plugin id
+            self.plugin.id = ''.join(self._regex.findall(
+                info.get('Id', self.plugin.name))).replace(' ', '_')
+
+        else:
+            self.plugin.id = ''.join(self._regex.findall(
+                self.plugin.name)).replace(' ', '_')
+            self._object._bundled = False
 
         # Create the plugin logger
         log_name = 'blueweather.plugins.' + os.path.basename(self.plugin.path)
@@ -158,6 +170,16 @@ class PluginManager:
         :param dict kwargs: keword args for the function
 
         :param float call_time: minimum time between each call in seconds
+
+        :param list return_list: a list of dicts with the following structure:
+
+        ```
+        {
+            'plugin': pluginInfo,
+            'returned': returned value
+        }
+        ```
+
         """
         func_name = func.__name__
         plugin_name = plugin.__name__
@@ -176,6 +198,8 @@ class PluginManager:
 
         self._logger.debug("calling %s.%s()", plugin_name, func_name)
 
+        succeeded = True
+
         # Call the the mixin function for each plugin
         for pluginInfo in self._manager.getPluginsOfCategory(plugin_name):
             if pluginInfo.is_activated:
@@ -183,15 +207,19 @@ class PluginManager:
                     ret = getattr(pluginInfo.plugin_object, func_name)(
                         *args, **kwargs)
                     if return_list is not None:
-                        ret.append(ret)
+                        return_info = dict(
+                            plugin=pluginInfo,
+                            returned=ret
+                        )
+                        return_list.append(return_info)
                 except:
                     import traceback
                     traceback.print_exc()
                     self._logger.warning("Disabling '%s' due to runtime error",
                                          pluginInfo.name)
                     self.deactivate(pluginInfo)
-                    return False
-        return True
+                    succeeded = False
+        return succeeded
 
     @staticmethod
     def activate(plugin: yapsy.PluginInfo):

@@ -5,12 +5,12 @@
     {% for card in settings %}
         <div class="card mb-2">
             <div class="card-header">
-                {{ card.title }}
-                <button type="button" class="close" data-toggle="collapse" data-target="#settings{{ loop.index }}" aria-expanded="false" aria-controls="settings{{ loop.index }}" aria-label="Collapse">
+                {{ card.name }}
+                <button type="button" class="close" data-toggle="collapse" data-target="#{{ card.id }}" aria-expanded="false" aria-controls="{{ card.id }}" aria-label="Collapse">
                     <i class="fas fa-minus-square"></i>
                 </button>
             </div>
-            <div class="collapse" id="settings{{ loop.index }}">
+            <div class="collapse" id="{{ card.id }}">
                 <div class="card-body">
                     {{ card.content|safe }}
                 </div>

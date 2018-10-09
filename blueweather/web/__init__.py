@@ -11,6 +11,7 @@ from flask_wtf.csrf import CSRFProtect
 from blueweather import variables, plugin
 
 from blueweather.web import config, server
+from blueweather.web.util import template
 
 
 logger = logging.getLogger(__name__)
@@ -76,6 +77,8 @@ def start(debug=False):
     variables.plugin_manager.call(plugin.types.StartupPlugin,
                                   plugin.types.StartupPlugin.on_startup,
                                   args=(host, port))
+
+    template.load_templates()
 
     if debug is True:
         app.run(host, port, debug=True)

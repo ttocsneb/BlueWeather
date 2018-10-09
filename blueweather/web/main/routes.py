@@ -3,6 +3,8 @@ from flask import url_for
 from flask_login import login_required
 
 from blueweather import variables
+from blueweather.web.util import template
+
 from .util import get_web_variables
 
 
@@ -59,26 +61,8 @@ def data():
 @main.route('/config')
 @login_required
 def config():
-    settings = [
-        {
-            'title': 'Foo',
-            'content': '<p>Bar</p><h1>HELLO</h1>'
-        },
-        {
-            'title': 'qwerty',
-            'content': """
-            {% for f in foo %}
-                <h{{ f }}>Hello World!</h{{ f }}>
-            {% endfor %}""",
-            'vars': {'foo': [1, 5, 2, 3]}
-        }
-    ]
 
-    for sett in settings:
-        sett['content'] = flask.render_template_string(
-            sett['content'],
-            **sett.get('vars', dict())
-        )
+    settings = template.render_templates(template.get_templates('settings'))
 
     web = get_web_variables('main.config', 'Dashboard')
     return flask.render_template('config.jinja2', settings=settings,
