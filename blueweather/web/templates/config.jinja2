@@ -1,0 +1,25 @@
+{% extends "layouts/web.jinja2" %}
+
+
+{% block body %}
+    {% for card in settings %}
+        <div class="card mb-2">
+            <div class="card-header">
+                {{ card.title }}
+                <button type="button" class="close" data-toggle="collapse" data-target="#settings{{ loop.index }}" aria-expanded="false" aria-controls="settings{{ loop.index }}" aria-label="Collapse">
+                    <i class="fas fa-minus-square"></i>
+                </button>
+            </div>
+            <div class="collapse" id="settings{{ loop.index }}">
+                <div class="card-body">
+                    {{ card.content|safe }}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock body %}
+
+
+{% block scripts %}
+{{ super() }}
+{% endblock scripts %}

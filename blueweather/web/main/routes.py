@@ -59,6 +59,27 @@ def data():
 @main.route('/config')
 @login_required
 def config():
+    settings = [
+        {
+            'title': 'Foo',
+            'content': '<p>Bar</p><h1>HELLO</h1>'
+        },
+        {
+            'title': 'qwerty',
+            'content': """
+            {% for f in foo %}
+                <h{{ f }}>Hello World!</h{{ f }}>
+            {% endfor %}""",
+            'vars': {'foo': [1, 5, 2, 3]}
+        }
+    ]
+
+    for sett in settings:
+        sett['content'] = flask.render_template_string(
+            sett['content'],
+            **sett.get('vars', dict())
+        )
+
     web = get_web_variables('main.config', 'Dashboard')
-    return flask.render_template('layouts/web.jinja2',
+    return flask.render_template('config.jinja2', settings=settings,
                                  **web)

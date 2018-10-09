@@ -232,3 +232,48 @@ class SettingsPlugin(BlueWeatherPlugin):
             del data[self.config_version_key]
 
         return data
+
+
+class TemplatePlugin(BlueWeatherPlugin):
+
+    def get_template_configs(self):
+        """
+        Allows configuration of the settings.  I will implement more templates
+        later on, but for now, only settings templates will be allowed.
+
+        The function should return a list of dictionaries with each template.
+
+        The dictionary contains the following
+
+
+        ``type``: <``settings``, ...>
+        The template type.  More will be added at some point.
+
+        ``name``:
+        The name of the component.  If nothing is set, the name of the plugin
+        will be used instead.
+
+        ``template``:
+        The name of the template file to use
+
+        ``id``:
+        the div id that contains the component.  The default is
+        ``<type>_plugin_<plugin identifier>``.
+
+        ``variables``: dict
+        A dictionary of variables to pass to the template engine.  You should
+        use lambdas for variables that might change
+
+        Example:
+
+        ```
+        return [
+            dict(type='settings', template='my_template.jinja2',
+                 variables=dict(foo='bar', qwerty=lambda: foo())),
+            dict(type='settings', template='my_template_2.jinja2',
+                 name='Hello World!', id='hello_world_settings')
+        ]
+        ```
+        """
+
+        pass

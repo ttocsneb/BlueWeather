@@ -84,6 +84,7 @@ class PluginManager:
         types.RequestsPlugin,
         types.WeatherPlugin,
         types.SettingsPlugin,
+        types.TemplatePlugin
     ]
 
     def __init__(self,):
@@ -142,7 +143,7 @@ class PluginManager:
         variables.config.load()
 
     def call(self, plugin: type, func: callable, args=None, kwargs=None,
-             call_time=0) -> bool:
+             call_time=0, return_list=None) -> bool:
         """
         Call a mixin function on all plugins.  ``plugin`` should be a class
         from :module:``~blueweather.plugin.types`` and ``func`` should be a
@@ -179,8 +180,10 @@ class PluginManager:
         for pluginInfo in self._manager.getPluginsOfCategory(plugin_name):
             if pluginInfo.is_activated:
                 try:
-                    getattr(pluginInfo.plugin_object, func_name)(
+                    ret = getattr(pluginInfo.plugin_object, func_name)(
                         *args, **kwargs)
+                    if return_list is not None:
+                        ret.append(ret)
                 except:
                     import traceback
                     traceback.print_exc()
