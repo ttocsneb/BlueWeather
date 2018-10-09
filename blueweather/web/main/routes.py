@@ -39,7 +39,7 @@ def dashboard():
     statusCard = variables.load_status()
     if len(statusCard['messages']) is 0 and len(statusCard['tables']) is 0:
         statusCard = None
-    return flask.render_template('dashboard.html',
+    return flask.render_template('dashboard.jinja2',
                                  status=statusCard,
                                  **web)
 
@@ -51,7 +51,7 @@ def data():
     weatherCard = variables.load_weather()
     if len(weatherCard['tables']) is 0:
         weatherCard = None
-    return flask.render_template('weather.html',
+    return flask.render_template('weather.jinja2',
                                  weather=weatherCard,
                                  **web)
 
@@ -60,5 +60,5 @@ def data():
 @login_required
 def config():
     web = get_web_variables('main.config', 'Dashboard')
-    return flask.render_template('layouts/web.html',
+    return flask.render_template('layouts/web.jinja2',
                                  **web)

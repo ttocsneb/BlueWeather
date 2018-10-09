@@ -23,13 +23,13 @@ def before_request():
 @data.route('/data/status')
 def status():
     statusData = variables.load_status()
-    return flask.render_template('includes/status.html', status=statusData)
+    return flask.render_template('includes/status.jinja2', status=statusData)
 
 
 @data.route('/data/weather')
 def weather():
     weatherData = variables.load_weather()
-    return flask.render_template('includes/weather.html', weather=weatherData)
+    return flask.render_template('includes/weather.jinja2', weather=weatherData)
 
 
 @data.route('/status/remove_message')

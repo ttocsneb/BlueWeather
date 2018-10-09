@@ -1,5 +1,6 @@
 from collections import Mapping
 
+
 def dict_merge(a, b, leaf_merger=None):
     """
     Recursively deep-merges two dictionaries.

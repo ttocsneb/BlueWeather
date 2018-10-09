@@ -38,7 +38,7 @@ def register():
             data=form.username.data), 'success')
         return flask.redirect(url_for('main.home'))
 
-    return flask.render_template('user/register.html', title='Register',
+    return flask.render_template('user/register.jinja2', title='Register',
                                  form=form)
 
 
@@ -57,7 +57,7 @@ def login():
             return flask.redirect(next_page)
         flask.flash('Username or Password is incorrect', 'danger')
 
-    return flask.render_template('user/login.html', title='Login', form=form)
+    return flask.render_template('user/login.jinja2', title='Login', form=form)
 
 
 @users.route('/users/logout')
@@ -107,7 +107,7 @@ def settings():
         tabs['tabs'][0]['active'] = False
         tabs['tabs'][1]['active'] = True
 
-    return flask.render_template('user/account.html', title='Account',
+    return flask.render_template('user/account.jinja2', title='Account',
                                  permissions=permissions, tabs=tabs,
                                  form=change_password)
 
@@ -144,7 +144,7 @@ def privileges():
 
         editUser.load_defaults()
 
-        return flask.render_template("user/permissions.html",
+        return flask.render_template("user/permissions.jinja2",
                                      title='Privileges', user=user_name,
                                      editUser=editUser)
 
@@ -161,5 +161,5 @@ def privileges():
             url=url_for('users.privileges'), params=urllib.parse.urlencode(
                 {'user': user_id})))
 
-    return flask.render_template('user/permissions.html', title='Privileges',
+    return flask.render_template('user/permissions.jinja2', title='Privileges',
                                  selectUser=selectUser)
