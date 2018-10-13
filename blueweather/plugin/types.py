@@ -246,12 +246,14 @@ class TemplatePlugin(BlueWeatherPlugin):
         The dictionary contains the following
 
 
-        ``type``: <``settings``, ...>
-        The template type.  More will be added at some point.
+        ``type``: <``settings``, ``weather``, ``status``, ``dashboard_page``,
+        ``weather_page``>
+        The template type.
 
         ``name``:
         The name of the component.  If nothing is set, the name of the plugin
-        will be used instead.
+        will be used instead.  Some types, such as the weather type, do not
+        use the name
 
         ``template``:
         The name of the template file to use

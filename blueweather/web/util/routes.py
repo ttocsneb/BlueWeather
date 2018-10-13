@@ -3,6 +3,8 @@ from flask import current_app
 
 from blueweather import variables, plugin
 
+from . import template
+
 data = flask.Blueprint('data', __name__)
 
 
@@ -22,14 +24,23 @@ def before_request():
 
 @data.route('/data/status')
 def status():
-    statusData = variables.load_status()
-    return flask.render_template('includes/status.jinja2', status=statusData)
+    variables.plugin_manager.call(
+        plugin.types.WeatherPlugin,
+        plugin.types.WeatherPlugin.on_weather_request,
+        call_time=5)
+    statusCards = template.render_templates(template.get_templates('status'))
+    return flask.render_template('includes/status.jinja2', status=statusCards)
 
 
 @data.route('/data/weather')
 def weather():
-    weatherData = variables.load_weather()
-    return flask.render_template('includes/weather.jinja2', weather=weatherData)
+    variables.plugin_manager.call(
+        plugin.types.WeatherPlugin,
+        plugin.types.WeatherPlugin.on_weather_request,
+        call_time=5)
+    weatherCards = template.render_templates(template.get_templates('weather'))
+    return flask.render_template('includes/weather.jinja2',
+                                 weather=weatherCards)
 
 
 @data.route('/status/remove_message')

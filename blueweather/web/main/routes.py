@@ -5,6 +5,7 @@ from flask_login import login_required
 
 from blueweather import variables
 from blueweather.web.util import template
+from blueweather.plugin import types
 
 from .util import get_web_variables
 
@@ -39,11 +40,16 @@ def dashboard():
 
     web = get_web_variables('main.dashboard', 'Dashboard')
 
-    statusCard = variables.load_status()
-    if len(statusCard['messages']) is 0 and len(statusCard['tables']) is 0:
-        statusCard = None
+    variables.plugin_manager.call(types.WeatherPlugin,
+                                  types.WeatherPlugin.on_weather_request,
+                                  call_time=5)
+    status = template.render_templates(template.get_templates('status'))
+
+    statusCards = template.render_templates(
+        template.get_templates('dashboard_page'))
+
     return flask.render_template('dashboard.jinja2',
-                                 status=statusCard,
+                                 status=status, dashboard_page=statusCards,
                                  **web)
 
 
@@ -51,17 +57,34 @@ def dashboard():
 def data():
     web = get_web_variables('main.data', 'Dashboard')
 
-    weatherCard = variables.load_weather()
-    if len(weatherCard['tables']) is 0:
-        weatherCard = None
+    variables.plugin_manager.call(types.WeatherPlugin,
+                                  types.WeatherPlugin.on_weather_request,
+                                  call_time=5)
+    weather = template.render_templates(template.get_templates('weather'))
+
+    weatherCards = template.render_templates(
+        template.get_templates('weather_page'))
+
     return flask.render_template('weather.jinja2',
-                                 weather=weatherCard,
+                                 weather=weather, weather_page=weatherCards,
                                  **web)
 
 
-@main.route('/config')
+@main.route('/config', methods=['GET', 'POST'])
 @login_required
 def config():
+    from flask_wtf import FlaskForm
+    import wtforms
+
+    class SaveForm(FlaskForm):
+        submit = wtforms.SubmitField('Save')
+
+    form = SaveForm()
+
+    if form.validate_on_submit():
+        variables.config.save()
+        flask.flash('Successfully Saved settings', category='success')
+        return flask.redirect(url_for('main.home'))
 
     if flask_login.current_user.permissions.change_settings is False:
         flask.abort(403)
@@ -70,4 +93,4 @@ def config():
 
     web = get_web_variables('main.config', 'Dashboard')
     return flask.render_template('config.jinja2', settings=settings,
-                                 **web)
+                                 form=form, **web)

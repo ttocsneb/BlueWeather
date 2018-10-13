@@ -2,9 +2,31 @@
 
 {% block body %}
 
-    <div id="status-content">
-        {% include "includes/status.jinja2" %}
+    <div class="card mb-3">
+        <div class="card-header">Status</div>
+        <div class="card-body">
+            <div class="row">
+
+                {% for card in status %}
+                    <div class="col-sm-12 col-lg-6 col-xl-4">
+                        <div class="card mb-2" id="{{ card.id }}">
+                            {{ card.content|safe }}
+                        </div>
+                    </div>
+                {% endfor %}
+
+            </div>
+        </div>
     </div>
+
+    {% for card in dashboard_page %}
+        <div class="card mb-3" id="{{ card.id }}">
+            <div class="card-header">{{ card.name }}</div>
+            <div class="card-body">
+                {{ card.content|safe }}
+            </div>
+        </div>
+    {% endfor %}
 
 {% endblock body %}
 

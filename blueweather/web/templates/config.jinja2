@@ -18,6 +18,11 @@
             </div>
         </div>
     {% endfor %}
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <a class="btn btn-warning" href="{{ url_for('main.home') }}" role="button">Cancel</a>
+        {{ form.submit(class="btn btn-info") }}
+    </form>
 {% endblock body %}
 
 
