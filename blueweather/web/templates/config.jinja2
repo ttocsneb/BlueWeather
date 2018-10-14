@@ -28,4 +28,10 @@
 
 {% block scripts %}
 {{ super() }}
+
+    {% for card in settings %}
+        {% for script in card.scripts %}
+            <script src="{{ script }}"></script>
+        {% endfor %}
+    {% endfor %}
 {% endblock scripts %}

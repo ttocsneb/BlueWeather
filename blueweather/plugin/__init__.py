@@ -68,6 +68,28 @@ class PluginLoader:
             if not os.path.exists(self._object._data_folder):
                 os.mkdir(self._object._data_folder)
 
+            if info:
+                # Check if templating is enabled
+                if info.get('Templating', 'no') == 'yes':
+
+                    # Create the templates directory
+                    templates = os.path.join(
+                        self._object._data_folder, 'templates')
+                    if not os.path.exists(templates):
+                        os.mkdir(templates)
+
+                    # Create the static directory
+                    static = os.path.join(
+                        self._object._data_folder, 'static')
+                    if not os.path.exists(static):
+                        os.mkdir(static)
+
+                    # Register the static directory with flask
+                    from blueweather import web
+                    web.register_static_folder(self.plugin.id,
+                                               self._object.__class__.__name__,
+                                               static)
+
     def _load_weather(self):
 
         # Set the status/weather plugin variables
@@ -95,7 +117,8 @@ class PluginManager:
         types.RequestsPlugin,
         types.WeatherPlugin,
         types.SettingsPlugin,
-        types.TemplatePlugin
+        types.TemplatePlugin,
+        types.RoutePlugin
     ]
 
     def __init__(self,):

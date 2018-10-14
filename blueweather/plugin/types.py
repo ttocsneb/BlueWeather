@@ -266,16 +266,54 @@ class TemplatePlugin(BlueWeatherPlugin):
         A dictionary of variables to pass to the template engine.  You should
         use lambdas for variables that might change
 
+        ``scripts``: list
+        A list of urls to scripts to include.  You should use the
+        `flask.url_for('plugin_id.static', filename='script')` to retrieve
+        scripts located in the static directory
+
         Example:
 
         ```
+        import flask
         return [
             dict(type='settings', template='my_template.jinja2',
                  variables=dict(foo='bar', qwerty=lambda: foo())),
             dict(type='settings', template='my_template_2.jinja2',
-                 name='Hello World!', id='hello_world_settings')
+                 name='Hello World!', id='hello_world_settings'),
+            dict(type='weather', template='weather.jinja2',
+                 scripts=[flask.url_for('plugin_id.static',
+                                        filename='js/script.js')])
         ]
         ```
+        """
+
+        pass
+
+
+class RoutePlugin(BlueWeatherPlugin):
+
+    def get_bluprint(self):
+        """
+        You can register a flask blueprint here by returning the created
+        blueprint.
+
+        This blueprint can be used to add routes to the website.
+
+        A route can be created with the following code
+
+        ```
+        import flask
+
+        my_blueprint = flask.Blueprint('my_blueprint', __name__)
+
+        @my_blueprint.route('/plugin_name/route_name')
+        def route_name(self):
+            return 'Hello World!'
+        ```
+
+        Going to `plugin_name/route_name` would display the text `Hello World!`
+
+        This can be used to create ReSTfull apis or new webpages entirely.
         """
 
         pass

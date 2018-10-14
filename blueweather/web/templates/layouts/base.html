@@ -51,14 +51,34 @@
     </head>
     {% block content %}{% endblock %}
 
+        <div class="modal fade" id="site_down" tabindex="-1" role="dialog" aria-labelledby="site_downLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title" id="site_downLabel">Server is Offline!</h1>
+                    </div>
+                    <div class="modal-body">
+                        The server seems to be offline, or you have lost the connection to the
+                        internet.  I will periodically check if the server comes back online,
+                        or you can manually reload the website.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="location.reload();">Reload</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Bootstrap core JavaScript-->
         <script src="{{ url_for('static', filename='startbootstrap-sb-admin/vendor/jquery/jquery.min.js') }}"></script>
         <script src="{{ url_for('static', filename='startbootstrap-sb-admin/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
         <!-- Core plugin JavaScript-->
         <script src="{{ url_for('static', filename='startbootstrap-sb-admin/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/includes/moment.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/includes/angular.min.js') }}"></script>
         <!-- Custom scripts for all pages-->
         <script src="{{ url_for('static', filename='startbootstrap-sb-admin/js/sb-admin.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/blueweather.js') }}"></script>
         
         <!-- Custom scripts for this page-->
         {% block scripts %}{% endblock %}

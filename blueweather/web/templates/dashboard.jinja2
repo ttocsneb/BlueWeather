@@ -34,4 +34,9 @@
 {% block scripts %}
 {{ super() }}
 
+    {% for card in status|list + dashboard_page|list %}
+        {% for script in card.scripts %}
+            <script src="{{ script }}"></script>
+        {% endfor %}
+    {% endfor %}
 {% endblock scripts %}

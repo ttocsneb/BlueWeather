@@ -1,6 +1,7 @@
 import logging
 import logging.config
 
+import flask
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -47,6 +48,13 @@ def init_db():
         db.session.commit()
 
 
+def register_static_folder(name: str, import_name: str, folder: str):
+    blueprint = flask.Blueprint(name, import_name,
+                                static_url_path='/static/' + name,
+                                static_folder=folder)
+    flask.current_app.register_blueprint(blueprint)
+
+
 def start(debug=False):
     app = Flask(__name__)
     app.config.from_object(config.Config())
@@ -68,8 +76,8 @@ def start(debug=False):
 
         init_db()
 
-    variables.plugin_manager.loadPlugins()
-    variables.plugin_manager.activatePlugins()
+        variables.plugin_manager.loadPlugins()
+        variables.plugin_manager.activatePlugins()
 
     host = variables.config.web.host
     port = variables.config.web.port
@@ -79,6 +87,14 @@ def start(debug=False):
                                   args=(host, port))
 
     template.load_templates()
+
+    # Register all the plugin routes
+    routes = list()
+    variables.plugin_manager.call(plugin.types.RoutePlugin,
+                                  plugin.types.RoutePlugin.get_bluprint,
+                                  return_list=routes)
+    for route in routes:
+        app.register_blueprint(route['returned'])
 
     if debug is True:
         app.run(host, port, debug=True)
