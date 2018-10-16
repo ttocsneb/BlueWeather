@@ -22,7 +22,7 @@
                         {{ current_user.username }}
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                        <a class="dropdown-item" href="{{ url_for('users.settings') }}">Settings</a>
+                        <a class="dropdown-item" href="{{ url_for('users.settings') }}">Account</a>
                         {% if current_user.permissions.change_perm or current_user.permissions.add_user %}
                             <div class="dropdown-divider"></div>
                         {% endif %}

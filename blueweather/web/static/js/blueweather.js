@@ -6,6 +6,8 @@ if($(window).width() >= 768) {
     console.log('minified the menu');
 }
 
+// Show the is Down Modal if the server is unresponsive
+
 is_down = false;
 
 $(document).ready(function() {

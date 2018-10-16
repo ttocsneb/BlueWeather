@@ -52,7 +52,7 @@ permissionApp.controller('EditUser', ['$scope', '$http', function($scope, $http)
                     $scope.submit.fail = true;
                     $scope.submit.success = false;
                 }
-            }, function(response) {
+            }, function(_response) {
                 $scope.submit.fail = true;
                 $scope.submit.success = false;
                 // fail

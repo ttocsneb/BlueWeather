@@ -25,7 +25,7 @@ class Startup(StartupPlugin):
             try:
                 r = requests.get(
                     'http://127.0.0.1:{0}/isDown'.format(self._port))
-                if r.status_code is 200:
+                if r.status_code == 200:
                     self._logger.debug('Server started')
                     not_started = False
                     return

@@ -97,6 +97,6 @@ def start(debug=False):
         app.register_blueprint(route['returned'])
 
     if debug is True:
-        app.run(host, port, debug=True)
+        app.run(host, port, debug=debug)
     else:
         server.startServer(host, port, app)

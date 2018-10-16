@@ -1,4 +1,3 @@
-import urllib
 import flask
 from flask import url_for
 import flask_login
@@ -129,7 +128,8 @@ def privileges():
         change_settings=u.permissions.change_settings,
         reboot=u.permissions.reboot) for u in all_users]
 
-    return flask.render_template('user/permissions.jinja2', title='Set Privileges',
+    return flask.render_template('user/permissions.jinja2',
+                                 title='Set Privileges',
                                  users=usrs)
 
 
