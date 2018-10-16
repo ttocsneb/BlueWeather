@@ -47,7 +47,13 @@
         
         <!-- Custom styles for this website -->
         <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+        <!-- JS scripts that should be loaded BEFORE the site has been loaded -->
+        <script src="{{ url_for('static', filename='js/includes/angular.min.js') }}"></script>
         
+        
+        
+
     </head>
     {% block content %}{% endblock %}
 
@@ -75,11 +81,23 @@
         <!-- Core plugin JavaScript-->
         <script src="{{ url_for('static', filename='startbootstrap-sb-admin/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/includes/moment.min.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/includes/angular.min.js') }}"></script>
         <!-- Custom scripts for all pages-->
         <script src="{{ url_for('static', filename='startbootstrap-sb-admin/js/sb-admin.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/blueweather.js') }}"></script>
-        
+
+        <!-- Add the csrf token to javascript -->
+        <script type="text/javascript">
+            var csrf_token = "{{ csrf_token() }}"
+
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                    }
+                }
+            });
+        </script>
+
         <!-- Custom scripts for this page-->
         {% block scripts %}{% endblock %}
 

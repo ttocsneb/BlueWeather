@@ -19,3 +19,7 @@
 .minimize[aria-expanded=false] .expanded {
     display: none;
 }
+
+.btn.nohover:hover {
+    cursor: default !important;
+}

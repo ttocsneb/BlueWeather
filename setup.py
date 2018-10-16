@@ -41,7 +41,7 @@ EXTRAS_REQUIRE = {}
 
 def params():
     name = "BlueWeather"
-    version = '0.0.1'
+    version = '0.1.0'
 
     description = "A web application that allows you to interface with your " \
         + "weather station"
@@ -52,7 +52,7 @@ def params():
     extras_require = EXTRAS_REQUIRE
 
     classifiers = [
-        "Development Status :: 1 - Planning",
+        "Development Status :: 2 - Pre-Alpha",
         "Environment :: Web Environment",
         "Framework :: Flask",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",

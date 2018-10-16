@@ -26,12 +26,12 @@ def register():
                            password=hashed_password)
 
         # Create the permissions row for the user
-        permissions = models.Permission(user_id=user.id)
-        user.permissions = permissions
+        perms = models.Permission(user_id=user.id)
+        user.permissions = perms
 
         # Add the rows to the database
         db.session.add(user)
-        db.session.add(permissions)
+        db.session.add(perms)
         db.session.commit()
 
         flask.flash('Account created for {data}'.format(
@@ -76,7 +76,7 @@ def settings():
         'current': 0
     }
 
-    permissions = [
+    perms = [
         {'text': 'Create Users',
          'checked': flask_login.current_user.permissions.add_user},
         {'text': 'Edit Permissions ',
@@ -108,58 +108,65 @@ def settings():
         tabs['tabs'][1]['active'] = True
 
     return flask.render_template('user/account.jinja2', title='Account',
-                                 permissions=permissions, tabs=tabs,
+                                 permissions=perms, tabs=tabs,
                                  form=change_password)
 
 
-@users.route('/users/privileges', methods=['GET', 'POST'])
+@users.route('/users/privileges')
 @login_required
 def privileges():
 
     if flask_login.current_user.permissions.change_perm is False:
         flask.abort(403)
 
-    # Edit User
+    all_users = models.User.query.all()
 
-    user = flask.request.args.get('user')
+    usrs = [dict(
+        id=u.id,
+        name=u.username,
+        add_user=u.permissions.add_user,
+        change_perm=u.permissions.change_perm,
+        change_settings=u.permissions.change_settings,
+        reboot=u.permissions.reboot) for u in all_users]
 
-    if user:
-        editUser = forms.EditUser()
-        editUser.load(flask_login.current_user.id, int(user))
-        if not editUser.check_valid():
-            flask.flash('You cannot edit that user', category='warning')
-            return flask.redirect(url_for('users.privileges'))
+    return flask.render_template('user/permissions.jinja2', title='Set Privileges',
+                                 users=usrs)
 
-        user_name = models.User.query.filter_by(id=user).first().username
 
-        if editUser.validate_on_submit():
-            if editUser.setPrivileges():
-                flask.flash("Successfully edited {user}'s permissions".format(
-                    user=user_name), category='success')
-            else:
-                flask.flash("Could not edit that user's permissions",
-                            category='danger')
+@users.route('/users/privileges/set', methods=['POST'])
+@login_required
+def set_privileges():
 
-            return flask.redirect(url_for('users.privileges'))
+    if flask_login.current_user.permissions.change_perm is False:
+        flask.abort(403)
 
-        editUser.load_defaults()
+    data = flask.request.get_json()
 
-        return flask.render_template("user/permissions.jinja2",
-                                     title='Privileges', user=user_name,
-                                     editUser=editUser)
+    editor = flask_login.current_user
+    # Check if the user is trying to edit himself
+    if editor.id is data['id']:
+        return 'false'
+    perms = models.Permission.query.filter_by(
+        user_id=data['id']).first()
 
-    # Select User
+    # Check if the edited user exists
+    if perms is None:
+        return 'false'
 
-    selectUser = forms.SelectUser()
-    selectUser.users.choices = selectUser.getUsers()
+    print("Setting Privileges")
 
-    if selectUser.validate_on_submit():
-        user_id = models.User.query.filter_by(
-            id=selectUser.users.data).first().id
+    editor_perm = editor.permissions
 
-        return flask.redirect('{url}?{params}'.format(
-            url=url_for('users.privileges'), params=urllib.parse.urlencode(
-                {'user': user_id})))
+    # Only change the settings if the editor has the privileges to that setting
+    if editor_perm.add_user:
+        perms.add_user = data['add_user']
+    if editor_perm.change_perm:
+        perms.change_perm = data['change_perm']
+    if editor_perm.change_settings:
+        perms.change_settings = data['change_settings']
+    if editor_perm.reboot:
+        perms.reboot = data['reboot']
 
-    return flask.render_template('user/permissions.jinja2', title='Privileges',
-                                 selectUser=selectUser)
+    db.session.commit()
+
+    return 'true'
