@@ -1,0 +1,89 @@
+{% extends "layouts/user.jinja2" %}
+
+{% block body %}
+
+<div ng-app="permissionApp">
+    <div ng-controller="SelectUser">
+        <form novalidate name="permission">
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Select User</legend>
+
+                <!-- Have a for loop for each user -->
+
+                {% for user in users %}
+                    <div class="form-group">
+                        <div class="btn-group-toggle">
+                            <label class="btn btn-{% if current_user.id == user.id %}secondary nohover active{% else %}outline-info{% endif %}" id="usrbtn-{{ user.id }}">
+                                <input type="checkbox" ng-click="change({{ user.id }})" ng-model="users['{{ user.id }}']" {% if current_user.id == user.id %}disabled{% endif %}/>
+                                {{ user.name }} {% if current_user.id == user.id %}(you){% endif %}
+                            </label>
+                        </div>
+
+                        {% if current_user.id != user.id %}
+                            <div class="form-group ng-hide" ng-show="clicked({{ user.id }})">
+                                <legend class="border-bottom mb-4 mt-3">Edit Permissions</legend>
+                                <div class="form-group" ng-controller="EditUser" ng-init='init({{ user|tojson }})'>
+
+                                    <div class="alert alert-success" ng-if="submit.success">
+                                        Successfully changed {{ user.name }}'s permissions!
+                                    </div>
+                                    <div class="alert alert-danger" ng-if="submit.fail">
+                                        An error occured while trying to change the settings.
+                                    </div>
+
+                                    <div class="row mt-4">
+                                        <div class="col-6">
+                                            <div class="form-group ml-4">
+                                                <div class="row">
+                                                    <label class="form-check-label">
+                                                        <input type="checkbox" ng-model="perm.add_user" ng-change="update()" {% if not current_user.permissions.add_user %}disabled{% endif %}/>
+                                                        Create Users
+                                                    </label>
+                                                </div>
+                                                <div class="row">
+                                                    <label class="form-check-label">
+                                                        <input type="checkbox" ng-model="perm.change_perm" ng-change="update()" {% if not current_user.permissions.change_perm %}disabled{% endif %}/>
+                                                        Edit Permissions
+                                                    </label>
+                                                </div>
+                                                <div class="row">
+                                                    <label class="form-check-label">
+                                                        <input type="checkbox" ng-model="perm.change_settings" ng-change="update()" {% if not current_user.permissions.change_settings %}disabled{% endif %}/>
+                                                        Change Settings
+                                                    </label>
+                                                </div>
+                                                <div class="row">
+                                                    <label class="form-check-label">
+                                                        <input type="checkbox" ng-model="perm.reboot" ng-change="update()" {% if not current_user.permissions.reboot %}disabled{% endif %}/>
+                                                        Reboot
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-4 mt-2">
+                                            <div class="form-group">
+                                                <input type="button" class="btn btn-danger btn-sm" ng-click="submit()" value="Save">
+                                            </div>
+                                            <div class="form-group">
+                                                <input type="button" class="btn btn-warning btn-sm" ng-click="cancel()" value="Cancel">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                    </div>
+                {% endfor %}
+
+            </fieldset>
+        </form>
+    </div>
+</div>
+{% endblock body %}
+
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/users/permissions.js') }}"></script>
+{% endblock scripts %}

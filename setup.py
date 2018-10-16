@@ -29,16 +29,19 @@ INSTALL_REQUIRES = [
     'Flask-Login',
     'Flask-SQLAlchemy',
     'Flask-WTF',
+    'Flask-Triangle',
     'Jinja2',
     'yapsy',
     'requests',
     'ruamel.yaml'
 ]
 
+EXTRAS_REQUIRE = {}
+
 
 def params():
     name = "BlueWeather"
-    version = '0.0.1'
+    version = '0.1.0'
 
     description = "A web application that allows you to interface with your " \
         + "weather station"
@@ -46,9 +49,10 @@ def params():
     long_description_content_type = "text/markdown"
 
     install_requires = INSTALL_REQUIRES
+    extras_require = EXTRAS_REQUIRE
 
     classifiers = [
-        "Development Status :: 1 - Planning",
+        "Development Status :: 2 - Pre-Alpha",
         "Environment :: Web Environment",
         "Framework :: Flask",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
@@ -61,10 +65,9 @@ def params():
     author_email = 'benjammin1100@gmail.com'
     url = 'https://github.com/ttocsneb/BlueWeather'
 
-    packages = find_packages(where='src')
-    package_dir = {'': 'src'}
+    packages = find_packages()
     package_data = {
-        'blueweather': package_data_dirs('src/blueweather',
+        'blueweather': package_data_dirs('blueweather',
                                          ['static', 'templates'])
     }
 

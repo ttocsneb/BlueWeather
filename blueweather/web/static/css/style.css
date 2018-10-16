@@ -1,0 +1,25 @@
+
+/* Fix the sidebar not being tall enough */
+.sidebar#fix-top {
+    min-height: calc(100vh - 52px);
+}
+
+.sidebar-divider {
+    display: block;
+    height: 1px;
+    margin: 9px 10%;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.minimize[aria-expanded=true] .minimized {
+    display: none;
+}
+
+.minimize[aria-expanded=false] .expanded {
+    display: none;
+}
+
+.btn.nohover:hover {
+    cursor: default !important;
+}
