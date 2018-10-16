@@ -46,13 +46,7 @@
         <link href="{{ url_for('static', filename='startbootstrap-sb-admin/css/sb-admin.css') }}" rel="stylesheet">
         
         <!-- Custom styles for this website -->
-        <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
-
-        <!-- JS scripts that should be loaded BEFORE the site has been loaded -->
-        <script src="{{ url_for('static', filename='js/includes/angular.min.js') }}"></script>
-        
-        
-        
+        <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">       
 
     </head>
     {% block content %}{% endblock %}
@@ -81,6 +75,7 @@
         <!-- Core plugin JavaScript-->
         <script src="{{ url_for('static', filename='startbootstrap-sb-admin/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/includes/moment.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/includes/angular.min.js') }}"></script>
         <!-- Custom scripts for all pages-->
         <script src="{{ url_for('static', filename='startbootstrap-sb-admin/js/sb-admin.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/blueweather.js') }}"></script>
