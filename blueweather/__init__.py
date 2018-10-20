@@ -4,7 +4,7 @@ import logging.config
 logging.config.dictConfig({
     'version': 1,
     'formatters': {'default': {
-        'format': '[%(asctime)s] %(levelname)s - %(name)s - %(message)s'
+        'format': '[%(asctime)s] %(levelname)s - %(name)s: %(message)s'
     }},
     'handlers': {'wsgi': {
         'class': 'logging.StreamHandler',
@@ -26,6 +26,9 @@ logger = logging.getLogger(__name__)
 
 
 def main(debug=False):
+    from . import gitsubmodule
+    gitsubmodule.load_git_submodules()
+
     logger.info("Starting BlueWeather")
 
     web.start(debug)
