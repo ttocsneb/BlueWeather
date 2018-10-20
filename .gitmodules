@@ -1,3 +1,3 @@
-[submodule "src/blueweather/static/startbootstrap-sb-admin"]
-	path = src/blueweather/static/startbootstrap-sb-admin
+[submodule "blueweather/web/static/startbootstrap-sb-admin"]
+	path = blueweather/web/static/startbootstrap-sb-admin
 	url = https://github.com/BlackrockDigital/startbootstrap-sb-admin.git
