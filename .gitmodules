@@ -1,3 +1,6 @@
 [submodule "blueweather/web/static/startbootstrap-sb-admin"]
 	path = blueweather/web/static/startbootstrap-sb-admin
 	url = https://github.com/BlackrockDigital/startbootstrap-sb-admin.git
+[submodule "blueweather/web/static/weather-icons"]
+	path = blueweather/web/static/weather-icons
+	url = https://github.com/erikflowers/weather-icons.git
