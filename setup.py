@@ -29,11 +29,11 @@ INSTALL_REQUIRES = [
     'Flask-Login',
     'Flask-SQLAlchemy',
     'Flask-WTF',
-    'Flask-Triangle',
     'Jinja2',
     'yapsy',
     'requests',
-    'ruamel.yaml'
+    'ruamel.yaml',
+    'marshmallow'
 ]
 
 EXTRAS_REQUIRE = {}

@@ -18,3 +18,8 @@ def before_request():
                                   plugin.types.RequestsPlugin.before_request,
                                   args=(flask.request.path, flask.request.args)
                                   )
+
+
+@data.route('/manifest.json')
+def manifest():
+    return flask.render_template("manifest.json")

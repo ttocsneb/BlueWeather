@@ -59,6 +59,9 @@ def start(debug=False):
     app = Flask(__name__)
     app.config.from_object(config.Config())
 
+    app.jinja_env.trim_blocks = True
+    app.jinja_env.lstrip_blocks = True
+
     db.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)

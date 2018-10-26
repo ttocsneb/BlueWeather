@@ -118,19 +118,8 @@ def privileges():
     if flask_login.current_user.permissions.change_perm is False:
         flask.abort(403)
 
-    all_users = models.User.query.all()
-
-    usrs = [dict(
-        id=u.id,
-        name=u.username,
-        add_user=u.permissions.add_user,
-        change_perm=u.permissions.change_perm,
-        change_settings=u.permissions.change_settings,
-        reboot=u.permissions.reboot) for u in all_users]
-
     return flask.render_template('user/permissions.jinja2',
-                                 title='Set Privileges',
-                                 users=usrs)
+                                 title='Set Privileges')
 
 
 @users.route('/users/privileges/set', methods=['POST'])
@@ -170,3 +159,33 @@ def set_privileges():
     db.session.commit()
 
     return 'true'
+
+
+@users.route('/users/privileges/get')
+@login_required
+def get_privileges():
+
+    if flask_login.current_user.permissions.change_perm is False:
+        flask.abort(403)
+
+    editor = flask_login.current_user
+    all_users = models.User.query.all()
+
+    usrs = dict(
+        perm=[dict(
+            id=u.id,
+            name=u.username,
+            add_user=u.permissions.add_user,
+            change_perm=u.permissions.change_perm,
+            change_settings=u.permissions.change_settings,
+            reboot=u.permissions.reboot) for u in all_users],
+        editor=dict(
+            id=editor.id,
+            name=editor.username,
+            add_user=editor.permissions.add_user,
+            change_perm=editor.permissions.change_perm,
+            change_settings=editor.permissions.change_settings,
+            reboot=editor.permissions.reboot)
+    )
+
+    return flask.json.jsonify(usrs)
