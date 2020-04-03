@@ -24,4 +24,8 @@
 [Master]: https://github.com/ttocsneb/BlueWeather/
 [Django]: https://github.com/ttocsneb/BlueWeather/tree/django
 
-A New project that I aim to host a web-server designed for weather.  It will be built on Python3, and have support weather underground, and custom weather station equipment
+> This software is still in early development.
+
+BlueWeather is an open-source personal weather station (PWS) web-app. It
+connects your weather station hardware to a website allowing you to view
+your weather from your phone or computer.

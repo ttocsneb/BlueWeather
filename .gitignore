@@ -107,5 +107,11 @@ venv.bak/
 .vscode
 *.code
 
+# Vim
+.vim
+
 # Databse
 *.db
+
+# Configs
+/*.yml

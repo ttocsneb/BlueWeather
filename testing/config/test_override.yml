@@ -1,0 +1,3 @@
+debug: false
+web:
+  static_url: /foo/
