@@ -19,6 +19,7 @@ class Config(objects.Config):
         self.web = obj.web
         self.debug = obj.debug
         self.secret_key = obj.secret_key
+        self.modified = obj.modified
 
     def set_defaults(self):
         self.__apply(objects.Config())
@@ -41,8 +42,6 @@ class Config(objects.Config):
         schema = schemes.ConfigSchema()
 
         self.__apply(schema.load(config))
-
-        self.modified = False
 
     def save(self):
         """

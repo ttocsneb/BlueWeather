@@ -18,6 +18,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 config = Config(os.path.join(BASE_DIR, "config.yml"))
 config.load()
+if config.modified:
+    config.save()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -75,23 +77,15 @@ WSGI_APPLICATION = 'blueweather.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+DATABASES = dict(
+    [(k, v.get_data(BASE_DIR)) for k, v in config.web.databases.items()]
+)
 
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = [
-    dict(NAME='django.contrib.auth.password_validation.UserAttributeSimilarityValidator'),
-    dict(NAME='django.contrib.auth.password_validation.MinimumLengthValidator'),
-    dict(NAME='django.contrib.auth.password_validation.CommonPasswordValidator'),
-    dict(NAME='django.contrib.auth.password_validation.NumericPasswordValidator')
-]
+AUTH_PASSWORD_VALIDATORS = config.web.password_validation
 
 
 # Internationalization
@@ -99,7 +93,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = config.time_zone
 
 USE_I18N = True
 

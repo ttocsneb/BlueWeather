@@ -69,3 +69,11 @@ class ConfigTester(unittest.TestCase):
         self.assertIn("debug", data)
         self.assertIn("web", data)
         self.assertIn("static_url", data["web"])
+
+    def test_modified(self):
+        shutil.copyfile(_override_conf_file, _conf_file)
+        config = Config(_conf_file)
+        config.load()
+        self.assertTrue(config.modified)
+        config.save()
+        self.assertFalse(config.modified)

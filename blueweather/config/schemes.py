@@ -1,30 +1,37 @@
-from marshmallow import Schema, fields, post_load, post_dump, pre_dump
+from marshmallow import Schema, fields, post_dump, post_load, pre_dump
 
+from . import fields as customFields
 from . import objects
 
 
-def get_object(self, obj: objects.Config, **kwargs):
-    self._obj = obj
-    return obj
+class PasswordValidator(Schema):
+    name = customFields.ClassString("django.contrib.auth.password_validation")
+    options = fields.Dict(fields.String)
 
+    @pre_dump
+    def to_lower(self, obj: dict, **kwargs):
+        new_data = dict()
+        for k, v in obj.items():
+            new_data[k.lower()] = v
+        return new_data
 
-def strip_defaults(self, data, **kwargs):
-    if not hasattr(self, "_obj") \
-            or not hasattr(self._obj, "_defaults") \
-            or not hasattr(self._obj, "_required"):
-        return data
-    new_data = dict()
-    for k, v in data.items():
-        if k in self._obj._required \
-                or k not in self._obj._defaults \
-                or v != self._obj._defaults[k]:
-            new_data[k] = v
-            continue
-    return new_data
+    @post_load
+    def to_upper(self, data: dict, **kwargs):
+        new_data = dict()
+        for k, v in data.items():
+            new_data[k.upper()] = v
+        return new_data
 
 
 class WebSchema(Schema):
     static_url = fields.String()
+    databases = fields.Dict(fields.String(), customFields.Database())
+    password_validation = customFields.NamedList(
+        fields.Nested(PasswordValidator), "name", "options", dict_value=True
+    )
+
+    get_object = pre_dump(fn=customFields.get_object)
+    strip_defaults = post_dump(fn=customFields.strip_defaults)
 
     @post_load
     def makeWeb(self, data, **kwargs):
@@ -35,9 +42,10 @@ class ConfigSchema(Schema):
     secret_key = fields.String()
     debug = fields.Boolean()
     web = fields.Nested(WebSchema)
+    time_zone = fields.String()
 
-    get_object = pre_dump(fn=get_object)
-    strip_defaults = post_dump(fn=strip_defaults)
+    get_object = pre_dump(fn=customFields.get_object)
+    strip_defaults = post_dump(fn=customFields.strip_defaults)
 
     @post_load
     def makeConfig(self, data, **kwargs):
