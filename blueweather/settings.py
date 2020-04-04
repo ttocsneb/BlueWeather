@@ -16,21 +16,19 @@ from .config import Config
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-config = Config(os.path.join(BASE_DIR, "config.yml"))
-config.load()
-if config.modified:
-    config.save()
+# Configuration are user-defined settings. They are all stored in the CONFIG
+# object, and follow a different convention from Settings to differentiate them
+CONFIG = Config(os.path.join(BASE_DIR, "config.yml"))
+CONFIG.load()
+if CONFIG.modified:
+    CONFIG.save()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
-SECRET_KEY = config.secret_key
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config.debug
-
-ALLOWED_HOSTS = []
-
+SECRET_KEY = CONFIG.secret_key
+DEBUG = CONFIG.debug
+ALLOWED_HOSTS = CONFIG.web.allowed_hosts
 
 # Application definition
 
@@ -78,14 +76,14 @@ WSGI_APPLICATION = 'blueweather.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = dict(
-    [(k, v.get_data(BASE_DIR)) for k, v in config.web.databases.items()]
+    [(k, v.get_data(BASE_DIR)) for k, v in CONFIG.web.databases.items()]
 )
 
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = config.web.password_validation
+AUTH_PASSWORD_VALIDATORS = CONFIG.web.password_validation
 
 
 # Internationalization
@@ -93,7 +91,7 @@ AUTH_PASSWORD_VALIDATORS = config.web.password_validation
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = config.time_zone
+TIME_ZONE = CONFIG.time_zone
 
 USE_I18N = True
 
@@ -105,4 +103,4 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_URL = config.web.static_url
+STATIC_URL = CONFIG.web.static_url

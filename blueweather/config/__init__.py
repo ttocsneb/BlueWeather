@@ -19,6 +19,7 @@ class Config(objects.Config):
         self.web = obj.web
         self.debug = obj.debug
         self.secret_key = obj.secret_key
+        self.time_zone = obj.time_zone
         self.modified = obj.modified
 
     def set_defaults(self):
@@ -33,7 +34,7 @@ class Config(objects.Config):
             with open(self._directory) as conf:
                 config = yaml.safe_load(conf)
         except FileNotFoundError:
-            _logger.warn("Could not find %s! Creating default..",
+            _logger.warn("Could not find %s! Creating default config..",
                          self._directory)
             self.set_defaults()
             self.save()

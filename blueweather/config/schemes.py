@@ -29,6 +29,7 @@ class WebSchema(Schema):
     password_validation = customFields.NamedList(
         fields.Nested(PasswordValidator), "name", "options", dict_value=True
     )
+    allowed_hosts = fields.List(fields.String(), allow_none=True)
 
     get_object = pre_dump(fn=customFields.get_object)
     strip_defaults = post_dump(fn=customFields.strip_defaults)

@@ -4,6 +4,14 @@ import os
 _logger = logging.getLogger(__name__)
 
 
+def _print_attrs(obj, *args, join="\n  "):
+    import pprint
+    attr_list = ['{} = {}'.format(i, pprint.pformat(getattr(obj, i)))
+                 for i in sorted(args)]
+    split = ',\n'.join(attr_list).split('\n')
+    return join + join.join(split)
+
+
 def generate_secret():
     """
     > Inspired from https://gist.github.com/ndarville/3452907
@@ -107,12 +115,13 @@ class Database(Settings, dict):
 class Web(Settings):
     _required = ['password_validation']
     _defaults = dict(
-        static_url="/static/"
+        static_url="/static/",
+        allowed_hosts=[]
     )
     _modifiable = []
 
     def __init__(self, static_url: str = None, databases: dict = None,
-                 password_validation: dict = None):
+                 password_validation: dict = None, allowed_hosts: list = None):
         super().__init__()
         self.static_url = static_url or self._defaults['static_url']
 
@@ -132,7 +141,20 @@ class Web(Settings):
             ]
             self._modified = True
 
+        self.allowed_hosts = allowed_hosts or self._defaults['allowed_hosts']
+
         self._init = False
+
+    def __str__(self):
+        data = _print_attrs(
+            self,
+            'static_url', 'databases', 'password_validation', 'allowed_hosts'
+        )
+
+        return "Web{%s\n}" % data
+
+    def __repr__(self):
+        return str(self)
 
 
 class Config(Settings):
@@ -159,3 +181,10 @@ class Config(Settings):
             self.web = Web()
 
         self._init = False
+
+    def __str__(self):
+        data = _print_attrs(self, "debug", "time_zone", "web")
+        return "Config{%s\n}" % data
+
+    def __repr__(self):
+        return str(self)
