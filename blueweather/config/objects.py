@@ -113,7 +113,7 @@ class Database(Settings, dict):
 
 
 class Web(Settings):
-    _required = ['password_validation']
+    _required = []
     _defaults = dict(
         static_url="/static/",
         allowed_hosts=[]
@@ -121,7 +121,8 @@ class Web(Settings):
     _modifiable = []
 
     def __init__(self, static_url: str = None, databases: dict = None,
-                 password_validation: dict = None, allowed_hosts: list = None):
+                 password_validation: dict = None, allowed_hosts: list = None,
+                 template_globals: dict = None):
         super().__init__()
         self.static_url = static_url or self._defaults['static_url']
 
@@ -142,6 +143,11 @@ class Web(Settings):
             self._modified = True
 
         self.allowed_hosts = allowed_hosts or self._defaults['allowed_hosts']
+
+        self.template_globals = template_globals
+        if self.template_globals is None:
+            self.template_globals = dict(title="BlueWeather")
+            self._modified = True
 
         self._init = False
 

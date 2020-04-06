@@ -14,8 +14,20 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
+
+from . import views
+
+handler404 = 'blueweather.views.pageNotFound'
+handler403 = 'blueweather.views.forbidden'
+handler400 = 'blueweather.views.badRequest'
+handler500 = 'blueweather.views.internalServerError'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    #  path('404/', views.pageNotFoundView),
+    #  path('403/', views.forbiddenView),
+    #  path('400/', views.badRequestView),
+    #  path('500/', views.internalServerErrorView),
+    path('', include('blueweather.weather.urls'))
 ]

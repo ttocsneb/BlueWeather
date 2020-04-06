@@ -1,0 +1,15 @@
+{% macro navDropdown(content, id, icon, class='no-arrow', dropdown_class='animated--grow-in') %}
+<li class="nav-item dropdown {{ class }}">
+  <a class="nav-link dropdown-toggle" href="#" id="id" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <i class="{{ icon }}"></i>
+  </a>
+  <!-- Dropdown - Messages -->
+  <div class="dropdown-menu {{ dropdown_class }}" aria-labelledby="id">
+    {{ content|safe }}
+  </div>
+</li>
+{% endmacro %}
+
+{% macro navDivider(class='') %}
+<div class="topbar-divider {{ class }}"></div>
+{% endmacro %}

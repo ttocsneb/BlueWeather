@@ -1,0 +1,33 @@
+{
+  "name": "blueweather",
+  "version": "0.2.0",
+  "description": "Personal Weather Station (PWS) web-app that connects your weather station hardware to a web-app.",
+  "main": "index.js",
+  "dependencies": {
+    "@popperjs/core": "^2.2.1",
+    "bootstrap": "^4.4.1",
+    "startbootstrap-sb-admin-2": "^4.0.7"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "./test.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ttocsneb/BlueWeather.git"
+  },
+  "keywords": [
+    "blueweather",
+    "personal",
+    "weather",
+    "station",
+    "pws",
+    "app"
+  ],
+  "author": "Benjamin Jacobs",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/ttocsneb/BlueWeather/issues"
+  },
+  "homepage": "https://github.com/ttocsneb/BlueWeather#readme"
+}

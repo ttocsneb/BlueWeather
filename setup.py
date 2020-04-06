@@ -24,6 +24,7 @@ def package_data_dirs(source, sub_folders):
 
 INSTALL_REQUIRES = [
     'django',
+    'django-npm',
     'Jinja2',
     'yapsy',
     'requests',
@@ -36,7 +37,7 @@ EXTRAS_REQUIRE = {}
 
 def params():
     name = "BlueWeather"
-    version = '0.1.0'
+    version = '0.2.0'
 
     description = "A web application that allows you to interface with your " \
         + "weather station"

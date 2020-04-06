@@ -1,0 +1,26 @@
+{% macro sidebarBrand(name, link, icon, class='') %}
+<a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ link }}">
+  <div class="sidebar-brand-icon {{ class }}">
+    <i class="{{ link }}"></i>
+  </div>
+  <div class="sidebar-brand-text mx-3">{{ name|safe }}</div>
+</a>
+{% endmacro %}
+
+{% macro sidebarItem(name, link, icon, class='') %}
+<li class="nav-item {{ class }}">
+  <a class="nav-link" href="{{ link }}">
+    <i class="{{ icon }}"></i>
+    <span>{{ name }}</span></a>
+</li>
+{% endmacro %}
+
+{% macro sidebarHeading(name, class='') %}
+<div class="sidebar-heading {{ class }}">
+  {{ name|safe }}
+</div>
+{% endmacro %}
+
+{% macro sidebarDivider(class='') %}
+<hr class="sidebar-divider {{ class }}">
+{% endmacro %}

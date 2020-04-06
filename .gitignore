@@ -113,5 +113,11 @@ venv.bak/
 # Databse
 *.db
 
+# NPM
+node_modules
+
+# django
+static
+
 # Configs
 /*.yml
