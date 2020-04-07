@@ -39,8 +39,22 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles'
+    'django.contrib.staticfiles',
+    'blueweather.weather'
 ]
+
+
+# A list of apps that should be linked in the sidebar
+SIDEBAR = CONFIG.web.sidebar or [
+    {
+        "category": "divider"
+    },
+    {
+        "category": "item",
+        "value": "blueweather.weather"
+    }
+]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -50,6 +64,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'htmlmin.middleware.HtmlMinifyMiddleware',
+    'htmlmin.middleware.MarkRequestMiddleware'
 ]
 
 ROOT_URLCONF = 'blueweather.urls'

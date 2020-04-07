@@ -122,7 +122,7 @@ class Web(Settings):
 
     def __init__(self, static_url: str = None, databases: dict = None,
                  password_validation: dict = None, allowed_hosts: list = None,
-                 template_globals: dict = None):
+                 template_globals: dict = None, sidebar: list = None):
         super().__init__()
         self.static_url = static_url or self._defaults['static_url']
 
@@ -148,6 +148,8 @@ class Web(Settings):
         if self.template_globals is None:
             self.template_globals = dict(title="BlueWeather")
             self._modified = True
+
+        self.sidebar = sidebar
 
         self._init = False
 

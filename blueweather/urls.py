@@ -16,8 +16,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-from . import views
-
 handler404 = 'blueweather.views.pageNotFound'
 handler403 = 'blueweather.views.forbidden'
 handler400 = 'blueweather.views.badRequest'
@@ -29,5 +27,8 @@ urlpatterns = [
     #  path('403/', views.forbiddenView),
     #  path('400/', views.badRequestView),
     #  path('500/', views.internalServerErrorView),
-    path('', include('blueweather.weather.urls'))
+    path('', include(
+        ('blueweather.weather.urls', 'blueweather.weather'),
+        namespace='blueweather.weather'
+    ))
 ]

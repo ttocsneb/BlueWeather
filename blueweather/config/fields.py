@@ -1,4 +1,4 @@
-from marshmallow import fields
+from marshmallow import fields, exceptions
 import collections
 
 from . import objects
@@ -75,7 +75,7 @@ class NamedList(fields.List):
 
     def _serialize(self, values, attr, obj, **kwargs):
         serialized = super()._serialize(values, attr, obj, **kwargs)
-        dict_obj = dict()
+        obj = list()
         for value in serialized:
             name = value[self._name_attr]
             if self._remove_attr:
@@ -88,19 +88,36 @@ class NamedList(fields.List):
                     value = value[self._value_attr]
                 except KeyError:
                     pass
-            dict_obj[name] = value
+            if not value:
+                obj.append(name)
+            else:
+                obj.append({name: value})
 
-        return dict_obj
+        return obj
 
     def _deserialize(self, value, attr, data, **kwargs):
         deserialized = list()
-        for k, v in value.items():
-            if self._value_only:
-                value = {self._value_attr: value}
-            elif not isinstance(value, collections.Mapping):
-                value = {self._value_attr: value}
+
+        def parse_dict(k: str, v):
+            if not isinstance(value, collections.Mapping):
+                v = {self._value_attr: v}
             v[self._name_attr] = k
             deserialized.append(v)
+
+        if isinstance(value, collections.Mapping):
+            for k, v in value.items():
+                parse_dict(k, v)
+        else:
+            for d in value:
+                if isinstance(d, collections.Mapping):
+                    # There should only be one key in this dict
+                    k = list(d.keys())[0]
+                    v = d[k]
+                    parse_dict(k, v)
+                else:
+                    deserialized.append({
+                        self._name_attr: d
+                    })
 
         return super()._deserialize(deserialized, attr, data, **kwargs)
 

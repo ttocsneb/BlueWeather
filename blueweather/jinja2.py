@@ -1,8 +1,18 @@
+from django.apps.registry import apps
 from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.urls import reverse
 from django.utils import dateformat, datetime_safe, formats, timezone
 from jinja2 import Environment
+
+
+def parse_sidebar(item: dict):
+    if item['category'] == 'item':
+        item['value'] = apps.get_app_config(item['value'])
+    return item
+
+
+sidebar = [parse_sidebar(x) for x in settings.SIDEBAR]
 
 
 def now():
@@ -17,7 +27,8 @@ def environment(**options):
         'url': reverse,
         'time': dateformat.format,
         'now': now,
-        'number': formats.number_format
+        'number': formats.number_format,
+        'sidebar': sidebar
     })
 
     global_settings = {

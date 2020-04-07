@@ -1,4 +1,5 @@
-from marshmallow import Schema, fields, post_dump, post_load, pre_dump
+from marshmallow import (Schema, fields, post_dump, post_load, pre_dump,
+                         validate)
 
 from . import fields as customFields
 from . import objects
@@ -23,6 +24,11 @@ class PasswordValidator(Schema):
         return new_data
 
 
+class SidebarSchema(Schema):
+    category = fields.String()
+    value = fields.String()
+
+
 class WebSchema(Schema):
     static_url = fields.String()
     databases = fields.Dict(fields.String(), customFields.Database())
@@ -34,6 +40,10 @@ class WebSchema(Schema):
 
     get_object = pre_dump(fn=customFields.get_object)
     strip_defaults = post_dump(fn=customFields.strip_defaults)
+
+    sidebar = customFields.NamedList(
+        fields.Nested(SidebarSchema), "category", "value", value_only=True
+    )
 
     @post_load
     def makeWeb(self, data, **kwargs):

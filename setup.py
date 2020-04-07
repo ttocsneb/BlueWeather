@@ -23,13 +23,14 @@ def package_data_dirs(source, sub_folders):
 
 
 INSTALL_REQUIRES = [
-    'django',
-    'django-npm',
-    'Jinja2',
+    'django==3.0.5',
+    'django-npm==1.0.0',
+    'django-htmlmin==0.11.0',
+    'Jinja2==2.11.1',
+    'ruamel.yaml==0.16.10',
+    'marshmallow==3.5.1',
     'yapsy',
     'requests',
-    'ruamel.yaml',
-    'marshmallow'
 ]
 
 EXTRAS_REQUIRE = {}
@@ -39,8 +40,7 @@ def params():
     name = "BlueWeather"
     version = '0.2.0'
 
-    description = "A web application that allows you to interface with your " \
-        + "weather station"
+    description = "A web-app for your Personal Weather Staion"
     long_description = LONG_DESCRIPTION
     long_description_content_type = "text/markdown"
 
@@ -63,18 +63,14 @@ def params():
 
     packages = find_packages()
     package_data = {
-        'blueweather': package_data_dirs('blueweather',
-                                         ['static', 'templates'])
+        'blueweather': package_data_dirs('.',
+                                         ['dist', 'templates'])
     }
 
     include_package_data = True
     zip_safe = False
 
-    entry_points = {
-        'console_scripts': [
-            'blueweather = blueweather:main'
-        ]
-    }
+    entry_points = {}
 
     return locals()
 
