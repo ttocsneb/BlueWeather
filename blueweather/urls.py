@@ -23,10 +23,7 @@ handler500 = 'blueweather.views.internalServerError'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include(
-        ('blueweather.accounts.urls', 'accounts'),
-        namespace='accounts')
-    ),
+    path('accounts/', include('blueweather.accounts.urls')),
     path('', include(
         ('blueweather.weather.urls', 'weather'),
         namespace='weather'

@@ -9,8 +9,8 @@ class AccountsConfig(AppConfig):
 
     def route(self, request):
         if request.user.is_authenticated:
-            return 'accounts:profile'
-        return 'accounts:login'
+            return 'profile'
+        return 'login'
 
     def display_name(self, request):
         if request.user.is_authenticated:
@@ -24,14 +24,14 @@ class AccountsConfig(AppConfig):
                     "category": "item",
                     "value": {
                         "display_name": "Profile",
-                        "route": "accounts:profile"
+                        "route": "profile"
                     }
                 },
                 {
                     "category": "item",
                     "value": {
                         "display_name": "Change Password",
-                        "route": "accounts:password_change"
+                        "route": "password_change"
                     }
                 },
                 {
@@ -41,7 +41,7 @@ class AccountsConfig(AppConfig):
                     "category": "item",
                     "value": {
                         "display_name": "Logout",
-                        "route": "accounts:logout"
+                        "route": "logout"
                     }
                 }
             ]

@@ -6,9 +6,11 @@
     <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
   </div>
   {% for message in form.errors.values() %}
-    <div class="alert alert-danger" role="alert">
-        {{ message }}
-    </div>
+    {% for m in message %}
+      <div class="alert alert-danger" role="alert">
+          {{ m }}
+      </div>
+    {% endfor %}
   {% endfor %}
   <form class="user" method="POST">
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
@@ -28,11 +30,11 @@
       Login
     </button>
   </form>
-  <hr>
+  {# <hr>
   <div class="text-center">
-    <a class="small" href="{{ url("accounts:password_reset") }}">Forgot Password?</a>
+    <a class="small" href="{{ url("password_reset") }}">Forgot Password?</a>
   </div>
-  {# <div class="text-center">
+  <div class="text-center">
     <a class="small" href="register.html">Create an Account!</a>
   </div> #}
 </div>

@@ -75,6 +75,8 @@ class NamedList(fields.List):
 
     def _serialize(self, values, attr, obj, **kwargs):
         serialized = super()._serialize(values, attr, obj, **kwargs)
+        if serialized is None:
+            return None
         obj = list()
         for value in serialized:
             name = value[self._name_attr]

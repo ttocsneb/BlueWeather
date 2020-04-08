@@ -1,0 +1,25 @@
+{% set card_class = "col-xl-4 col-lg-6 col-md-9" %}
+{% extends "card.html" %}
+{% block card %}
+<div class="p-5">
+  <div class="text-center">
+    <h1 class="h4 text-gray-900 mb-4">{{ message_header }}</h1>
+  </div>
+  {% if message is string %}
+    <p>{{ message }}</p>
+  {% else %}
+    {% for m in message %}
+      <p>{{ m }}</p>
+    {% endfor %}
+  {% endif %}
+  <hr>
+  <div class="row text-center">
+    {% if not request.user.is_authenticated %}
+      <div class="col-6"><a class="small" href="{{ url("login") }}">Login</a></div>
+    {% else %}
+      <div class="col-6"><a class="small" href="{{ url("profile") }}">Profile</a></div>
+    {% endif %}
+    <div class="col-6"><a class="small" href="/">Home</a></div>
+  </div>
+</div>
+{% endblock card%}
