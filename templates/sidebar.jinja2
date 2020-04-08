@@ -1,26 +1,104 @@
-{% macro sidebarBrand(name, link, icon, class='') -%}
+{% macro sidebarBrand(name, link, icon, class='') %}
 <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ link }}">
   <div class="sidebar-brand-icon {{ class }}">
     <i class="{{ icon }}"></i>
   </div>
   <div class="sidebar-brand-text mx-3">{{ name|safe }}</div>
 </a>
-{%- endmacro %}
+{% endmacro %}
 
-{% macro sidebarItem(name, link, icon, class='') -%}
-<li class="nav-item {{ class }}">
-  <a class="nav-link" href="{{ link }}">
-    <i class="{{ icon }}"></i>
-    <span>{{ name }}</span></a>
-</li>
-{%- endmacro %}
+{% macro sidebarItem(name, link, icon, active, class='') %}
+  <li class="nav-item {{ "active" if active else "" }} {{ class }}">
+    {% if active %}
+    <span class="nav-link ">
+      <i class="{{ icon }}"></i>
+      <span>{{ name }}</span></span>
+    {% else %}
+    <a class="nav-link" href="{{ link }}">
+      <i class="{{ icon }}"></i>
+      <span>{{ name }}</span></a>
+    {% endif %}
+  </li>
+{% endmacro %}
 
-{% macro sidebarHeading(name, class='') -%}
+{% macro sidebarMenu(request, name, id, icon, subitems, active=False, invert=False, class='') %}
+  {% set color = "primary" if not invert else "light" %}
+  {% set bg = "primary" if invert else "light" %}
+  {% set hover = "bg-hover-dark-translucent" if not invert else "bg-hover-light-translucent" %}
+  {% set highlight = "bg-dark-translucent" if not invert else "bg-light-translucent" %}
+  {% set name = get_or_call(request, name) %}
+  {% set id = get_or_call(request, id) %}
+  {% set icon = get_or_call(request, icon) %}
+  {% set subitems = get_or_call(request, subitems) %}
+  {% set active = get_or_call(request, active)%}
+  <li class="nav-item {{ "active" if active else "" }} {{ class }}">
+
+    <a class="nav-link {{ "collapsed" if not active else "" }}" href="#" data-toggle="collapse" data-target="#{{ id }}" aria-expanded="true" aria-controls="{{ id }}">
+      <i class="{{ icon }}"></i>
+      <span>{{ name }}</span>
+    </a>
+    <div id="{{ id }}" class="collapse {{ "show" if active else "" }}" aria-labelledby="{{ id }}" data-parent="#accordionSidebar">
+      <div class="collapse-inner bg-{{ bg }} rounded py-2">
+        {# Parse sub-items #}
+        {% for item in subitems %}
+          {% set value = item.value %}
+          {% set category = item.category %}
+          {% if category == "item" %}
+            {# sub item #}
+            {% set name = get_or_call(request, value.display_name or value.verbose_name) %}
+            {% set item_url = url(get_or_call(request, value.route or value.name + ":index")) %}
+            {% set active = request.path == item_url %}
+            {% if active %}
+              <span class="{{ highlight }} collapse-item active text-{{ color }}">{{ name }}</span>
+            {% else %}
+              <a class="{{ hover }} collapse-item text-{{ color }}" href="{{ item_url }}">
+                {{ name }}
+              </a>
+            {% endif%}
+          {% elif category == "header" %}
+            {# sub-header #}
+            <h6 class="{{ hover }} collapse-header text-{{ color }}">{{ value }}</h6>
+          {% elif category == "divider" %}
+            {# sub-divider #}
+            <hr class="collapse-divider my-1">
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </li>
+{% endmacro %}
+
+{% macro sidebarHeading(name, class='') %}
 <div class="sidebar-heading {{ class }}">
   {{ name|safe }}
 </div>
-{%- endmacro %}
+{% endmacro %}
 
-{% macro sidebarDivider(class='') -%}
+{% macro sidebarDivider(class='') %}
 <hr class="sidebar-divider {{ class }}">
-{%- endmacro %}
+{% endmacro %}
+
+{% macro sidebarParse(request, item, invert_sub=False) -%}
+  {% set value = item.value %}
+  {% if item.item %}
+    {# Check if the item is the active item #}
+    {% set name = get_or_call(request, value.display_name or value.verbose_name) %}
+    {% if value.sidebar_items is defined %}
+      {% set sidebar_items = get_or_call(request, value.sidebar_items) %}
+    {% else %}
+      {% set sidebar_items = None %}
+    {% endif %}
+    {% if sidebar_items %}
+      {# Parse sub items #}
+      {{ sidebarMenu(request, name, value.name.replace('.', '-'), value.icon, value.sidebar_items, item.active, invert=invert_sub) }}
+    {% else %}
+      {# Parse Single Item #}
+      {% set item_url = url(get_or_call(request, item.path)) %}
+      {{ sidebarItem(name, item_url, get_or_call(request, value.icon), item.active(request)) }}
+    {% endif %}
+  {% elif item.header %}
+    {{ sidebarHeading(value, "my-3") }}
+  {% elif item.divider %}
+    {{ sidebarDivider("my-0") }}
+  {% endif %}
+{%- endmacro%}

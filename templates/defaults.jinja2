@@ -1,0 +1,10 @@
+{% from "sidebar.jinja2" import sidebarBrand, sidebarParse %}
+{# {% include "navbar.jinja2" %} #}
+
+{% macro sidebarDefault(request, invert_sub=False) -%}
+  {{ sidebarBrand(title, "/", "wi wi-day-cloudy") }}
+  {% for item in sidebar %}
+    {{ sidebarParse(request, item, invert_sub) }}
+  {% endfor %}
+{%- endmacro %}
+

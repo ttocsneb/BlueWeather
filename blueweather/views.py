@@ -1,5 +1,3 @@
-from django.http import Http404
-from django.core.exceptions import PermissionDenied
 from django.urls import Resolver404
 from django.shortcuts import render
 
@@ -45,15 +43,3 @@ def pageNotFound(request, exception: Resolver404 = None):
     return render(
         request, "error.html", context=context, status=404
     )
-
-
-def pageNotFoundView(request):
-    raise Http404()
-
-
-def forbiddenView(request):
-    raise PermissionDenied()
-
-
-def internalServerErrorView(request):
-    raise Exception

@@ -1,0 +1,39 @@
+{% set card_class = "col-xl-4 col-lg-6 col-md-9" %}
+{% extends "card.html" %}
+{% block card %}
+<div class="p-5">
+  <div class="text-center">
+    <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
+  </div>
+  {% for message in form.errors.values() %}
+    <div class="alert alert-danger" role="alert">
+        {{ message }}
+    </div>
+  {% endfor %}
+  <form class="user" method="POST">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <div class="form-group">
+      {{ set_attr(add_classes(form.username, "form-control form-control-user"), 'placeholder', form.username.label) }}
+    </div>
+    <div class="form-group">
+      {{ set_attr(add_classes(form.password, "form-control form-control-user"), 'placeholder', form.password.label) }}
+    </div>
+    {# <div class="form-group">
+      <div class="custom-control custom-checkbox small">
+        <input type="checkbox" class="custom-control-input" id="customCheck">
+        <label class="custom-control-label" for="customCheck">Remember Me</label>
+      </div>
+    </div> #}
+    <button type="submit" class="btn btn-primary btn-user btn-block">
+      Login
+    </button>
+  </form>
+  <hr>
+  <div class="text-center">
+    <a class="small" href="{{ url("accounts:password_reset") }}">Forgot Password?</a>
+  </div>
+  {# <div class="text-center">
+    <a class="small" href="register.html">Create an Account!</a>
+  </div> #}
+</div>
+{% endblock card%}

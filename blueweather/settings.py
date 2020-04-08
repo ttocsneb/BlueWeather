@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'blueweather.weather'
+    'blueweather.weather',
+    'blueweather.accounts'
 ]
 
 
@@ -52,6 +53,13 @@ SIDEBAR = CONFIG.web.sidebar or [
     {
         "category": "item",
         "value": "blueweather.weather"
+    },
+    {
+        "category": "divider"
+    },
+    {
+        "category": "item",
+        "value": "blueweather.accounts"
     }
 ]
 
@@ -78,7 +86,11 @@ NPM_FILE_PATERNS = {
     ]
 }
 
-STATIC_ROOT = "static"
+STATIC_ROOT = "dist"
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static")
+]
 
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -94,7 +106,12 @@ TEMPLATES = [
         ],
         'APP_DIRS': True,
         'OPTIONS': {
-            "environment": "blueweather.jinja2.environment"
+            "environment": "blueweather.jinja2.environment",
+            "context_processors": [
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ]
         },
     },
     {
