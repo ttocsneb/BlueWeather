@@ -58,9 +58,9 @@ as a front-end. To serve Vue, NPM will be used.
 
 > Note: these todos may be too general, and are subject to change.
 
-* [ ] Setup Django Framework
+* [X] Setup Django Framework
   * [ ] Setup Plugin Django Apps
-* [ ] Setup NPM
+* [X] Setup NPM
 * [ ] Setup Vue
 
 ### Plugins
