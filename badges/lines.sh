@@ -6,7 +6,7 @@ if ! hash anybadge &> /dev/null; then
   exit 1
 fi
 
-lines=$(find . -type f -name '*.py' -not -path '*venv*' -not -path '*testing*' -not -path '*badges*' -print0 | xargs -0 cat | wc -l)
+lines=$(find . -type f -name '*.py' -not -path '*venv*' -not -path '*testing*' -not -path '*badges*' -not -path '*blueweather-old*' -print0 | xargs -0 cat | wc -l)
 
 echo Lines: $lines
 
