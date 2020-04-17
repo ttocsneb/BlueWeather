@@ -29,7 +29,7 @@ INSTALL_REQUIRES = [
     'Jinja2==2.11.1',
     'ruamel.yaml==0.16.10',
     'marshmallow==3.5.1',
-    'yapsy',
+    'stevedore',
     'requests',
 ]
 
