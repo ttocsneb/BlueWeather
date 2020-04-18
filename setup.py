@@ -29,26 +29,24 @@ INSTALL_REQUIRES = [
     'Jinja2==2.11.1',
     'ruamel.yaml==0.16.10',
     'marshmallow==3.5.1',
-    'stevedore',
-    'requests',
+    'stevedore'
 ]
 
 EXTRAS_REQUIRE = {}
 
+setup(
+    name="BlueWeather",
+    version='0.2.0',
 
-def params():
-    name = "BlueWeather"
-    version = '0.2.0'
+    description="A web-app for your Personal Weather Staion",
+    long_description=LONG_DESCRIPTION,
+    long_description_content_type="text/markdown",
 
-    description = "A web-app for your Personal Weather Staion"
-    long_description = LONG_DESCRIPTION
-    long_description_content_type = "text/markdown"
+    install_requires=INSTALL_REQUIRES,
+    extras_require=EXTRAS_REQUIRE,
 
-    install_requires = INSTALL_REQUIRES
-    extras_require = EXTRAS_REQUIRE
-
-    classifiers = [
-        "Development Status :: 2 - Pre-Alpha",
+    classifiers=[
+        "Development Status :: 1 - Planning",
         "Environment :: Web Environment",
         "Framework :: Django",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
@@ -56,23 +54,17 @@ def params():
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: Implementation :: CPython"
-    ]
-    author = 'Benjamin Jacobs'
-    author_email = 'benjammin1100@gmail.com'
-    url = 'https://github.com/ttocsneb/BlueWeather'
+    ],
 
-    packages = find_packages()
-    package_data = {
-        'blueweather': package_data_dirs('.',
-                                         ['dist', 'templates'])
-    }
+    author='Benjamin Jacobs',
+    author_email='benjammin1100@gmail.com',
+    url='https://github.com/ttocsneb/BlueWeather',
 
-    include_package_data = True
-    zip_safe = False
+    test_suite="testing.suite",
 
-    entry_points = {}
+    packages=find_packages(),
+    include_package_data=True,
+    zip_safe=False,
 
-    return locals()
-
-
-setup(**params())
+    entry_points={}
+)

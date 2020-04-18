@@ -1,30 +1,14 @@
 # BlueWeather
 
-| Branch   | Build                 | Grade                 | Progress           | Lines           |
-|----------|-----------------------|-----------------------|--------------------|-----------------|
-| [Master] | [![Build Master]][bd] | [![Grade Master]][gm] | ![Progress Master] | ![Lines Master] |
-| [Django] | [![Build Django]][bd] | [![Grade Django]][gd] | ![Progress Django] | ![Lines Django] |
-
-[Build Master]: https://github.drone.home.benscraft.info/api/badges/ttocsneb/BlueWeather/status.svg?ref=refs/heads/master
-[Build Django]: https://github.drone.home.benscraft.info/api/badges/ttocsneb/BlueWeather/status.svg?ref=refs/heads/django
-[bd]: https://github.drone.home.benscraft.info/ttocsneb/BlueWeather
-
-[Grade Master]: https://www.codefactor.io/repository/github/ttocsneb/blueweather/badge
-[gm]: https://www.codefactor.io/repository/github/ttocsneb/blueweather
-
-[Grade Django]: https://www.codefactor.io/repository/github/ttocsneb/blueweather/badge/django
-[gd]: https://www.codefactor.io/repository/github/ttocsneb/blueweather/overview/django
-
-[Progress Master]: ../master/badges/progress.svg
-[Progress Django]: ../django/badges/progress.svg
-
-[Lines Master]: ../master/badges/lines.svg
-[Lines Django]: ../django/badges/lines.svg
-
-[Master]: https://github.com/ttocsneb/BlueWeather/
-[Django]: https://github.com/ttocsneb/BlueWeather/tree/django
-
 > This software is still in early development.
+
+| Branch   | Build | Grade | Progress | Lines |
+|----------|-------|-------|----------|-------|
+| [Master] | [![Build Master]][bd] | [![Grade Master]][gm] | [![Progress Master]][Master] | [![Lines Master]][Master] |
+| [Django] | [![Build Django]][bd] | [![Grade Django]][gd] | [![Progress Django]][Django] | [![Lines Django]][Jdango] |
+
+> Progress comes from the number of checked check boxes in this readme. The
+> Progress may not be accurate as I do not yet have the TODOs set in stone
 
 BlueWeather is an open-source personal weather station (PWS) web-app. It
 connects your weather station hardware to a website allowing you to view
@@ -43,6 +27,13 @@ to stop this, and decide what the app will look like once and for all! From now
 on, I will not make any large changes to the design of the app, and any
 additions I want to add may only be done after The app is functional.
 
+### TODO
+
+* [ ] [Build Framework](#Framework)
+* [ ] [Build Plugin Manager](#Plugins)
+* [ ] [Build CLI](#Command-Line-Interface)
+* [ ] [Build API](#API)
+
 ---
 
 ### Framework
@@ -55,8 +46,6 @@ as a front-end. To serve Vue, NPM will be used.
 > without bundling. This may not be possible, but we will see.
 
 #### Framework TODO
-
-> Note: these todos may be too general, and are subject to change.
 
 * [X] Setup Django Framework
   * [ ] Setup Plugin Django Apps
@@ -78,8 +67,6 @@ processing, django sub-app, and possibly more I haven't yet thought of.
 
 #### Plugin TODO
 
-> Note: these todos may be too general, and are subject to change.
-
 * [ ] Setup Stevedore
 * [ ] Collect Plugins
 * [ ] Create Plugin Management App
@@ -87,14 +74,51 @@ processing, django sub-app, and possibly more I haven't yet thought of.
 * [ ] Create Integrated Plugins (_Plugins that are built in to BlueWeather that
 use extensions_)
 
+### Command Line Interface
+
+The CLI will be able to manage plugins, settings, django, and starting the
+application
+
+> I hope to integrate the cli with django's manage.py to make managing the app
+> more seamless.
+
+#### CLI TODO
+
+* [ ] Integrate CLI options with manage.py
+* [ ] Add Plugin Commands
+* [ ] Add Setting Commands
+* [ ] Add Start Command
+
 ### API
+
+> Not much is known about how the API will act yet
 
 This app will of course support a ReST API allowing for external integration
 with things such as Android/iOS/desktop apps.
 
 #### API TODO
 
-> Note: these todos may be too general, and are subject to change.
-
 * [ ] Create API App
 * _Plan more for the API_
+
+<!-- Badge Links -->
+
+[Build Master]: https://github.drone.home.benscraft.info/api/badges/ttocsneb/BlueWeather/status.svg?ref=refs/heads/master
+[Build Django]: https://github.drone.home.benscraft.info/api/badges/ttocsneb/BlueWeather/status.svg?ref=refs/heads/django
+[bd]: https://github.drone.home.benscraft.info/ttocsneb/BlueWeather
+
+[Grade Master]: https://www.codefactor.io/repository/github/ttocsneb/blueweather/badge
+[gm]: https://www.codefactor.io/repository/github/ttocsneb/blueweather
+
+[Grade Django]: https://www.codefactor.io/repository/github/ttocsneb/blueweather/badge/django
+[gd]: https://www.codefactor.io/repository/github/ttocsneb/blueweather/overview/django
+
+[Progress Master]: ../master/badges/progress.svg
+[Progress Django]: ../django/badges/progress.svg
+
+[Lines Master]: ../master/badges/lines.svg
+[Lines Django]: ../django/badges/lines.svg
+
+[Master]: https://github.com/ttocsneb/BlueWeather/
+[Django]: https://github.com/ttocsneb/BlueWeather/tree/django
+
