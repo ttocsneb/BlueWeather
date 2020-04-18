@@ -5,7 +5,7 @@
 | Branch   | Build | Grade | Progress | Lines |
 |----------|-------|-------|----------|-------|
 | [Master] | [![Build Master]][bd] | [![Grade Master]][gm] | [![Progress Master]][Master] | [![Lines Master]][Master] |
-| [Django] | [![Build Django]][bd] | [![Grade Django]][gd] | [![Progress Django]][Django] | [![Lines Django]][Django] |
+| [Plugin] | [![Build Plugin]][bd] | [![Grade Plugin]][gp] | [![Progress Plugin]][Plugin] | [![Lines Plugin]][Plugin] |
 
 > Progress comes from the number of checked check boxes in this readme. The
 > Progress may not be accurate as I do not yet have the TODOs set in stone
@@ -104,21 +104,21 @@ with things such as Android/iOS/desktop apps.
 <!-- Badge Links -->
 
 [Build Master]: https://github.drone.home.benscraft.info/api/badges/ttocsneb/BlueWeather/status.svg?ref=refs/heads/master
-[Build Django]: https://github.drone.home.benscraft.info/api/badges/ttocsneb/BlueWeather/status.svg?ref=refs/heads/django
+[Build Plugin]: https://github.drone.home.benscraft.info/api/badges/ttocsneb/BlueWeather/status.svg?ref=refs/heads/plugin
 [bd]: https://github.drone.home.benscraft.info/ttocsneb/BlueWeather
 
 [Grade Master]: https://www.codefactor.io/repository/github/ttocsneb/blueweather/badge
 [gm]: https://www.codefactor.io/repository/github/ttocsneb/blueweather
 
-[Grade Django]: https://www.codefactor.io/repository/github/ttocsneb/blueweather/badge/django
-[gd]: https://www.codefactor.io/repository/github/ttocsneb/blueweather/overview/django
+[Grade Plugin]: https://www.codefactor.io/repository/github/ttocsneb/blueweather/badge/plugin
+[gp]: https://www.codefactor.io/repository/github/ttocsneb/blueweather/overview/plugin
 
 [Progress Master]: ../master/badges/progress.svg
-[Progress Django]: ../django/badges/progress.svg
+[Progress Plugin]: ../django/badges/progress.svg
 
 [Lines Master]: ../master/badges/lines.svg
-[Lines Django]: ../django/badges/lines.svg
+[Lines Plugin]: ../plugin/badges/lines.svg
 
 [Master]: https://github.com/ttocsneb/BlueWeather/
-[Django]: https://github.com/ttocsneb/BlueWeather/tree/django
+[Plugin]: https://github.com/ttocsneb/BlueWeather/tree/plugin
 
