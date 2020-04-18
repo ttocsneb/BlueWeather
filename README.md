@@ -5,7 +5,7 @@
 | Branch   | Build | Grade | Progress | Lines |
 |----------|-------|-------|----------|-------|
 | [Master] | [![Build Master]][bd] | [![Grade Master]][gm] | [![Progress Master]][Master] | [![Lines Master]][Master] |
-| [Django] | [![Build Django]][bd] | [![Grade Django]][gd] | [![Progress Django]][Django] | [![Lines Django]][Jdango] |
+| [Django] | [![Build Django]][bd] | [![Grade Django]][gd] | [![Progress Django]][Django] | [![Lines Django]][Django] |
 
 > Progress comes from the number of checked check boxes in this readme. The
 > Progress may not be accurate as I do not yet have the TODOs set in stone
