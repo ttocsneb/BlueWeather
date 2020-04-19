@@ -1,5 +1,5 @@
-from django.urls import Resolver404
 from django.shortcuts import render
+from django.urls import Resolver404
 
 
 def badRequest(request, exception=None):

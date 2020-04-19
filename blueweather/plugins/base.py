@@ -1,25 +1,9 @@
-from yapsy.IPlugin import IPlugin
-import logging
+import abc
+
 from marshmallow import Schema
 
 
-class ILoggerPlugin(IPlugin):
-    """
-    A Plugin That supports logging
-
-    Use this to allow logging settings to be controlled in one place
-    """
-
-    def __init__(self, name):
-        super().__init__()
-        self._logger_name = name
-        self._logger = logging.getLogger(name)
-
-    def get_logger_name(self):
-        return self._logger_name
-
-
-class IStartupPlugin(IPlugin):
+class Startup(metaclass=abc.ABCMeta):
     """
     A Plugin that hooks into the start and stop of the web-app
     """
@@ -41,7 +25,34 @@ class IStartupPlugin(IPlugin):
         """
 
 
-class ISettingsPlugin(IPlugin):
+class DjangoApp(metaclass=abc.ABCMeta):
+    """
+    A Plugin that hosts django web pages
+    """
+
+    @abc.abstractmethod
+    def get_app_name(self) -> str:
+        """
+        Get the import name of the app
+        """
+
+    @abc.abstractclassmethod
+    def get_url_info(self) -> (str, str):
+        """
+        Get the info required to make url patterns
+
+        If the namespace is not provided, the url_base will be used as the
+        namespace
+
+        :return (str url_base, str namespace):
+
+        or
+
+        :return str url_base:
+        """
+
+
+class Settings(metaclass=abc.ABCMeta):
     """
     Be able to interact with the settings for the plugin
     """
@@ -75,7 +86,7 @@ class ISettingsPlugin(IPlugin):
         """
         return None
 
-    def on_settings_migrate(self, version: int, settings: dict):
+    def on_settings_migrate(self, version: int, settings: dict) -> dict:
         """
         Migrate the settings from an older version to the current version
 
@@ -93,11 +104,12 @@ class ISettingsPlugin(IPlugin):
         pass
 
 
-class IWeatherPlugin(IPlugin):
+class Weather(metaclass=abc.ABCMeta):
     """
     Plugin that Collects the weather
     """
 
+    @abc.abstractmethod
     def on_weather_request(self) -> dict:
         """
         Collect the current weather
@@ -129,24 +141,24 @@ class IWeatherPlugin(IPlugin):
 
         :return dict(str name, (str type, float value))
         """
-        raise NotImplementedError("on_weather_request must be implemented")
 
 
-class IUnitConversionPlugin(IPlugin):
+class UnitConversion(metaclass=abc.ABCMeta):
     """
     Plugin that can facilitate conversions
 
     Blueweather is (will be) bundled with a conversion plugin for imperial
     """
 
+    @abc.abstractmethod
     def get_conversion_types(self) -> list:
         """
         Get a list of available conversions in the form of tuples
 
         :return list( (str from_type, str to_type) ):
         """
-        raise NotImplementedError("on_weather_request must be implemented")
 
+    @abc.abstractmethod
     def on_request_conversion(self, data: float, from_type: str, to_type: str
                               ) -> float:
         """
@@ -155,4 +167,3 @@ class IUnitConversionPlugin(IPlugin):
 
         When converting values, the first successful conversion will stop
         """
-        raise NotImplementedError("on_weather_request must be implemented")

@@ -1,11 +1,10 @@
 from django.apps.registry import apps
 from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
+from django.forms import Widget
 from django.urls import reverse
 from django.utils import dateformat, datetime_safe, formats, timezone
 from jinja2 import Environment
-
-from django.forms import Widget
 
 
 def get_or_call(request, setting):

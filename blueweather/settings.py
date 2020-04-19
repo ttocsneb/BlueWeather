@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 
 from .config import Config
+from .plugins import ExtensionsSingleton
+from .plugins import map as plugin_map
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -23,6 +25,8 @@ CONFIG = Config(os.path.join(BASE_DIR, "config.yml"))
 CONFIG.load()
 if CONFIG.modified:
     CONFIG.save()
+
+EXTENSIONS = ExtensionsSingleton(CONFIG, True)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -43,6 +47,12 @@ INSTALLED_APPS = [
     'blueweather.weather',
     'blueweather.accounts'
 ]
+
+INSTALLED_APPS.extend(
+    plugin_map.strip_name(EXTENSIONS.djangoApp.map(
+        plugin_map.DjangoApp.get_app_name
+    ))
+)
 
 
 # A list of apps that should be linked in the sidebar

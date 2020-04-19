@@ -165,6 +165,32 @@ class Web(Settings):
         return str(self)
 
 
+class Extensions(Settings):
+    _required = ['weather_driver']
+    _defaults = dict(
+        weather_driver=''
+    )
+
+    def __init__(self, weather_driver: str = None, disabled: list = None,
+                 settings: dict = None):
+        super().__init__()
+
+        self.weather_driver = weather_driver or \
+            self._defaults['weather_driver']
+
+        self.disabled = disabled or list()
+        self.settings = settings or dict()
+
+
+class Commands(Settings):
+    def __init__(self, stop: str = None, restart: str = None,
+                 shutdown: str = None):
+        super().__init__()
+        self.stop = stop or ''
+        self.restart = restart or ''
+        self.shutdown = shutdown or ''
+
+
 class Config(Settings):
     _required = ["secret_key"]
     _defaults = dict(
@@ -172,10 +198,11 @@ class Config(Settings):
         web=dict(),
         time_zone="UTC"
     )
-    _modifiable = ["web"]
+    _modifiable = ["web", "commands", "extensions"]
 
     def __init__(self, secret_key: str = None, debug: bool = None,
-                 web: Web = None, time_zone: str = None):
+                 web: Web = None, time_zone: str = None,
+                 commands: Commands = None, extensions: Extensions = None):
         super().__init__()
         self.secret_key = secret_key
         if self.secret_key is None:
@@ -187,6 +214,14 @@ class Config(Settings):
         self.web = web
         if self.web is None:
             self.web = Web()
+
+        self.commands = commands
+        if self.commands is None:
+            self.commands = Commands()
+
+        self.extensions = extensions
+        if self.extensions is None:
+            self.extensions = Extensions()
 
         self._init = False
 

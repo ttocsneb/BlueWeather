@@ -1,5 +1,6 @@
-from marshmallow import fields, exceptions
 import collections
+
+from marshmallow import fields
 
 from . import objects
 
