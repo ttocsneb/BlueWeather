@@ -1,5 +1,5 @@
 from marshmallow import Schema
-from stevedore.extension import Extension
+from stevedore.extension import Extension, ExtensionManager
 
 
 def strip_name(tup: tuple):
@@ -64,6 +64,74 @@ class Weather:
 
 
 class UnitConversion:
+
+    @staticmethod
+    def conversions(man: ExtensionManager) -> dict:
+        units = dict()
+        for _, conversions in man.map(UnitConversion.get_conversion_types):
+            for from_type, to_type in conversions:
+                if from_type not in units:
+                    units[from_type] = set()
+                units[from_type].add(to_type)
+
+    @staticmethod
+    def all_conversions(man: ExtensionManager = None, units: dict = None
+                        ) -> dict:
+        if units is None:
+            units = UnitConversion.conversions(man)
+        # Add secondary conversions (Conversions that can be made by
+        # converting a conversion)
+        for k, v in units.items():
+            for u in v:
+                if u in units:
+                    v.union(units[u])
+
+    @staticmethod
+    def convert(man: ExtensionManager, data: float, from_type: str,
+                to_type: str) -> (str, float):
+        units = UnitConversion.conversions(man)
+
+        if from_type not in units:
+            raise KeyError("%s can not be converted to another type" %
+                           from_type)
+        to_types = units[from_type]
+
+        def conv(d, from_t, to_t) -> (str, float):
+            for ext in man.extensions:
+                if not UnitConversion.on_request_conversion_check(
+                        ext, d, from_t, to_t):
+                    continue
+                val = ext.obj.on_request_conversion(d, from_t, to_t)
+                if val is not None:
+                    return ext.name, val
+            raise KeyError("%s can not be converted to %s" % (from_t, to_t))
+
+        # It is a simple conversion, so we can convert directly
+        if to_type in to_types:
+            return conv(data, from_type, to_type)
+
+        # It may be a complex (two part conversion) so we will need to see if
+        # it is possible to convert
+
+        from_types = set()
+        for k, v in units:
+            if v == to_type:
+                from_types.add(k)
+
+        mid_type = None
+        for t in units[from_type]:
+            if t not in from_types:
+                continue
+            # Make the Middle conversion
+            mid_type = t
+            name1, data = conv(data, from_type, mid_type)
+
+        if mid_type is None:
+            raise KeyError("%s can not be converted to %s" %
+                           (from_type, to_type))
+        # Make final conversion
+        name2, data = conv(data, mid_type, to_type)
+        return (name1, name2), data
 
     @staticmethod
     def get_conversion_types(ext: Extension) -> (str, list):

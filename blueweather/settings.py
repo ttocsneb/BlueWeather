@@ -28,6 +28,11 @@ if CONFIG.modified:
 
 EXTENSIONS = ExtensionsSingleton(CONFIG, True)
 
+
+# Unit Conversions
+UNITS = plugin_map.UnitConversion.all_conversions(EXTENSIONS.unitConversion)
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 

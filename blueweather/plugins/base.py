@@ -123,7 +123,7 @@ class Weather(metaclass=abc.ABCMeta):
 
         The following is a list of valid types and their unit
 
-        temperatures: celsius
+        temperature: celsius
         distance: meter
         mass: kilogram
         time: second

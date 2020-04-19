@@ -66,5 +66,10 @@ setup(
     include_package_data=True,
     zip_safe=False,
 
-    entry_points={}
+    entry_points={
+        'blueweather.plugins.unitconv': [
+            'imperial = blueweather.plugins.integrated.imperialConv.ImperialConversion',
+            'metric = blueweather.plugins.integrated.imperialConv.MetricConversion'
+        ]
+    }
 )

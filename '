@@ -1,0 +1,31 @@
+from blueweather.plugins.base import UnitConversion
+
+
+class ImperialConversion(UnitConversion):
+    def get_conversion_types(self):
+        return [
+            ('celsius', 'fahrenheit'),
+            ('meter', 'feet'),
+            ('kilogram', 'pound'),
+            ('meter/second', 'mile/hour'),
+            ('newton', 'pound'),
+            ('pascal', 'inch of mercury')
+        ]
+
+    def on_request_conversion(self, data, from_type, to_type):
+        if from_type == 'celsius' and to_type == 'fahrenheit':
+            return (data * 9 / 5) + 32
+        if from_type == 'meter' and to_type == 'feet':
+            return data * 3.28084
+        if from_type == 'kilogram' and to_type == 'pound':
+            return data * 2.20462
+        if from_type == 'meter/second' and to_type == 'mile/hour':
+            return data * 2.23694
+        if from_type == 'newton' and to_type == 'pound':
+            return data * 0.224809
+        if from_type == 'pascal' and to_type == 'inch of mercury':
+            return data * 0.0002953
+
+
+class MetricConversion(UnitConversion):
+
