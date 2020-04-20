@@ -114,7 +114,7 @@ with things such as Android/iOS/desktop apps.
 [gp]: https://www.codefactor.io/repository/github/ttocsneb/blueweather/overview/plugin
 
 [Progress Master]: ../master/badges/progress.svg
-[Progress Plugin]: ../django/badges/progress.svg
+[Progress Plugin]: ../plugin/badges/progress.svg
 
 [Lines Master]: ../master/badges/lines.svg
 [Lines Plugin]: ../plugin/badges/lines.svg
