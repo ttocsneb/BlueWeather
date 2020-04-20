@@ -1,5 +1,6 @@
 from marshmallow import Schema
 from stevedore.extension import Extension, ExtensionManager
+from stevedore.dispatch import DispatchExtensionManager
 
 
 def strip_name(tup: tuple):
@@ -66,17 +67,21 @@ class Weather:
 class UnitConversion:
 
     @staticmethod
-    def conversions(man: ExtensionManager) -> dict:
+    def conversions(man: DispatchExtensionManager) -> dict:
         units = dict()
-        for _, conversions in man.map(UnitConversion.get_conversion_types):
+        for name, conversions in man.map(lambda *args, **kwargs: True,
+                                         UnitConversion.get_conversion_types):
+            if conversions is None:
+                continue
             for from_type, to_type in conversions:
                 if from_type not in units:
                     units[from_type] = set()
                 units[from_type].add(to_type)
+        return units
 
     @staticmethod
-    def all_conversions(man: ExtensionManager = None, units: dict = None
-                        ) -> dict:
+    def all_conversions(man: DispatchExtensionManager = None,
+                        units: dict = None) -> dict:
         if units is None:
             units = UnitConversion.conversions(man)
         # Add secondary conversions (Conversions that can be made by
@@ -85,9 +90,10 @@ class UnitConversion:
             for u in v:
                 if u in units:
                     v.union(units[u])
+        return units
 
     @staticmethod
-    def convert(man: ExtensionManager, data: float, from_type: str,
+    def convert(man: DispatchExtensionManager, data: float, from_type: str,
                 to_type: str) -> (str, float):
         units = UnitConversion.conversions(man)
 
@@ -135,7 +141,7 @@ class UnitConversion:
 
     @staticmethod
     def get_conversion_types(ext: Extension) -> (str, list):
-        return ext.obj.get_conversion_types()
+        return ext.name, ext.obj.get_conversion_types()
 
     @staticmethod
     def on_request_conversion_check(ext: Extension, data: float,

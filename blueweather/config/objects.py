@@ -168,7 +168,7 @@ class Web(Settings):
 class Extensions(Settings):
     _required = ['weather_driver']
     _defaults = dict(
-        weather_driver=''
+        weather_driver='dummyWeather'
     )
 
     def __init__(self, weather_driver: str = None, disabled: list = None,

@@ -12,6 +12,8 @@ _logger = logging.getLogger(__name__)
 
 class ExtensionsSingleton:
     def __init__(self, config: Config, invoke_on_load=False):
+        self.failed_plugins = list()
+
         def check(ext: Extension):
             return self._check_extension(config, ext)
 
@@ -40,7 +42,6 @@ class ExtensionsSingleton:
             check_func=check,
             on_load_failure_callback=self._on_load_fail
         )
-        self.failed_plugins = list()
 
         if invoke_on_load:
             self.invoke()

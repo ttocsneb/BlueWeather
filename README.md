@@ -67,7 +67,7 @@ processing, django sub-app, and possibly more I haven't yet thought of.
 
 #### Plugin TODO
 
-* [ ] Setup Stevedore
+* [X] Setup Stevedore
 * [ ] Collect Plugins
 * [ ] Create Plugin Management App
   * [ ] Download and install plugins
