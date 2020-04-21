@@ -1,7 +1,13 @@
-from blueweather.plugins.base import UnitConversion
+from blueweather.plugins.base import UnitConversion, Plugin
 
 
-class ImperialConversion(UnitConversion):
+class ImperialConversion(UnitConversion, Plugin):
+    def get_plugin_name(self):
+        return "Imperial Conversion"
+
+    def get_plugin_description(self):
+        return "Provides conversions for common american units."
+
     def get_conversion_types(self):
         return [
             ('celsius', 'fahrenheit'),
@@ -34,7 +40,13 @@ class ImperialConversion(UnitConversion):
             return data * 0.0002953
 
 
-class MetricConversion(UnitConversion):
+class MetricConversion(UnitConversion, Plugin):
+    def get_plugin_name(self):
+        return "Metric Conversion"
+
+    def get_plugin_description(self):
+        return "Provides conversions for common metric units."
+
     def get_conversion_types(self):
         return [
             ('meter', 'centimeter'),

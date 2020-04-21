@@ -81,13 +81,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'blueweather.weather',
-    'blueweather.accounts'
+    'blueweather.accounts',
+    'blueweather.extensions'
 ]
 
 INSTALLED_APPS.extend(plugin_map.DjangoApp.getApps(EXTENSIONS.djangoApp))
 
 
 # A list of apps that should be linked in the sidebar
+# TODO automatically build SIDEBAR
 SIDEBAR = CONFIG.web.sidebar or [
     {
         "category": "divider"
@@ -95,6 +97,10 @@ SIDEBAR = CONFIG.web.sidebar or [
     {
         "category": "item",
         "value": "blueweather.weather"
+    },
+    {
+        "category": "item",
+        "value": "blueweather.extensions"
     },
     {
         "category": "divider"

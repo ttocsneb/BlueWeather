@@ -30,6 +30,10 @@ urlpatterns = [
     path('', include(
         ('blueweather.weather.urls', 'weather'),
         namespace='weather'
+    )),
+    path('extensions/', include(
+        ('blueweather.extensions.urls', 'extensions'),
+        namespace='extensions'
     ))
 ]
 

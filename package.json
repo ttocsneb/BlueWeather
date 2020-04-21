@@ -1,6 +1,6 @@
 {
   "name": "blueweather",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A web-app for your Personal Weather Station",
   "main": "index.js",
   "dependencies": {

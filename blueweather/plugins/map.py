@@ -7,6 +7,24 @@ def strip_name(tup: tuple):
     return map(lambda x: x[1], tup)
 
 
+class Plugin:
+    @staticmethod
+    def get_plugin_name(ext: Extension) -> str:
+        return ext.obj.get_plugin_name()
+
+    @staticmethod
+    def get_plugin_description(ext: Extension) -> str:
+        return ext.obj.get_plugin_description()
+
+    @staticmethod
+    def get_plugin_author(ext: Extension) -> str:
+        return ext.obj.get_plugin_author()
+
+    @staticmethod
+    def get_plugin_url(ext: Extension) -> str:
+        return ext.obj.get_plugin_url()
+
+
 class Startup:
     @staticmethod
     def on_startup(ext: Extension, host: str, port: int):
@@ -128,7 +146,6 @@ class UnitConversion:
         for k, v in units.items():
             if to_type in v:
                 from_types.add(k)
-
 
         mid_type = None
         for t in units[from_type]:

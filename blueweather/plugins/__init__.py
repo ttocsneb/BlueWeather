@@ -6,9 +6,24 @@ from stevedore.dispatch import DispatchExtensionManager
 from stevedore.extension import Extension, ExtensionManager
 
 from blueweather.config import Config
+from . import map as plugin_map
 
 
 class ExtensionsSingleton:
+    prettyNames = {
+        "blueweather.plugins.plugin": "Plugin",
+        "blueweather.plugins.weather": "Weather",
+        'blueweather.plugins.django': "Web-App",
+        'blueweather.plugins.startup': "Startup",
+        'blueweather.plugins.settings': "Settings",
+        'blueweather.plugins.unitconv': "Unit-Conversion"
+    }
+    builtins = [
+        'imperialConverter',
+        'metricConverter',
+        'dummyWeather'
+    ]
+
     def __init__(self, config: Config, invoke_on_load=False):
         self._logger = logging.getLogger(__name__)
 
@@ -20,6 +35,11 @@ class ExtensionsSingleton:
         self.weather = DriverManager(
             "blueweather.plugins.weather",
             config.extensions.weather_driver,
+            on_load_failure_callback=self._on_load_fail
+        )
+        self.plugins = EnabledExtensionManager(
+            "blueweather.plugins.plugin",
+            check_func=check,
             on_load_failure_callback=self._on_load_fail
         )
         self.djangoApp = EnabledExtensionManager(
@@ -57,6 +77,26 @@ class ExtensionsSingleton:
         if invoke_on_load:
             self.invoke()
 
+    def getPluginList(self):
+        extensions = self.getAllExtensions()
+        data = dict()
+
+        for name, exts in extensions.items():
+            desc = exts['blueweather.plugins.plugin']
+            data[name] = {
+                'human_name': plugin_map.Plugin.get_plugin_name(desc),
+                'description': plugin_map.Plugin.get_plugin_description(desc),
+                'author': plugin_map.Plugin.get_plugin_author(desc),
+                'url': plugin_map.Plugin.get_plugin_url(desc),
+                'entrypoints': [
+                    self.prettyNames[man]
+                    for man, ext in exts.items()
+                    if man != 'blueweather.plugins.plugin'
+                ],
+                'builtin': desc.builtin
+            }
+        return data
+
     def getAllExtensions(self):
         extensions = dict()
 
@@ -66,6 +106,7 @@ class ExtensionsSingleton:
                     extensions[ext.name] = dict()
                 extensions[ext.name][man.namespace] = ext
 
+        collect(self.plugins)
         collect(self.weather)
         collect(self.djangoApp)
         collect(self.startup)
@@ -79,6 +120,8 @@ class ExtensionsSingleton:
         """
         objects = dict()
 
+        for ext in self.plugins.extensions:
+            self._invoke_one(ext, objects)
         for ext in self.weather.extensions:
             self._invoke_one(ext, objects)
         for ext in self.startup.extensions:
@@ -91,6 +134,7 @@ class ExtensionsSingleton:
     def _invoke_one(self, extension: Extension, objects: dict):
         if extension.obj is not None:
             return
+        extension.builtin = extension.name in self.builtins
         if extension.name in objects:
             extension.obj = objects[extension.name]
         else:

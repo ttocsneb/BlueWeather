@@ -29,14 +29,14 @@ INSTALL_REQUIRES = [
     'Jinja2==2.11.1',
     'ruamel.yaml==0.16.10',
     'marshmallow==3.5.1',
-    'stevedore'
+    'stevedore==1.32.0'
 ]
 
 EXTRAS_REQUIRE = {}
 
 setup(
     name="BlueWeather",
-    version='0.2.0',
+    version='0.3.0',
 
     description="A web-app for your Personal Weather Staion",
     long_description=LONG_DESCRIPTION,
@@ -72,6 +72,11 @@ setup(
             'metricConverter = blueweather.plugins.integrated.converters:MetricConversion'
         ],
         'blueweather.plugins.weather': [
+            'dummyWeather = blueweather.plugins.integrated.dummyWeather:DummyWeather'
+        ],
+        'blueweather.plugins.plugin': [
+            'imperialConverter = blueweather.plugins.integrated.converters:ImperialConversion',
+            'metricConverter = blueweather.plugins.integrated.converters:MetricConversion',
             'dummyWeather = blueweather.plugins.integrated.dummyWeather:DummyWeather'
         ]
     }

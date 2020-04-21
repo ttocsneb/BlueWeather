@@ -68,12 +68,12 @@ processing, django sub-app, and possibly more I haven't yet thought of.
 #### Plugin TODO
 
 * [X] Setup Stevedore
-* [ ] Collect Plugins
+* [X] Collect Plugins
 * [ ] Create Plugin Management App
   * [ ] Download and install plugins
 * [ ] Create Integrated Plugins (_Plugins that are built in to BlueWeather that
 use extensions_)
-* [ ] Add testing for integrated plugins
+* [X] Add testing for integrated plugins
 
 ### Command Line Interface
 

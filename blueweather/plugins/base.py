@@ -3,6 +3,38 @@ import abc
 from marshmallow import Schema
 
 
+class Plugin(metaclass=abc.ABCMeta):
+    """
+    The base plugin configuration.
+
+    All Plugins should implement this extension
+    """
+
+    @abc.abstractmethod
+    def get_plugin_name(self):
+        """
+        Get the human readable name of the plugin
+        """
+
+    @abc.abstractmethod
+    def get_plugin_description(self):
+        """
+        Get the description for the plugin
+        """
+
+    def get_plugin_author(self):
+        """
+        Get the Author(s) of the plugin
+        """
+        return None
+
+    def get_plugin_url(self):
+        """
+        Get the plugin's url
+        """
+        return None
+
+
 class Startup(metaclass=abc.ABCMeta):
     """
     A Plugin that hooks into the start and stop of the web-app
