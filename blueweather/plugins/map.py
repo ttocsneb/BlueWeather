@@ -125,9 +125,10 @@ class UnitConversion:
         # it is possible to convert
 
         from_types = set()
-        for k, v in units:
-            if v == to_type:
+        for k, v in units.items():
+            if to_type in v:
                 from_types.add(k)
+
 
         mid_type = None
         for t in units[from_type]:

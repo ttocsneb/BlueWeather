@@ -57,11 +57,10 @@ class MetricConversion(UnitConversion):
                 return data / 1000
         if from_type == 'kilogram' and to_type == 'gram':
             return data * 1000
-        if from_type == 'newton':
-            if to_type == 'kilogram':
-                return data / 9.80665
-            if to_type == 'gram':
-                return data / 101.97162
+        if from_type == 'meter/second' and to_type == 'kilometer/hour':
+            return data / 3.6
+        if from_type == 'newton' and to_type == 'kilogram':
+            return data / 9.80665
         if from_type == 'pascal':
             if to_type == 'kilopascal':
                 return data / 1000

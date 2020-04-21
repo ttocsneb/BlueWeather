@@ -68,8 +68,8 @@ setup(
 
     entry_points={
         'blueweather.plugins.unitconv': [
-            'imperial = blueweather.plugins.integrated.imperialConv:ImperialConversion',
-            'metric = blueweather.plugins.integrated.imperialConv:MetricConversion'
+            'imperialConverter = blueweather.plugins.integrated.converters:ImperialConversion',
+            'metricConverter = blueweather.plugins.integrated.converters:MetricConversion'
         ],
         'blueweather.plugins.weather': [
             'dummyWeather = blueweather.plugins.integrated.dummyWeather:DummyWeather'
