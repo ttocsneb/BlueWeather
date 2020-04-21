@@ -23,6 +23,13 @@ class Startup:
 
 class DjangoApp:
     @staticmethod
+    def getApps(man: ExtensionManager) -> list:
+        apps = list()
+        for ext in man.extensions:
+            apps.append(DjangoApp.get_app_name(ext)[1])
+        return apps
+
+    @staticmethod
     def get_app_name(ext: Extension) -> (str, str):
         return ext.name, ext.obj.get_app_name()
 
@@ -58,14 +65,12 @@ class Settings:
 
 
 class Weather:
-
     @staticmethod
     def on_weather_request(ext: Extension) -> (str, dict):
         return ext.name, ext.obj.on_weather_request()
 
 
 class UnitConversion:
-
     @staticmethod
     def conversions(man: DispatchExtensionManager) -> dict:
         units = dict()

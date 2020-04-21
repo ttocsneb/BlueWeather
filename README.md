@@ -73,6 +73,7 @@ processing, django sub-app, and possibly more I haven't yet thought of.
   * [ ] Download and install plugins
 * [ ] Create Integrated Plugins (_Plugins that are built in to BlueWeather that
 use extensions_)
+* [ ] Add testing for integrated plugins
 
 ### Command Line Interface
 

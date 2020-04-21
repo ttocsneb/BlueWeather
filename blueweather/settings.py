@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
+import logging.config
 import os
 
 from .config import Config
@@ -19,6 +20,34 @@ from .plugins import map as plugin_map
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+LOGGING_CONFIG = None
+logging.config.dictConfig({
+    'version': 1,
+    'formatters': {
+        'brief': {
+            'format': '%(levelname)-5.5s [%(asctime)s - %(name)s] %(message)s',
+            'datefmt': '%I:%M:%S %p'
+        },
+        'default': {
+            'format': '%(levelname)-5.5s [%(asctime)s - %(name)s] %(message)s',
+            'datefmt': '%m/%d/%Y %I:%M:%S %p'
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'brief',
+            'level': 'INFO',
+            'stream': 'ext://sys.stdout'
+        }
+    },
+    'root': {
+        'level': 'INFO',
+        'handlers': ['console']
+    },
+    #  'incremental': True
+})
+
 # Configuration are user-defined settings. They are all stored in the CONFIG
 # object, and follow a different convention from Settings to differentiate them
 CONFIG = Config(os.path.join(BASE_DIR, "config.yml"))
@@ -26,6 +55,8 @@ CONFIG.load()
 if CONFIG.modified:
     CONFIG.save()
 
+# because django is set to reload, two instances of extensions will always be
+# loaded. to stop this, use 'manage.py runserver --noreload'
 EXTENSIONS = ExtensionsSingleton(CONFIG, True)
 
 
@@ -53,11 +84,7 @@ INSTALLED_APPS = [
     'blueweather.accounts'
 ]
 
-INSTALLED_APPS.extend(
-    plugin_map.strip_name(EXTENSIONS.djangoApp.map(
-        plugin_map.DjangoApp.get_app_name
-    ))
-)
+INSTALLED_APPS.extend(plugin_map.DjangoApp.getApps(EXTENSIONS.djangoApp))
 
 
 # A list of apps that should be linked in the sidebar

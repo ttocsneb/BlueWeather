@@ -58,7 +58,6 @@ def parse_sidebar(obj: dict):
         item['item'] = False
     item['header'] = item['category'] == 'header'
     item['divider'] = item['category'] == 'divider'
-    print(item)
     return item
 
 

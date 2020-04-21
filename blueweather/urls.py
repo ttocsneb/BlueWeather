@@ -13,7 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.conf import config
+from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 
@@ -34,7 +34,7 @@ urlpatterns = [
 ]
 
 # Add plugin urls
-for ext in config.EXTENSIONS.djangoApp:
+for ext in settings.EXTENSIONS.djangoApp:
     _, url, name = plugin_map.DjangoApp.get_url_info(ext)
     _, path = plugin_map.DjangoApp.get_app_name(ext)
     urlpatterns.append(path(url, include((path, name), name)))

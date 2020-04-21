@@ -7,11 +7,11 @@ from stevedore.extension import Extension, ExtensionManager
 
 from blueweather.config import Config
 
-_logger = logging.getLogger(__name__)
-
 
 class ExtensionsSingleton:
     def __init__(self, config: Config, invoke_on_load=False):
+        self._logger = logging.getLogger(__name__)
+
         self.failed_plugins = list()
 
         def check(ext: Extension):
@@ -43,8 +43,35 @@ class ExtensionsSingleton:
             on_load_failure_callback=self._on_load_fail
         )
 
+        if self._logger.isEnabledFor(logging.INFO):
+            extensions = self.getAllExtensions()
+            for k, v in extensions.items():
+                extensions[k] = '\n\t'.join(v.keys())
+
+            extensions = '\n'.join(
+                ["%s: \n\t%s" % (k, v) for k, v in extensions.items()]
+            )
+
+            self._logger.info("Discovered Extensions: \n%s", extensions)
+
         if invoke_on_load:
             self.invoke()
+
+    def getAllExtensions(self):
+        extensions = dict()
+
+        def collect(man: ExtensionManager):
+            for ext in man.extensions:
+                if ext.name not in extensions:
+                    extensions[ext.name] = dict()
+                extensions[ext.name][man.namespace] = ext
+
+        collect(self.weather)
+        collect(self.djangoApp)
+        collect(self.startup)
+        collect(self.settings)
+        collect(self.unitConversion)
+        return extensions
 
     def invoke(self):
         """
@@ -70,7 +97,8 @@ class ExtensionsSingleton:
             try:
                 extension.obj = extension.plugin()
                 objects[extension.name] = extension.obj
-                _logger.info("Loaded plugin '%s'", extension.name)
+                #  self._logger.info("Loaded plugin '%s'", extension.name)
+                self._logger.info("Loaded Plugin '%s'" % extension.name)
             except Exception as exc:
                 self._on_load_fail(None, extension, exc)
 
@@ -79,8 +107,8 @@ class ExtensionsSingleton:
         """
         Called when a plugin fails to load
         """
-        _logger.warning("Unable to load plugin '%s'", entrypoint,
-                        exc_info=sys.exc_info(), stack_info=True)
+        self._logger.warning("Unable to load plugin '%s'", entrypoint,
+                             exc_info=sys.exc_info(), stack_info=True)
         self.failed_plugins.append((entrypoint, exception))
 
     def _check_extension(self, config: Config, extension: Extension):
