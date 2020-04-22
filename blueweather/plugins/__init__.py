@@ -11,7 +11,7 @@ from . import map as plugin_map
 
 class ExtensionsSingleton:
     prettyNames = {
-        "blueweather.plugins.plugin": "Plugin",
+        "blueweather.plugins.plugin": "Plugin-Info",
         "blueweather.plugins.weather": "Weather",
         'blueweather.plugins.django': "Web-App",
         'blueweather.plugins.startup': "Startup",

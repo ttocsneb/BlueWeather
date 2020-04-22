@@ -52,6 +52,41 @@ as a front-end. To serve Vue, NPM will be used.
 * [X] Setup NPM
 * [ ] Setup Vue
 
+### Apps
+
+There will be several apps that help manage blueweather. This includes viewing
+the weather, managing settings, managing accounts, and managing plugins.
+
+#### Weather
+
+This app will display the weather.
+
+##### Weather TODO
+
+* [ ] Integrate with weather driver
+
+#### Accounts
+
+This app will serve the login/register pages as well as the accounts, and
+general admin page.
+
+##### Accounts TODO
+
+* [X] Create Login Page
+* [ ] Create Account Page
+
+#### Settings
+
+This app will serve all the application settings, as well as all of the
+plugins settings.
+
+##### Settings TODO
+
+* [ ] Create Settings Page
+* [ ] Integrate with Settings Extension
+
+---
+
 ### Plugins
 
 There is no way this app could be useful without the integration of plugins.
@@ -69,11 +104,33 @@ processing, django sub-app, and possibly more I haven't yet thought of.
 
 * [X] Setup Stevedore
 * [X] Collect Plugins
+* [ ] Create Plugin Extension Interfaces
+  * [X] Create Weather Driver
+    * [ ] Implement it
+    * [ ] Add Testing
+  * [X] Create Plugin-Info Extension
+    * [X] Implement it
+    * [ ] Add Testing
+  * [X] Create Django-App Extension
+    * [X] Implement it
+    * [ ] Add Testing
+  * [X] Create Startup/Shutdown Extension
+    * [ ] Implement it
+    * [ ] Add Testing
+  * [X] Create Settings Extension
+    * [ ] Implement it
+    * [ ] Add Testing
+  * [X] Create Unit-Conversion Extension
+    * [X] Implement it
+    * [X] Add Testing
+  * [ ] Create API Extension
+    * [ ] Implement it
+    * [ ] Add Testing
+* [ ] Add plugin hooks (_Ability for plugins to interact with other plugins_)
 * [ ] Create Plugin Management App
   * [ ] Download and install plugins
 * [ ] Create Integrated Plugins (_Plugins that are built in to BlueWeather that
 use extensions_)
-* [X] Add testing for integrated plugins
 
 ### Command Line Interface
 
