@@ -31,9 +31,9 @@ urlpatterns = [
         ('blueweather.weather.urls', 'weather'),
         namespace='weather'
     )),
-    path('extensions/', include(
-        ('blueweather.plugins.urls', 'extensions'),
-        namespace='extensions'
+    path('plugins/', include(
+        ('blueweather.plugins.urls', 'plugins'),
+        namespace='plugins'
     )),
     path('api/', include(
         ('blueweather.api.urls', 'api'),

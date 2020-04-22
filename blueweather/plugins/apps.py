@@ -6,4 +6,4 @@ class ExtensionsConfig(AppConfig):
     label = 'blueweather.plugins'
     verbose_name = 'Plugins'
     icon = 'fas fa-puzzle-piece'
-    route = 'extensions:extensions'
+    route = 'plugins:index'

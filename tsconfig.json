@@ -1,0 +1,22 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "noEmitOnError": true,
+    "removeComments": true,
+    "sourceMap": false,
+    "target": "ES5",
+    "allowSyntheticDefaultImports": true,
+    "module": "none",
+    "typeRoots": [
+      "node_modules/vue/types/",
+      "node_modules/@types"
+    ]
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "include": [
+    "**/*"
+  ]
+}

@@ -2,53 +2,21 @@
 
 {% block content %}
 <div class="col-xl-6 col-lg-8">
-  <div class="card shadow mb-4">
+  <div class="card shadow mb-4" id="plugin-list">
     <!-- Card Header -->
     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
       <h6 class="m-0 font-weight-bold text-primary">Installed Extensions</h6>
     </div>
     <!-- Card Body -->
     <div class="card-body">
-      <div id="accordion">
-      {% for name, ext in extensions.items() %}
-        <div class="card">
-          <div class="card-header">
-            <h5 class="mb-0" id="heading{{ name }}">
-              <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse{{ name }}" aria-expanded="false" aria-controls="collapse{{ name }}">
-                {{ ext.human_name }}
-                {% if ext.builtin %}
-                  <span class="badge badge-secondary">builtin</span>
-                {% endif %}
-              </button>
-            </h5>
-          </div>
-          <div id="collapse{{ name }}" class="collapse" aria-labelledby="heading{{ name }}" data-parent="#accordion">
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item">
-                <p>{{ ext.description }}</p>
-                {% if ext.author %}
-                  <p>Author: <span>{{ ext.author }}</span></p>
-                {% endif %}
-                {% if ext.url %}
-                  <p>Homepage: <a href="{{ ext.url }}">{{ ext.url }}</a></p>
-                {% endif %}
-              </li>
-            </ul>
-            <div class="card-body">
-              <h6>Entry Points</h6>
-              <ul>
-              {% for point in ext.entrypoints %}
-                <li>
-                  <h6>{{ point }}</h6>
-                </li>
-              {% endfor %}
-              </ul>
-            </div>
-          </div>
-        </div>
-      {% endfor %}
-      </div>
+
+    <div class="card-body">
+      <plugin-list></plugin-list>
     </div>
   </div>
 </div>
 {% endblock content %}
+
+{% block scripts %}
+<script src="{{ static("plugins/plugin_list.js") }}"></script>
+{% endblock scripts %}

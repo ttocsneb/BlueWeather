@@ -50,7 +50,7 @@ as a front-end. To serve Vue, NPM will be used.
 * [X] Setup Django Framework
   * [ ] Setup Plugin Django Apps
 * [X] Setup NPM
-* [ ] Setup Vue
+* [X] Setup Vue
 
 ### Apps
 
