@@ -2,6 +2,21 @@ from marshmallow import Schema
 from stevedore.extension import Extension, ExtensionManager
 from stevedore.dispatch import DispatchExtensionManager
 
+prettyNames = {
+    "blueweather.plugins.plugin": "Plugin-Info",
+    "blueweather.plugins.weather": "Weather",
+    'blueweather.plugins.django': "Web-App",
+    'blueweather.plugins.startup': "Startup",
+    'blueweather.plugins.settings': "Settings",
+    'blueweather.plugins.unitconv': "Unit-Conversion",
+    'blueweather.plugins.api': "ReST-API"
+}
+builtins = [
+    'imperialConverter',
+    'metricConverter',
+    'dummyWeather'
+]
+
 
 def strip_name(tup: tuple):
     return map(lambda x: x[1], tup)
@@ -57,6 +72,19 @@ class DjangoApp:
         if isinstance(data, tuple):
             return ext.name, data[0], data[1]
         return ext.name, data, data.replace('/', '.')
+
+
+class API:
+    @staticmethod
+    def allApiPatterns(man: ExtensionManager) -> list:
+        patterns = list()
+        for ext in man.extensions:
+            patterns.extend(API.get_api_urlpatterns(ext)[1])
+        return patterns
+
+    @staticmethod
+    def get_api_urlpatterns(ext: Extension) -> (str, list):
+        return ext.name, ext.obj.get_api_urlpatterns()
 
 
 class Settings:

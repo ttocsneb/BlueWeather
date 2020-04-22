@@ -82,7 +82,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'blueweather.weather',
     'blueweather.accounts',
-    'blueweather.extensions'
+    'blueweather.plugins',
+    'blueweather.api'
 ]
 
 INSTALLED_APPS.extend(plugin_map.DjangoApp.getApps(EXTENSIONS.djangoApp))
@@ -100,7 +101,7 @@ SIDEBAR = CONFIG.web.sidebar or [
     },
     {
         "category": "item",
-        "value": "blueweather.extensions"
+        "value": "blueweather.plugins"
     },
     {
         "category": "divider"

@@ -3,5 +3,10 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name='extensions'),
-    path("plugins", views.plugin_list, name='plugin_list')
 ]
+
+
+def get_api_urlpatterns():
+    return [
+        path("list", views.plugin_list, name='plugin_list')
+    ]

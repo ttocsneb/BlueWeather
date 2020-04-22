@@ -2,8 +2,8 @@ from django.apps import AppConfig
 
 
 class ExtensionsConfig(AppConfig):
-    name = 'blueweather.extensions'
-    label = 'blueweather.extensions'
-    verbose_name = 'Extensions'
+    name = 'blueweather.plugins'
+    label = 'blueweather.plugins'
+    verbose_name = 'Plugins'
     icon = 'fas fa-puzzle-piece'
     route = 'extensions:extensions'

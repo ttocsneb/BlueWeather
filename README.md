@@ -123,11 +123,13 @@ processing, django sub-app, and possibly more I haven't yet thought of.
   * [X] Create Unit-Conversion Extension
     * [X] Implement it
     * [X] Add Testing
-  * [ ] Create API Extension
-    * [ ] Implement it
+  * [X] Create API Extension
+    * [X] Implement it
     * [ ] Add Testing
 * [ ] Add plugin hooks (_Ability for plugins to interact with other plugins_)
-* [ ] Create Plugin Management App
+* [X] Create Plugin Management App
+  * [ ] View list of plugins
+  * [ ] Disable/enable plugins
   * [ ] Download and install plugins
 * [ ] Create Integrated Plugins (_Plugins that are built in to BlueWeather that
 use extensions_)

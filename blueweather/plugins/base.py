@@ -84,6 +84,34 @@ class DjangoApp(metaclass=abc.ABCMeta):
         """
 
 
+class API(metaclass=abc.ABCMeta):
+    """
+    An Extension that allows for ReST API calls
+    """
+
+    @abc.abstractmethod
+    def get_api_urlpatterns(self):
+        """
+        get a list of url patterns for the api
+
+        the patterns should use `django.urls` patterns such as path
+
+        example:
+
+        >>> from django.urls import path
+        >>> from . import views
+        >>> pattern = [
+                path("data/", views.data, name="data")
+            ]
+
+        The namespace of the urls will be api:<extensionName>, so the name of
+        a path will be api:<extensionName>:<pathName>
+
+        Using the example above, assuming the extension name is 'extension',
+        the full url name of data will be `api:extension:data`
+        """
+
+
 class Settings(metaclass=abc.ABCMeta):
     """
     Be able to interact with the settings for the plugin
