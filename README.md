@@ -128,7 +128,7 @@ processing, django sub-app, and possibly more I haven't yet thought of.
     * [ ] Add Testing
 * [ ] Add plugin hooks (_Ability for plugins to interact with other plugins_)
 * [X] Create Plugin Management App
-  * [ ] View list of plugins
+  * [X] View list of plugins
   * [ ] Disable/enable plugins
   * [ ] Download and install plugins
 * [ ] Create Integrated Plugins (_Plugins that are built in to BlueWeather that

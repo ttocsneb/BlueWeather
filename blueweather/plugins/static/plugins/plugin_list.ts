@@ -1,5 +1,6 @@
 /// <reference types="vue" />
 /// <reference types="jquery" />
+/// <reference types="lodash" />
 
 interface PluginItem {
   human_name: string;
@@ -10,19 +11,17 @@ interface PluginItem {
   builtin: boolean;
 }
 type PluginList = {[key: string]: PluginItem}
+interface PluginResponse {
+  plugins: PluginList;
+  page: number;
+  items: number;
+  pages: number;
+  total: number;
+}
 
 const plugin_list_component = Vue.extend({
-  data: function name() {
-    var extensions: PluginList = {};
-    return {
-      extensions: extensions
-    };
-  },
-  beforeMount: function () {
-    const _this = this;
-    $.ajax("/api/plugins/list").done(function name(data:string) {
-      _this.extensions = data;
-    });
+  props: {
+    extensions: Object,
   },
   template: `
 <div id="plugin-list-accordion">
@@ -59,7 +58,63 @@ const plugin_list_component = Vue.extend({
 
 var plugin_list = new Vue({
   el: '#plugin-list',
+  data: function name() {
+    return {
+      extensions: {},
+      pages: 0,
+      page: 0,
+      total: 0,
+      items: 0,
+      pageSize: 10
+    }
+  },
   components: {
     'plugin-list': plugin_list_component
+  },
+  beforeMount: function () {
+    this.getData();
+  },
+  methods: {
+    getData: function(page: number = 0) {
+      const _this = this;
+      $.ajax({
+        url: "/api/plugins/list",
+        type: "get",
+        data: {
+          page: page,
+          items: _this.pageSize
+        },
+        success: function(data: PluginResponse) {
+          _this.extensions = data.plugins;
+          _this.page = data.page;
+          _this.items = data.items;
+          _this.pages = data.pages;
+          _this.total = data.total;
+        }
+      })
+    },
+    first: function() {
+      this.getData(0);
+    },
+    last: function() {
+      this.getData(this.pages - 1);
+    },
+    next: function() {
+      this.getData(Math.min(this.page + 1, this.pages - 1));
+    },
+    prev: function() {
+      this.getData(Math.max(this.page - 1, 0))
+    }
+  },
+  computed: {
+    pageList: function() {
+      const display = 5;
+      const half = Math.floor(display / 2);
+      // Get the first number of the index
+      const start = Math.min(Math.max(this.page - half, 0), this.page + half, Math.max(this.pages - display, 0));
+      // get the size of the index
+      const size = Math.min(display, this.pages - start);
+      return _.range(start, start + size);
+    }
   }
 });
