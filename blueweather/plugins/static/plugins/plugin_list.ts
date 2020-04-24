@@ -9,6 +9,8 @@ interface PluginItem {
   url: string;
   entrypoints: Array<string>;
   builtin: boolean;
+  enabled: boolean;
+  disableable: boolean;
 }
 type PluginList = {[key: string]: PluginItem}
 interface PluginResponse {
@@ -21,35 +23,74 @@ interface PluginResponse {
 
 const plugin_list_component = Vue.extend({
   props: {
-    extensions: Object,
+    extension: Object,
+    name: String
+  },
+  computed: {
+    disableValue: function() {
+      return this.extension.enabled ? "Disable" : "Enable";
+    },
+    disableClass: function() {
+      return {
+        'btn-warning': this.extension.enabled,
+        'btn-success': !this.extension.enabled
+      }
+    },
+    badges: function() {
+      type Badges = {[key: string]: Array<string>};
+      var badges:Badges = {};
+      if(!this.extension.enabled) {
+        badges.disabled = ["badge-warning"];
+      }
+      if(this.extension.builtin) {
+        badges.builtin = ["badge-secondary"];
+      }
+      return badges;
+    }
+  },
+  methods: {
+    toggle: function() {
+      const action = this.extension.enabled ? "disable" : "enable";
+      alert("Cannot " + action + " '" + this.extension.human_name + "' plugin, because this function is not yet implemented :/");
+    }
   },
   template: `
-<div id="plugin-list-accordion">
-  <div class="card" v-for="(ext, name) in extensions">
-    <div class="card-header">
-      <h5 class="mb-0" :id="'heading' + name">
-              <button class="btn btn-link collapsed" data-toggle="collapse" :data-target="'#collapse' + name" aria-expanded="false" :aria-controls="'collapse' + name">
-                {{ ext.human_name }}
-                <span v-if="ext.builtin" class="badge badge-secondary">builtin</span>
-              </button>
-      </h5>
-    </div>
-    <div :id="'collapse' + name" class="collapse" :aria-labelledby="'heading' + name" data-parent="#plugin-list-accordion">
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item">
-          <p>{{ ext.description }}</p>
-          <p v-if="ext.author != null">Author: {{ ext.author }}</p>
-          <p v-if="ext.url != null"><a :href="ext.url">{{ ext.url }}</a></p>
-        </li>
-      </ul>
-      <div class="card-body">
+<div class="card">
+  <div class="card-header d-flex flex-row align-items-center justify-content-between p-1 pr-4">
+    <h5 :id="'heading' + name" class="my-auto">
+      <button class="btn btn-link collapsed text-left" data-toggle="collapse" :data-target="'#collapse' + name" aria-expanded="false" :aria-controls="'collapse' + name">
+        {{ extension.human_name }}
+      </button>
+    </h5>
+    <ul class="nav nav-tabs card-header-tabs pull-right my-auto text-right" role="tablist">
+      <li class="nav-item" v-for="(cls, name) in badges">
+        <span :class="cls" class="ml-1 badge">{{ name }}</span>
+      </li>
+    </ul>
+  </div>
+  <div :id="'collapse' + name" class="collapse" :aria-labelledby="'heading' + name" data-parent="#plugin-list-accordion">
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">
+        <p>{{ extension.description }}</p>
+        <p v-if="extension.author != null">Author: {{ extension.author }}</p>
+        <p v-if="extension.url != null"><a :href="extension.url">{{ extension.url }}</a></p>
+      </li>
+      <li v-if="extension.entrypoints.length > 0" class="list-group-item">
         <h6>Entry Points</h6>
         <ul>
-          <li v-for="point in ext.entrypoints">
+          <li v-for="point in extension.entrypoints">
             <h6>{{ point }}</h6>
           </li>
         </ul>
-      </div>
+      </li>
+    </ul>
+    <div class="card-body">
+      <form class="form form-inline pull-right">
+        <div class="form-group">
+          <button v-if="extension.disableable" @click="toggle" type="button" class="form-control btn" :class="disableClass" >{{ disableValue }}</button>
+          <button v-else type="button" class="form-control btn disabled" :class="disableClass" disabled>{{ disableValue }}</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

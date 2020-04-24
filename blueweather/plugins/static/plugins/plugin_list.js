@@ -1,8 +1,36 @@
 var plugin_list_component = Vue.extend({
     props: {
-        extensions: Object,
+        extension: Object,
+        name: String
     },
-    template: "\n<div id=\"plugin-list-accordion\">\n  <div class=\"card\" v-for=\"(ext, name) in extensions\">\n    <div class=\"card-header\">\n      <h5 class=\"mb-0\" :id=\"'heading' + name\">\n              <button class=\"btn btn-link collapsed\" data-toggle=\"collapse\" :data-target=\"'#collapse' + name\" aria-expanded=\"false\" :aria-controls=\"'collapse' + name\">\n                {{ ext.human_name }}\n                <span v-if=\"ext.builtin\" class=\"badge badge-secondary\">builtin</span>\n              </button>\n      </h5>\n    </div>\n    <div :id=\"'collapse' + name\" class=\"collapse\" :aria-labelledby=\"'heading' + name\" data-parent=\"#plugin-list-accordion\">\n      <ul class=\"list-group list-group-flush\">\n        <li class=\"list-group-item\">\n          <p>{{ ext.description }}</p>\n          <p v-if=\"ext.author != null\">Author: {{ ext.author }}</p>\n          <p v-if=\"ext.url != null\"><a :href=\"ext.url\">{{ ext.url }}</a></p>\n        </li>\n      </ul>\n      <div class=\"card-body\">\n        <h6>Entry Points</h6>\n        <ul>\n          <li v-for=\"point in ext.entrypoints\">\n            <h6>{{ point }}</h6>\n          </li>\n        </ul>\n      </div>\n    </div>\n  </div>\n</div>\n"
+    computed: {
+        disableValue: function () {
+            return this.extension.enabled ? "Disable" : "Enable";
+        },
+        disableClass: function () {
+            return {
+                'btn-warning': this.extension.enabled,
+                'btn-success': !this.extension.enabled
+            };
+        },
+        badges: function () {
+            var badges = {};
+            if (!this.extension.enabled) {
+                badges.disabled = ["badge-warning"];
+            }
+            if (this.extension.builtin) {
+                badges.builtin = ["badge-secondary"];
+            }
+            return badges;
+        }
+    },
+    methods: {
+        toggle: function () {
+            var action = this.extension.enabled ? "disable" : "enable";
+            alert("Cannot " + action + " '" + this.extension.human_name + "' plugin, because this function is not yet implemented :/");
+        }
+    },
+    template: "\n<div class=\"card\">\n  <div class=\"card-header d-flex flex-row align-items-center justify-content-between p-1 pr-4\">\n    <h5 :id=\"'heading' + name\" class=\"my-auto\">\n      <button class=\"btn btn-link collapsed text-left\" data-toggle=\"collapse\" :data-target=\"'#collapse' + name\" aria-expanded=\"false\" :aria-controls=\"'collapse' + name\">\n        {{ extension.human_name }}\n      </button>\n    </h5>\n    <ul class=\"nav nav-tabs card-header-tabs pull-right my-auto text-right\" role=\"tablist\">\n      <li class=\"nav-item\" v-for=\"(cls, name) in badges\">\n        <span :class=\"cls\" class=\"ml-1 badge\">{{ name }}</span>\n      </li>\n    </ul>\n  </div>\n  <div :id=\"'collapse' + name\" class=\"collapse\" :aria-labelledby=\"'heading' + name\" data-parent=\"#plugin-list-accordion\">\n    <ul class=\"list-group list-group-flush\">\n      <li class=\"list-group-item\">\n        <p>{{ extension.description }}</p>\n        <p v-if=\"extension.author != null\">Author: {{ extension.author }}</p>\n        <p v-if=\"extension.url != null\"><a :href=\"extension.url\">{{ extension.url }}</a></p>\n      </li>\n      <li v-if=\"extension.entrypoints.length > 0\" class=\"list-group-item\">\n        <h6>Entry Points</h6>\n        <ul>\n          <li v-for=\"point in extension.entrypoints\">\n            <h6>{{ point }}</h6>\n          </li>\n        </ul>\n      </li>\n    </ul>\n    <div class=\"card-body\">\n      <form class=\"form form-inline pull-right\">\n        <div class=\"form-group\">\n          <button v-if=\"extension.disableable\" @click=\"toggle\" type=\"button\" class=\"form-control btn\" :class=\"disableClass\" >{{ disableValue }}</button>\n          <button v-else type=\"button\" class=\"form-control btn disabled\" :class=\"disableClass\" disabled>{{ disableValue }}</button>\n        </div>\n      </form>\n    </div>\n  </div>\n</div>\n"
 });
 var plugin_list = new Vue({
     el: '#plugin-list',

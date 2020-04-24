@@ -190,6 +190,8 @@ class Commands(Settings):
         self.restart = restart or ''
         self.shutdown = shutdown or ''
 
+        self._init = False
+
 
 class Config(Settings):
     _required = ["secret_key"]

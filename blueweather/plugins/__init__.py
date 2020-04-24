@@ -16,6 +16,7 @@ class ExtensionsSingleton:
         self._logger = logging.getLogger(__name__)
 
         self.failed_plugins = list()
+        self._disabled_plugins = config.extensions.disabled
 
         def check(ext: Extension):
             return self._check_extension(config, ext)
@@ -25,9 +26,8 @@ class ExtensionsSingleton:
             config.extensions.weather_driver,
             on_load_failure_callback=self._on_load_fail
         )
-        self.plugins = EnabledExtensionManager(
+        self.plugins = ExtensionManager(
             "blueweather.plugins.plugin",
-            check_func=check,
             on_load_failure_callback=self._on_load_fail
         )
         self.djangoApp = EnabledExtensionManager(
@@ -86,7 +86,9 @@ class ExtensionsSingleton:
                     for man, ext in exts.items()
                     if man != 'blueweather.plugins.plugin'
                 ],
-                'builtin': desc.builtin
+                'builtin': desc.builtin,
+                'enabled': name not in self._disabled_plugins,
+                'disableable': name != self.weather.extensions[0].name
             }
         return data
 
@@ -136,8 +138,8 @@ class ExtensionsSingleton:
             try:
                 extension.obj = extension.plugin()
                 objects[extension.plugin] = extension.obj
-                #  self._logger.info("Loaded plugin '%s'", extension.name)
-                self._logger.info("Loaded Plugin '%s'" % extension.name)
+                if extension.name not in self._disabled_plugins:
+                    self._logger.info("Loaded Plugin '%s'", extension.name)
             except Exception as exc:
                 self._on_load_fail(None, extension, exc)
 

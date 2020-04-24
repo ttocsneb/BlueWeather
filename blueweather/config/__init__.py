@@ -21,6 +21,8 @@ class Config(objects.Config):
         self.secret_key = obj.secret_key
         self.time_zone = obj.time_zone
         self.modified = obj.modified
+        self.extensions = obj.extensions
+        self.commands = obj.commands
 
     def set_defaults(self):
         self.__apply(objects.Config())
