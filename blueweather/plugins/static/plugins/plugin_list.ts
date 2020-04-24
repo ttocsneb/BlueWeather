@@ -62,11 +62,13 @@ const plugin_list_component = Vue.extend({
         {{ extension.human_name }}
       </button>
     </h5>
-    <ul class="nav nav-tabs card-header-tabs pull-right my-auto text-right" role="tablist">
-      <li class="nav-item" v-for="(cls, name) in badges">
-        <span :class="cls" class="ml-1 badge">{{ name }}</span>
-      </li>
-    </ul>
+    <div class="d-flex justify-content-end">
+      <ul class="d-inline d-sm-flex nav nav-tabs card-header-tabs pull-right my-auto" role="tablist">
+        <li class="nav-item text-right text-sm-left" v-for="(cls, name) in badges">
+          <span :class="cls" class="ml-1 badge">{{ name }}</span>
+        </li>
+      </ul>
+    </div>
   </div>
   <div :id="'collapse' + name" class="collapse" :aria-labelledby="'heading' + name" data-parent="#plugin-list-accordion">
     <ul class="list-group list-group-flush">
