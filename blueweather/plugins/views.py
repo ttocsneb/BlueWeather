@@ -2,9 +2,12 @@ from django.shortcuts import render
 from django.http.response import JsonResponse
 from django.http.request import HttpRequest
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from blueweather.api.decorators import AuthorizationRequired
 import math
 
 
+@login_required
 def index(request):
     return render(request, 'plugins/plugins.html', context={
         'name': 'Plugins',
@@ -12,6 +15,7 @@ def index(request):
     })
 
 
+@AuthorizationRequired
 def plugin_list(request: HttpRequest):
     plugins_raw = settings.EXTENSIONS.getPluginList()
 

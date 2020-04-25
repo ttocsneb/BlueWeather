@@ -54,6 +54,7 @@ def parse_sidebar(obj: dict):
         item['path'] = get_attr(item['value'], 'route') \
             or get_attr(item['value'], 'name') + ':index'
         item['item'] = True
+        item['login_required'] = get_attr(item['value'], 'login_required')
     else:
         item['item'] = False
     item['header'] = item['category'] == 'header'

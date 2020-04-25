@@ -80,25 +80,27 @@
 
 {% macro sidebarParse(request, item, invert_sub=False) -%}
   {% set value = item.value %}
-  {% if item.item %}
-    {# Check if the item is the active item #}
-    {% set name = get_or_call(request, value.display_name or value.verbose_name) %}
-    {% if value.sidebar_items is defined %}
-      {% set sidebar_items = get_or_call(request, value.sidebar_items) %}
-    {% else %}
-      {% set sidebar_items = None %}
+  {% if (item.login_required and request.user.is_authenticated) or not item.login_required %}
+    {% if item.item %}
+      {# Check if the item is the active item #}
+      {% set name = get_or_call(request, value.display_name or value.verbose_name) %}
+      {% if value.sidebar_items is defined %}
+        {% set sidebar_items = get_or_call(request, value.sidebar_items) %}
+      {% else %}
+        {% set sidebar_items = None %}
+      {% endif %}
+      {% if sidebar_items %}
+        {# Parse sub items #}
+        {{ sidebarMenu(request, name, value.name.replace('.', '-'), value.icon, value.sidebar_items, item.active, invert=invert_sub) }}
+      {% else %}
+        {# Parse Single Item #}
+        {% set item_url = url(get_or_call(request, item.path)) %}
+        {{ sidebarItem(name, item_url, get_or_call(request, value.icon), item.active(request)) }}
+      {% endif %}
+    {% elif item.header %}
+      {{ sidebarHeading(value, "my-3") }}
+    {% elif item.divider %}
+      {{ sidebarDivider("my-0") }}
     {% endif %}
-    {% if sidebar_items %}
-      {# Parse sub items #}
-      {{ sidebarMenu(request, name, value.name.replace('.', '-'), value.icon, value.sidebar_items, item.active, invert=invert_sub) }}
-    {% else %}
-      {# Parse Single Item #}
-      {% set item_url = url(get_or_call(request, item.path)) %}
-      {{ sidebarItem(name, item_url, get_or_call(request, value.icon), item.active(request)) }}
-    {% endif %}
-  {% elif item.header %}
-    {{ sidebarHeading(value, "my-3") }}
-  {% elif item.divider %}
-    {{ sidebarDivider("my-0") }}
   {% endif %}
 {%- endmacro%}

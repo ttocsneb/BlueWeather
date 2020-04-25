@@ -12,7 +12,7 @@ def _print_attrs(obj, *args, join="\n  "):
     return join + join.join(split)
 
 
-def generate_secret():
+def generate_key(alphabet, length=50):
     """
     > Inspired from https://gist.github.com/ndarville/3452907
 
@@ -23,12 +23,19 @@ def generate_secret():
     _logger.info("Generating Secret Key..")
 
     SECRET_KEY = ''.join(
-        [random.SystemRandom().choice(
-            'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)')
-         for i in range(50)
+        [random.SystemRandom().choice(alphabet)
+         for i in range(length)
          ]
     )
     return SECRET_KEY
+
+
+def generate_secret():
+    return generate_key('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)')
+
+
+def generate_api():
+    return generate_key('abcdefghijklmnopqrstuvwxyz0123456789-_', length=21)
 
 
 class Settings:
@@ -116,13 +123,15 @@ class Web(Settings):
     _required = []
     _defaults = dict(
         static_url="/static/",
-        allowed_hosts=[]
+        allowed_hosts=[],
+        sidebar=None
     )
     _modifiable = []
 
     def __init__(self, static_url: str = None, databases: dict = None,
                  password_validation: dict = None, allowed_hosts: list = None,
-                 template_globals: dict = None, sidebar: list = None):
+                 template_globals: dict = None, sidebar: list = None,
+                 api_key: str = None):
         super().__init__()
         self.static_url = static_url or self._defaults['static_url']
 
@@ -150,6 +159,11 @@ class Web(Settings):
             self._modified = True
 
         self.sidebar = sidebar
+
+        self.api_key = api_key
+        if self.api_key is None:
+            self.api_key = generate_api()
+            self._modified = True
 
         self._init = False
 

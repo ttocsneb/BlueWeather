@@ -42,8 +42,11 @@ class WebSchema(Schema):
     strip_defaults = post_dump(fn=customFields.strip_defaults)
 
     sidebar = customFields.NamedList(
-        fields.Nested(SidebarSchema), "category", "value", value_only=True
+        fields.Nested(SidebarSchema), "category", "value", value_only=True,
+        allow_none=True
     )
+
+    api_key = fields.String()
 
     @post_load
     def makeWeb(self, data, **kwargs):

@@ -7,3 +7,4 @@ class ExtensionsConfig(AppConfig):
     verbose_name = 'Plugins'
     icon = 'fas fa-puzzle-piece'
     route = 'plugins:index'
+    login_required = True
