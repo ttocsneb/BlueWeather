@@ -1,6 +1,8 @@
-from django.http import HttpResponseForbidden
+from django.core.exceptions import PermissionDenied
 from django.http.request import HttpRequest
 from django.conf import settings
+
+# TODO add csrf validation for logged-in users
 
 
 def AuthorizationRequired(fn: callable, fail_view: callable = None
@@ -38,6 +40,6 @@ def AuthorizationRequired(fn: callable, fail_view: callable = None
 
         if fail_view is not None:
             return fail_view(request)
-        raise HttpResponseForbidden()
+        raise PermissionDenied
 
     return CheckAuthorization
