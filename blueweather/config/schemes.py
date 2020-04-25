@@ -1,5 +1,4 @@
-from marshmallow import (Schema, fields, post_dump, post_load, pre_dump,
-                         validate)
+from marshmallow import Schema, fields, post_dump, post_load, pre_dump
 
 from . import fields as customFields
 from . import objects
@@ -29,6 +28,19 @@ class SidebarSchema(Schema):
     value = fields.String()
 
 
+class APIKeySchema(Schema):
+    key = customFields.APIKey()
+    name = fields.String()
+    permissions = fields.List(fields.String())
+
+    get_object = pre_dump(fn=customFields.get_object)
+    strip_defaults = post_dump(fn=customFields.strip_defaults)
+
+    @post_load
+    def makeAPIKey(self, data, **kwargs):
+        return objects.APIKey(**data)
+
+
 class WebSchema(Schema):
     static_url = fields.String()
     databases = fields.Dict(fields.String(), customFields.Database())
@@ -38,15 +50,15 @@ class WebSchema(Schema):
     allowed_hosts = fields.List(fields.String(), allow_none=True)
     template_globals = fields.Dict(fields.String(), fields.String())
 
-    get_object = pre_dump(fn=customFields.get_object)
-    strip_defaults = post_dump(fn=customFields.strip_defaults)
-
     sidebar = customFields.NamedList(
         fields.Nested(SidebarSchema), "category", "value", value_only=True,
         allow_none=True
     )
 
-    api_key = fields.String()
+    api_keys = fields.List(fields.Nested(APIKeySchema))
+
+    get_object = pre_dump(fn=customFields.get_object)
+    strip_defaults = post_dump(fn=customFields.strip_defaults)
 
     @post_load
     def makeWeb(self, data, **kwargs):

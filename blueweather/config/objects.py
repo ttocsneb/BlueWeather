@@ -35,7 +35,7 @@ def generate_secret():
 
 
 def generate_api():
-    return generate_key('abcdefghijklmnopqrstuvwxyz0123456789-_', length=21)
+    return generate_key('1234567890abcdef', length=32)
 
 
 class Settings:
@@ -119,19 +119,97 @@ class Database(Settings, dict):
         return final
 
 
+class APIKey(Settings):
+    _required = ['key', 'name']
+    _defaults = dict(
+        name='default',
+        permissions=[]
+    )
+    _modifiable = []
+
+    def __init__(self, key: str = None, name: str = None,
+                 permissions: list = None):
+        super().__init__()
+
+        self.key = key
+        if self.key is None:
+            self.key = generate_api()
+            self._modified = True
+
+        if name is None:
+            self._modified = True
+        self.name = name or self._defaults['name']
+        self.permissions = permissions or self._defaults['permissions']
+
+    def check_api(self, key: str) -> bool:
+        """
+        Check if the supplied api key matches the stored api key
+        """
+        from . import fields
+        if not key:
+            return False
+        key = fields.APIKey()._deserialize(str(key), None, None)
+        return key == self.key
+
+    def __str__(self):
+        from . import fields
+        return fields.APIKey()._serialize(str(self.key), None, None)
+
+    def __repr__(self):
+        return "<APIKey(name='{name}', permissions={permissions})>".format(
+            name=self.name, permissions=self.permissions
+        )
+
+
+class APIList(list):
+    def __init__(self, iterable: list = None):
+        if iterable is None:
+            iterable = [APIKey()]
+        super().__init__(iterable)
+
+    def find(self, key: str) -> APIKey:
+        """
+        Find the key object from the key
+
+        :raises KeyError: when no key object is found
+        """
+        for k in self:
+            if k.check_api(key):
+                return k
+        raise KeyError
+
+    def get(self, key: str, default=None) -> APIKey:
+        """
+        Like find, but will not through a key error
+        """
+        try:
+            return self.find(key)
+        except KeyError:
+            return default
+
+    @property
+    def modified(self):
+        return any(map(lambda x: x.modified, self))
+
+    @modified.setter
+    def modified(self, value):
+        for i in self:
+            i.modified = value
+
+
 class Web(Settings):
-    _required = []
+    _required = ['api_keys']
     _defaults = dict(
         static_url="/static/",
         allowed_hosts=[],
         sidebar=None
     )
-    _modifiable = []
+    _modifiable = ['api_keys']
 
     def __init__(self, static_url: str = None, databases: dict = None,
                  password_validation: dict = None, allowed_hosts: list = None,
                  template_globals: dict = None, sidebar: list = None,
-                 api_key: str = None):
+                 api_keys: str = None):
         super().__init__()
         self.static_url = static_url or self._defaults['static_url']
 
@@ -159,11 +237,7 @@ class Web(Settings):
             self._modified = True
 
         self.sidebar = sidebar
-
-        self.api_key = api_key
-        if self.api_key is None:
-            self.api_key = generate_api()
-            self._modified = True
+        self.api_keys = APIList(api_keys)
 
         self._init = False
 

@@ -1,10 +1,14 @@
-from django.shortcuts import render
-from django.http.response import JsonResponse
-from django.http.request import HttpRequest
+import math
+
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from blueweather.api.decorators import AuthorizationRequired
-import math
+from django.http.request import HttpRequest
+from django.http.response import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.shortcuts import render
+
+from blueweather.api.decorators import csrf_authorization_required
 
 
 @login_required
@@ -15,7 +19,8 @@ def index(request):
     })
 
 
-@AuthorizationRequired
+@csrf_authorization_required
+@require_POST
 def plugin_list(request: HttpRequest):
     plugins_raw = settings.EXTENSIONS.getPluginList()
 

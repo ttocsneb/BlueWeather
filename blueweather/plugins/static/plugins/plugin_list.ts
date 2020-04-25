@@ -122,7 +122,7 @@ var plugin_list = new Vue({
       const _this = this;
       $.ajax({
         url: "/api/plugins/list",
-        type: "get",
+        type: "post",
         data: {
           page: page,
           items: _this.pageSize
