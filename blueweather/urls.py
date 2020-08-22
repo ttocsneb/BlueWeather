@@ -17,7 +17,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 
-from .plugins import map as plugin_map
+from .plugins import dao
 
 handler404 = 'blueweather.views.pageNotFound'
 handler403 = 'blueweather.views.forbidden'
@@ -26,23 +26,23 @@ handler500 = 'blueweather.views.internalServerError'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('blueweather.accounts.urls')),
+    path('accounts/', include('blueweather.apps.accounts.urls')),
     path('', include(
-        ('blueweather.weather.urls', 'weather'),
+        ('blueweather.apps.weather.urls', 'weather'),
         namespace='weather'
     )),
     path('plugins/', include(
-        ('blueweather.plugins.urls', 'plugins'),
+        ('blueweather.apps.plugins.urls', 'plugins'),
         namespace='plugins'
     )),
     path('api/', include(
-        ('blueweather.api.urls', 'api'),
+        ('blueweather.apps.api.urls', 'api'),
         namespace='api'
     ))
 ]
 
 # Add plugin urls
 for ext in settings.EXTENSIONS.djangoApp:
-    _, url, name = plugin_map.DjangoApp.get_url_info(ext)
-    _, path = plugin_map.DjangoApp.get_app_name(ext)
+    _, url, name = dao.DjangoApp.get_url_info(ext)
+    _, path = dao.DjangoApp.get_app_name(ext)
     urlpatterns.append(path(url, include((path, name), name)))

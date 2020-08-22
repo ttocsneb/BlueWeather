@@ -15,7 +15,7 @@ import os
 
 from .config import Config
 from .plugins import ExtensionsSingleton
-from .plugins import map as plugin_map
+from .plugins import dao
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -61,7 +61,7 @@ EXTENSIONS = ExtensionsSingleton(CONFIG, True)
 
 
 # Unit Conversions
-UNITS = plugin_map.UnitConversion.all_conversions(EXTENSIONS.unitConversion)
+UNITS = dao.UnitConversion.all_conversions(EXTENSIONS.unitConversion)
 
 
 # Quick-start development settings - unsuitable for production
@@ -80,13 +80,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'blueweather.weather',
-    'blueweather.accounts',
-    'blueweather.plugins',
-    'blueweather.api'
+    'blueweather.apps.weather',
+    'blueweather.apps.accounts',
+    'blueweather.apps.plugins',
+    'blueweather.apps.api'
 ]
 
-INSTALLED_APPS.extend(plugin_map.DjangoApp.getApps(EXTENSIONS.djangoApp))
+INSTALLED_APPS.extend(dao.DjangoApp.getApps(EXTENSIONS.djangoApp))
 
 
 # A list of apps that should be linked in the sidebar
@@ -97,18 +97,18 @@ SIDEBAR = CONFIG.web.sidebar or [
     },
     {
         "category": "item",
-        "value": "blueweather.weather"
+        "value": "blueweather.apps.weather"
     },
     {
         "category": "item",
-        "value": "blueweather.plugins"
+        "value": "blueweather.apps.plugins"
     },
     {
         "category": "divider"
     },
     {
         "category": "item",
-        "value": "blueweather.accounts"
+        "value": "blueweather.apps.accounts"
     }
 ]
 

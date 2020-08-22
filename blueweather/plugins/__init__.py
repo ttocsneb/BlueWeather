@@ -6,9 +6,7 @@ from stevedore.dispatch import DispatchExtensionManager
 from stevedore.extension import Extension, ExtensionManager
 
 from blueweather.config import Config
-from . import map as plugin_map
-
-default_app_config = "blueweather.plugins.apps.ExtensionsConfig"
+from . import dao
 
 
 class ExtensionsSingleton:
@@ -77,12 +75,12 @@ class ExtensionsSingleton:
         for name, exts in extensions.items():
             desc = exts['blueweather.plugins.plugin']
             data[name] = {
-                'human_name': plugin_map.Plugin.get_plugin_name(desc),
-                'description': plugin_map.Plugin.get_plugin_description(desc),
-                'author': plugin_map.Plugin.get_plugin_author(desc),
-                'url': plugin_map.Plugin.get_plugin_url(desc),
+                'human_name': dao.Plugin.get_plugin_name(desc),
+                'description': dao.Plugin.get_plugin_description(desc),
+                'author': dao.Plugin.get_plugin_author(desc),
+                'url': dao.Plugin.get_plugin_url(desc),
                 'entrypoints': [
-                    plugin_map.prettyNames[man]
+                    dao.prettyNames[man]
                     for man, ext in exts.items()
                     if man != 'blueweather.plugins.plugin'
                 ],
@@ -131,7 +129,7 @@ class ExtensionsSingleton:
     def _invoke_one(self, extension: Extension, objects: dict):
         if extension.obj is not None:
             return
-        extension.builtin = extension.name in plugin_map.builtins
+        extension.builtin = extension.name in dao.builtins
         if extension.plugin in objects:
             extension.obj = objects[extension.plugin]
         else:

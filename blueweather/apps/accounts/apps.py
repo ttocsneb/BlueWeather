@@ -2,8 +2,8 @@ from django.apps import AppConfig
 
 
 class AccountsConfig(AppConfig):
-    name = 'blueweather.accounts'
-    label = 'blueweather.accounts'
+    name = 'blueweather.apps.accounts'
+    label = 'blueweather.apps.accounts'
     verbose_name = 'Account'
     icon = 'fas fa-user'
 

@@ -4,7 +4,7 @@ from stevedore.extension import Extension
 
 from blueweather.config import objects
 from blueweather.plugins import ExtensionsSingleton
-from blueweather.plugins import map as plugin_map
+from blueweather.plugins import dao
 
 
 class UnitConversionTester(unittest.TestCase):
@@ -30,7 +30,7 @@ class UnitConversionTester(unittest.TestCase):
         )
 
     def convert(self, data, from_t, to_t):
-        return plugin_map.UnitConversion.convert(
+        return dao.UnitConversion.convert(
             self.extensions.unitConversion, data, from_t, to_t
         )[1]
 
@@ -51,7 +51,6 @@ class UnitConversionTester(unittest.TestCase):
         centi_conv = 100
         kilo_conv = 1 / 1000
         milli_conv = 1000
-        hour_conv = 1 / 3600
 
         try:
             # Test distances
@@ -175,4 +174,3 @@ class UnitConversionTester(unittest.TestCase):
             )
         except KeyError as err:
             self.fail(msg="Should not raise exception: %s" % err)
-

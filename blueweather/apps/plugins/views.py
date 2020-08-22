@@ -4,11 +4,10 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http.request import HttpRequest
 from django.http.response import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.shortcuts import render
 
-from blueweather.api.decorators import csrf_authorization_required
+from blueweather.apps.api.decorators import csrf_authorization_required
 
 
 @login_required
