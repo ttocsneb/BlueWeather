@@ -42,7 +42,7 @@ class APIKey(fields.String):
         uuid = self._format(value)
         chunk_size = 8
         chunks = [
-            uuid[i:i+chunk_size] for i in range(0, len(uuid), chunk_size)
+            uuid[i:i + chunk_size] for i in range(0, len(uuid), chunk_size)
         ]
         return super()._serialize('-'.join(chunks), attr, obj, **kwargs)
 

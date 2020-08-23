@@ -54,26 +54,6 @@ class Startup:
         ext.obj.on_shutdown()
 
 
-class DjangoApp:
-    @staticmethod
-    def getApps(man: ExtensionManager) -> list:
-        apps = list()
-        for ext in man.extensions:
-            apps.append(DjangoApp.get_app_name(ext)[1])
-        return apps
-
-    @staticmethod
-    def get_app_name(ext: Extension) -> (str, str):
-        return ext.name, ext.obj.get_app_name()
-
-    @staticmethod
-    def get_url_info(ext: Extension) -> (str, str, str):
-        data = ext.obj.get_url_info()
-        if isinstance(data, tuple):
-            return ext.name, data[0], data[1]
-        return ext.name, data, data.replace('/', '.')
-
-
 class API:
     @staticmethod
     def allApiPatterns(man: ExtensionManager) -> list:

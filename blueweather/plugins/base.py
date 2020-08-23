@@ -57,33 +57,6 @@ class Startup(metaclass=abc.ABCMeta):
         """
 
 
-class DjangoApp(metaclass=abc.ABCMeta):
-    """
-    A Plugin that hosts django web pages
-    """
-
-    @abc.abstractmethod
-    def get_app_name(self) -> str:
-        """
-        Get the import name of the app
-        """
-
-    @abc.abstractclassmethod
-    def get_url_info(self) -> (str, str):
-        """
-        Get the info required to make url patterns
-
-        If the namespace is not provided, the url_base will be used as the
-        namespace
-
-        :return (str url_base, str namespace):
-
-        or
-
-        :return str url_base:
-        """
-
-
 class API(metaclass=abc.ABCMeta):
     """
     An Extension that allows for ReST API calls
@@ -175,13 +148,17 @@ class Weather(metaclass=abc.ABCMeta):
         Collect the current weather
 
         This should be returned as a dictionary of tuples. Each tuple
-        contains the type and value in that order:
+        contains the unit and value in that order:
             >>> {
-                    "temperature": ("temperature", 25.3),
-                    "wind_speed": ("speed", 5.2)
+                    "temperature": ("celsius", 25.3),
+                    "wind_speed": ("meter/second", 5.2)
                 }
 
-        The following is a list of valid types and their unit
+        While a unit does not need to be a standardized unit, it is
+        important that it is a unit accessable to conversions through the
+        UnitConversion extension.
+
+        The following list contains units that are garanteed to be convertable
 
         temperature: celsius
         distance: meter
@@ -196,9 +173,6 @@ class Weather(metaclass=abc.ABCMeta):
         current: ampere
         luminous: candela
 
-        You definitely won't need to use all of them, but they are there for
-        conversions
-
         :return dict(str name, (str type, float value))
         """
 
@@ -207,7 +181,11 @@ class UnitConversion(metaclass=abc.ABCMeta):
     """
     Plugin that can facilitate conversions
 
-    Blueweather is (will be) bundled with a conversion plugin for imperial
+    Blueweather is bundled with a conversion plugin for metric and imperial
+    units.
+
+    It will most likely not be necessary to create a custom UnitConversion
+    Extension, but it is here just in case.
     """
 
     @abc.abstractmethod

@@ -86,11 +86,7 @@ INSTALLED_APPS = [
     'blueweather.apps.api'
 ]
 
-INSTALLED_APPS.extend(dao.DjangoApp.getApps(EXTENSIONS.djangoApp))
-
-
 # A list of apps that should be linked in the sidebar
-# TODO automatically build SIDEBAR
 SIDEBAR = CONFIG.web.sidebar or [
     {
         "category": "divider"
