@@ -77,14 +77,6 @@ const plugin_list_component = Vue.extend({
         <p v-if="extension.author != null">Author: {{ extension.author }}</p>
         <p v-if="extension.url != null"><a :href="extension.url">{{ extension.url }}</a></p>
       </li>
-      <li v-if="extension.entrypoints.length > 0" class="list-group-item">
-        <h6>Entry Points</h6>
-        <ul>
-          <li v-for="point in extension.entrypoints">
-            <h6>{{ point }}</h6>
-          </li>
-        </ul>
-      </li>
     </ul>
     <div class="card-body">
       <form class="form form-inline pull-right">
