@@ -97,38 +97,44 @@ class Settings(metaclass=abc.ABCMeta):
 
         self._settings = dict()
 
-    def get_default_settings(self) -> dict:
+    def settings_serialize(self, obj) -> dict:
         """
-        Get a dictionary of default settings
-        This will be applied to missing keys
-        """
-        return dict()
+        Serialize the settings object into a json serializeable dict.
 
-    def get_required_settings(self) -> dict:
-        """
-        Get a list of required settings that should always be in the config
-        file
-        """
-        return list()
+        This must undo whatever settings_deserialize does
 
-    def get_settings_schema(self) -> Schema:
-        """
-        Get the marshmallow schema for loading and dumping settings
+        :param object obj: settings object
 
-        If none is provided, no processing will be made to the settings
+        :return dict: settings primitives
         """
-        return None
+        return obj
 
-    def on_settings_migrate(self, version: int, settings: dict) -> dict:
+    def settings_deserialize(self, data: dict) -> object:
+        """
+        Deserialize the settings from a dictionary into a custom settings object.
+
+        By default no changes are made, so the default settings object is a
+        dict of primitives.
+
+        I recommend using Marshmallow to deserialize your settings.
+
+        :param dict data: settings dict
+        :return settings object:
+        """
+        return data
+
+    def settings_migrate(self, version: int, settings: dict) -> (int, dict):
         """
         Migrate the settings from an older version to the current version
 
-        :param int version: the version of the settings
-        :param dict settings: the raw loaded settings
+        This function is always run, it is your job to determine if a migration is required.
 
-        :return dict: raw settings of the current version
+        :param int version: the version of the settings
+        :param dict settings: the primative loaded settings
+
+        :return (int, dict): settings version and primative settings after the migration
         """
-        return settings
+        return version, settings
 
     def on_settings_initialized(self):
         """

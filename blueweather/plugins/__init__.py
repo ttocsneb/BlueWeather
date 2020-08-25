@@ -6,7 +6,9 @@ from stevedore.dispatch import DispatchExtensionManager
 from stevedore.extension import Extension, ExtensionManager
 
 from blueweather.config import Config
+
 from . import dao
+from .managers.settings import SettingsManager
 
 
 class ExtensionsSingleton:
@@ -15,6 +17,8 @@ class ExtensionsSingleton:
 
         self.failed_plugins = list()
         self._disabled_plugins = config.extensions.disabled
+
+        self._settings_initialized = False
 
         def check(ext: Extension):
             return self._check_extension(config, ext)
@@ -28,11 +32,6 @@ class ExtensionsSingleton:
             "blueweather.plugins.plugin",
             on_load_failure_callback=self._on_load_fail
         )
-        self.djangoApp = EnabledExtensionManager(
-            "blueweather.plugins.django",
-            check_func=check,
-            on_load_failure_callback=self._on_load_fail
-        )
         self.api = EnabledExtensionManager(
             "blueweather.plugins.api",
             check_func=check,
@@ -43,7 +42,7 @@ class ExtensionsSingleton:
             check_func=check,
             on_load_failure_callback=self._on_load_fail
         )
-        self.settings = EnabledExtensionManager(
+        self.settings = SettingsManager(
             "blueweather.plugins.settings",
             check_func=check,
             on_load_failure_callback=self._on_load_fail
@@ -101,7 +100,6 @@ class ExtensionsSingleton:
 
         collect(self.plugins)
         collect(self.weather)
-        collect(self.djangoApp)
         collect(self.startup)
         collect(self.settings)
         collect(self.unitConversion)
@@ -120,7 +118,6 @@ class ExtensionsSingleton:
 
         invoke_plugins(self.plugins)
         invoke_plugins(self.weather)
-        invoke_plugins(self.djangoApp)
         invoke_plugins(self.api)
         invoke_plugins(self.startup)
         invoke_plugins(self.settings)

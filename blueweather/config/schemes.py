@@ -68,7 +68,7 @@ class WebSchema(Schema):
 class ExtensionsSchema(Schema):
     weather_driver = fields.String()
     disabled = fields.List(fields.String())
-    settings = fields.Dict(fields.String(), fields.Dict(fields.String))
+    settings = fields.Dict(fields.String(), fields.Dict())
 
     get_object = pre_dump(fn=customFields.get_object)
     strip_defaults = post_dump(fn=customFields.strip_defaults)

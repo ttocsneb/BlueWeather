@@ -2,6 +2,8 @@ from marshmallow import Schema
 from stevedore.extension import Extension, ExtensionManager
 from stevedore.dispatch import DispatchExtensionManager
 
+from blueweather.config import Config
+
 prettyNames = {
     "blueweather.plugins.plugin": "Plugin-Info",
     "blueweather.plugins.weather": "Weather",
@@ -77,13 +79,46 @@ class Settings:
         return ext.name, ext.obj.get_required_settings()
 
     @staticmethod
-    def get_settings_schema(ext: Extension) -> (str, Schema):
-        return ext.name, ext.obj.get_settings_schema()
+    def settings_serialize(ext: Extension, settings: dict) -> (str, dict):
+        key = ext.obj.config_version_key
+        try:
+            version = int(settings.get(key, 0))
+        except ValueError:
+            version = 0
+        
+        config = ext.obj.settings_serialize(ext.obj._settings)
+        config[key] = version
+
+        return ext.name, config
 
     @staticmethod
-    def on_settings_migrate(ext: Extension, version: int, settings: dict
+    def settings_deserialize(ext: Extension, settings: dict):
+        key = ext.obj.config_version_key
+
+        temp = dict(settings)
+        if key in temp:
+            del temp[key]
+        deserialized = ext.obj.settings_deserialize(temp)
+
+        ext.obj._settings = deserialized
+
+    @staticmethod
+    def settings_migrate(ext: Extension, settings: dict
                             ) -> (str, dict):
-        return ext.name, ext.obj.on_settings_migrate(version, settings)
+        key = ext.obj.config_version_key
+        try:
+            version = int(settings.get(key, 0))
+        except ValueError:
+            version = 0
+        
+        temp = dict(settings)
+        if key in temp:
+            del temp[key]
+
+        migration = ext.obj.settings_migrate(version, temp)
+        migration[1][key] = migration[0]
+
+        return ext.name, migration[1]
 
     @staticmethod
     def on_settings_initialized(ext: Extension):

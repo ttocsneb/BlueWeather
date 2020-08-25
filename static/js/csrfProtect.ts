@@ -1,7 +1,7 @@
 /// <reference types="jquery" />
 /// <reference types="lodash" />
 
-var csrftoken = Cookies.get('csrftoken')
+const csrftoken = Cookies.get('csrftoken')
 
 $.ajaxSetup({
     beforeSend: function (xhr) {

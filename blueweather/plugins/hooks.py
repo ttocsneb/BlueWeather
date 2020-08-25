@@ -1,6 +1,10 @@
 
 
 class Hook:
+    """
+    Holds all the functions that are hooked into this hook.
+    """
+    
     def __init__(self, name: str):
         self.__name = name
         self.__hooks = dict()
@@ -10,10 +14,16 @@ class Hook:
         return self.__name
 
     def call(self, *args, **kwargs):
+        """
+        Call all the hooked functions without retreiving the return value
+        """
         for hook in self.__hooks.values():
             hook(*args, **kwargs)
 
     def request(self, *args, **kwargs) -> list:
+        """
+        Call all the hooked functions, and return a list of returned values
+        """
         values = list()
         for hook in self.__hooks.values():
             values.append(hook(*args, **kwargs))

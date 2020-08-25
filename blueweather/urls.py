@@ -40,9 +40,3 @@ urlpatterns = [
         namespace='api'
     ))
 ]
-
-# Add plugin urls
-for ext in settings.EXTENSIONS.djangoApp:
-    _, url, name = dao.DjangoApp.get_url_info(ext)
-    _, path = dao.DjangoApp.get_app_name(ext)
-    urlpatterns.append(path(url, include((path, name), name)))
