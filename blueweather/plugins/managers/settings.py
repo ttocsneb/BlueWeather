@@ -44,8 +44,10 @@ class SettingsManager(EnabledExtensionManager):
         
         # Migrate the settings
         settings = config.extensions.settings[ext.name]
-        _, migration = dao.Settings.settings_migrate(ext, settings)
+        migration, changed = dao.Settings.settings_migrate(ext, settings)
         config.extensions.settings[ext.name] = migration
+        if changed:
+            config.modified = True
 
         # Deserialize the settings
         dao.Settings.settings_deserialize(ext, migration)
@@ -53,7 +55,7 @@ class SettingsManager(EnabledExtensionManager):
     def _unload_one_setting(self, config: Config, ext: Extension):
         # Serialize the settings
         settings = config.extensions.settings[ext.name]
-        _, serialized = dao.Settings.settings_serialize(ext, settings)
+        serialized = dao.Settings.settings_serialize(ext, settings)
 
         # Apply the settings
         config.extensions.settings[ext.name] = serialized

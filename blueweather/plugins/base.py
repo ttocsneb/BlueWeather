@@ -40,21 +40,11 @@ class Startup(metaclass=abc.ABCMeta):
     A Plugin that hooks into the start and stop of the web-app
     """
 
-    def on_startup(self, host: str, port: int):
+    def on_startup(self):
         """
-        Called just before the server is started.
+        Called when the server is ready
         """
         pass
-
-    def on_after_startup(self):
-        """
-        Called after the server has started.
-        """
-
-    def on_shutdown(self):
-        """
-        Called just before he server has shutdown
-        """
 
 
 class API(metaclass=abc.ABCMeta):
@@ -123,18 +113,21 @@ class Settings(metaclass=abc.ABCMeta):
         """
         return data
 
-    def settings_migrate(self, version: int, settings: dict) -> (int, dict):
+    def settings_migrate(self, version: int, settings: dict) -> (int, dict, bool):
         """
         Migrate the settings from an older version to the current version
 
         This function is always run, it is your job to determine if a migration is required.
 
+        Returns the settings version, primative settings after the migration, and whether
+        the settins have been changed
+
         :param int version: the version of the settings
         :param dict settings: the primative loaded settings
 
-        :return (int, dict): settings version and primative settings after the migration
+        :return (int, dict, bool):
         """
-        return version, settings
+        return version, settings, False
 
     def on_settings_initialized(self):
         """

@@ -138,12 +138,12 @@ class ExtensionsSingleton:
             except Exception as exc:
                 self._on_load_fail(None, extension, exc)
 
-    def _on_load_fail(self, manager: ExtensionManager, entrypoint,
+    def _on_load_fail(self, manager: ExtensionManager, entrypoint: Extension,
                       exception: Exception):
         """
         Called when a plugin fails to load
         """
-        self._logger.warning("Unable to load plugin '%s'", entrypoint,
+        self._logger.warning("Unable to load plugin '%s'", entrypoint.name,
                              exc_info=sys.exc_info(), stack_info=True)
         self.failed_plugins.append((entrypoint, exception))
 

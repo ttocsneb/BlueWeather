@@ -52,13 +52,13 @@ logging.config.dictConfig({
 # object, and follow a different convention from Settings to differentiate them
 CONFIG = Config(os.path.join(BASE_DIR, "config.yml"))
 CONFIG.load()
-if CONFIG.modified:
-    CONFIG.save()
 
 # because django is set to reload, two instances of extensions will always be
 # loaded. to stop this, use 'manage.py runserver --noreload'
 EXTENSIONS = ExtensionsSingleton(CONFIG, True)
 EXTENSIONS.settings.load_settings(CONFIG)
+if CONFIG.modified:
+    CONFIG.save()
 
 
 # Unit Conversions

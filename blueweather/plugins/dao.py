@@ -1,6 +1,7 @@
 from marshmallow import Schema
 from stevedore.extension import Extension, ExtensionManager
 from stevedore.dispatch import DispatchExtensionManager
+from stevedore import EnabledExtensionManager
 
 from blueweather.config import Config
 
@@ -44,16 +45,9 @@ class Plugin:
 
 class Startup:
     @staticmethod
-    def on_startup(ext: Extension, host: str, port: int):
-        ext.obj.on_startup(host, port)
-
-    @staticmethod
-    def on_after_startup(ext: Extension):
-        ext.obj.on_after_startup()
-
-    @staticmethod
-    def on_shutdown(ext: Extension):
-        ext.obj.on_shutdown()
+    def on_startup(man: EnabledExtensionManager):
+        for ext in man.extensions:
+            ext.obj.on_startup()
 
 
 class API:
@@ -71,15 +65,15 @@ class API:
 
 class Settings:
     @staticmethod
-    def get_default_settings(ext: Extension) -> (str, dict):
-        return ext.name, ext.obj.get_default_settings()
+    def get_default_settings(ext: Extension) -> dict:
+        return ext.obj.get_default_settings()
 
     @staticmethod
-    def get_required_settings(ext: Extension) -> (str, dict):
-        return ext.name, ext.obj.get_required_settings()
+    def get_required_settings(ext: Extension) -> dict:
+        return ext.obj.get_required_settings()
 
     @staticmethod
-    def settings_serialize(ext: Extension, settings: dict) -> (str, dict):
+    def settings_serialize(ext: Extension, settings: dict) -> dict:
         key = ext.obj.config_version_key
         try:
             version = int(settings.get(key, 0))
@@ -89,7 +83,7 @@ class Settings:
         config = ext.obj.settings_serialize(ext.obj._settings)
         config[key] = version
 
-        return ext.name, config
+        return config
 
     @staticmethod
     def settings_deserialize(ext: Extension, settings: dict):
@@ -103,8 +97,7 @@ class Settings:
         ext.obj._settings = deserialized
 
     @staticmethod
-    def settings_migrate(ext: Extension, settings: dict
-                            ) -> (str, dict):
+    def settings_migrate(ext: Extension, settings: dict) -> dict:
         key = ext.obj.config_version_key
         try:
             version = int(settings.get(key, 0))
@@ -118,7 +111,7 @@ class Settings:
         migration = ext.obj.settings_migrate(version, temp)
         migration[1][key] = migration[0]
 
-        return ext.name, migration[1]
+        return migration[1], migration[2]
 
     @staticmethod
     def on_settings_initialized(ext: Extension):
@@ -127,8 +120,8 @@ class Settings:
 
 class Weather:
     @staticmethod
-    def on_weather_request(ext: Extension) -> (str, dict):
-        return ext.name, ext.obj.on_weather_request()
+    def on_weather_request(ext: Extension) -> dict:
+        return ext.obj.on_weather_request()
 
 
 class UnitConversion:
