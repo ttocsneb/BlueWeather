@@ -1,42 +1,88 @@
-
+import inspect
+import logging
 
 class Hook:
     """
-    Holds all the functions that are hooked into this hook.
+    Holds all the functions that are subscribed to this hook.
     """
     
-    def __init__(self, name: str):
+    def __init__(self, name: str, signature: inspect.Signature):
         self.__name = name
         self.__hooks = dict()
+        self.__signature = signature
 
     @property
     def name(self) -> str:
+        """
+        Name of the hook
+        """
         return self.__name
 
     def call(self, *args, **kwargs):
         """
         Call all the hooked functions without retreiving the return value
+
+        :param args: positional arguments
+        :param kwargs: keyword arguments
         """
-        for hook in self.__hooks.values():
-            hook(*args, **kwargs)
+        bound = self.__signature.bind(*args, **kwargs)
+        for name, hook in self.__hooks.items():
+            try:
+                hook(*bound.args, **bound.kwargs)
+            except Exception:
+                logging.getLogger(__name__).exception(
+                    "An error occurred while processing the hook %s:%s",
+                    self.name, name
+                )
 
     def request(self, *args, **kwargs) -> list:
         """
         Call all the hooked functions, and return a list of returned values
+
+        :param args: positional arguments
+        :param kwargs: keyword arguments
+
+        :return: list of return values
         """
+        bound = self.__signature.bind(*args, **kwargs)
         values = list()
         for hook in self.__hooks.values():
-            values.append(hook(*args, **kwargs))
+            try:
+                values.append(hook(*bound.args, **bound.kwargs))
+            except Exception:
+                logging.getLogger(__name__).exception(
+                    "An error occurred while processing the hook %s:%s",
+                    self.name, name
+                )
+
         return values
 
-    def _register_hook(self, name: str, hook: callable):
-        if name in self.__hooks:
-            raise KeyError("{} is already a registered hook".format(name))
-        self.__hooks[name] = hook
+    def subscribe(self, name: str, func: callable):
+        """
+        Subscribe to the hook
 
-    def _unregister_hook(self, name: str):
+        When the hook is called, the function will be called
+
+        .. note::
+
+            The name should be unique, so to help prevent collisions,
+            add/use the plugin name (`simplePlugin`)
+
+        :param name: name of the subscriber
+        :parm func: function to subscribe
+        """
+        if name in self.__hooks:
+            raise KeyError("{} is already subscribed".format(name))
+        self.__hooks[name] = func
+
+    def unsubscribe(self, name: str):
+        """
+        Unsubscribe from the hook
+
+        :param name: name of the subscriber
+        """
         if name not in self.__hooks:
-            raise KeyError("{} is not a registered hook".format(name))
+            raise KeyError("{} is not subscribed".format(name))
         del self.__hooks[name]
 
     def __repr__(self):
@@ -48,21 +94,18 @@ __hooks = dict()
 
 def get_hook(name) -> Hook:
     """
-    Create a new hook and return it
+    Create or retrieve a hook
 
-    With a hook, you can interact with other plugins.
+    With hooks, you can interact with other plugins in one of two ways
 
-    This can be done in two ways:
-
-    1. send a message to other hooked plugins
-    2. Request a message from other hooking plugins.
-
-    This function retrieves a hook allowing you to call all
-    hooked functions.
+    1. Send a message to other subscribed plugins
+    2. Subscribe to a hook that anyone can call.
 
     Names should always be unique, so to prevent the possibility
     of clashes, the name of the plugin should be used as part
-    of the hook name, such as "foobar_hook"
+    of the hook name, such as "simplePlugin_hookName"
+
+    :return: hook
     """
     if name in __hooks:
         return __hooks[name]
@@ -70,26 +113,3 @@ def get_hook(name) -> Hook:
     __hooks[name] = Hook(name)
 
     return __hooks[name]
-
-
-def register_hook(name: str, hook_name: str, hook: callable):
-    """
-    Register a hook with a new hooked function.
-
-    It is important when using hooks to know the parameters and
-    return types for specific types of hooks.
-
-    Names should always be unique, so to prevent the possibility
-    of clashes, the name of the plugin should be used as part
-    of the hook name, such as "foobar_hook"
-    """
-    hook = get_hook(name)
-    hook._register_hook(hook_name, hook)
-
-
-def unregister_hook(name: str, hook_name: str):
-    """
-    Unregister a hooked function
-    """
-    hook = get_hook(name)
-    hook._unregister_hook(hook_name)

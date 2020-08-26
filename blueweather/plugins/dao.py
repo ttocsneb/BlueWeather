@@ -166,7 +166,7 @@ class UnitConversion:
                 if not UnitConversion.on_request_conversion_check(
                         ext, d, from_t, to_t):
                     continue
-                val = ext.obj.on_request_conversion(d, from_t, to_t)
+                val = ext.obj.request_conversion(d, from_t, to_t)
                 if val is not None:
                     return ext.name, val
             raise KeyError("%s can not be converted to %s" % (from_t, to_t))
@@ -212,8 +212,8 @@ class UnitConversion:
         )
 
     @staticmethod
-    def on_request_conversion(ext: Extension, data: float, from_type: str,
+    def request_conversion(ext: Extension, data: float, from_type: str,
                               to_type: str) -> (str, float):
-        data = ext.obj.on_request_conversion(data, from_type, to_type)
+        data = ext.obj.request_conversion(data, from_type, to_type)
         if data is not None:
             return ext.name, data

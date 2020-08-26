@@ -10,34 +10,37 @@ class ImperialConversion(UnitConversion, Plugin):
 
     def get_conversion_types(self):
         return [
-            ('celsius', 'fahrenheit'),
-            ('meter', 'feet'),
-            ('meter', 'mile'),
-            ('meter', 'yard'),
-            ('kilogram', 'pound'),
-            ('meter/second', 'mile/hour'),
-            ('newton', 'pound'),
-            ('pascal', 'inch of mercury')
+            ('c', 'f'),
+            ('m', 'ft'),
+            ('m', 'mi'),
+            ('m', 'yd'),
+            ('kg', 'lb'),
+            ('m/s', 'mph'),
+            ('N', 'lbf'),
+            ('Pa', 'inHg'),
+            ('Pa', 'psi')
         ]
 
-    def on_request_conversion(self, data, from_type, to_type):
-        if from_type == 'celsius' and to_type == 'fahrenheit':
+    def conversion_request(self, data, from_type, to_type):
+        if from_type == 'c' and to_type == 'f':
             return (data * 9 / 5) + 32
-        if from_type == 'meter':
-            if to_type == 'feet':
+        if from_type == 'm':
+            if to_type == 'ft':
                 return data * 3.28084
-            if to_type == 'mile':
+            if to_type == 'mi':
                 return data * 0.000621371
-            if to_type == 'yard':
+            if to_type == 'yd':
                 return data * 1.09361
-        if from_type == 'kilogram' and to_type == 'pound':
+        if from_type == 'kg' and to_type == 'lb':
             return data * 2.20462
-        if from_type == 'meter/second' and to_type == 'mile/hour':
+        if from_type == 'm/s' and to_type == 'mph':
             return data * 2.23694
-        if from_type == 'newton' and to_type == 'pound':
+        if from_type == 'N' and to_type == 'lbf':
             return data * 0.224809
-        if from_type == 'pascal' and to_type == 'inch of mercury':
+        if from_type == 'Pa' and to_type == 'inHg':
             return data * 0.0002953
+        if from_type == 'Pa' and to_type == 'psi':
+            return data / 6894.75729
 
 
 class MetricConversion(UnitConversion, Plugin):
@@ -49,32 +52,32 @@ class MetricConversion(UnitConversion, Plugin):
 
     def get_conversion_types(self):
         return [
-            ('meter', 'centimeter'),
-            ('meter', 'kilometer'),
-            ('meter', 'millimeter'),
-            ('kilogram', 'gram'),
-            ('meter/second', 'kilometer/hour'),
-            ('newton', 'kilogram'),
-            ('pascal', 'bar'),
-            ('pascal', 'kilopascal')
+            ('m', 'cm'),
+            ('m', 'km'),
+            ('m', 'mm'),
+            ('kg', 'g'),
+            ('m/s', 'km/h'),
+            ('N', 'kgf'),
+            ('Pa', 'bar'),
+            ('Pa', 'kPa')
         ]
 
-    def on_request_conversion(self, data, from_type, to_type):
-        if from_type == 'meter':
-            if to_type == 'centimeter':
+    def conversion_request(self, data, from_type, to_type):
+        if from_type == 'm':
+            if to_type == 'cm':
                 return data * 100
-            if to_type == 'millimeter':
+            if to_type == 'mm':
                 return data * 1000
-            if to_type == 'kilometer':
+            if to_type == 'km':
                 return data / 1000
-        if from_type == 'kilogram' and to_type == 'gram':
+        if from_type == 'kg' and to_type == 'g':
             return data * 1000
-        if from_type == 'meter/second' and to_type == 'kilometer/hour':
+        if from_type == 'm/s' and to_type == 'km/h':
             return data / 3.6
-        if from_type == 'newton' and to_type == 'kilogram':
+        if from_type == 'N' and to_type == 'kgf':
             return data / 9.80665
-        if from_type == 'pascal':
-            if to_type == 'kilopascal':
+        if from_type == 'Pa':
+            if to_type == 'kPa':
                 return data / 1000
             if to_type == 'bar':
                 return data / 100000
