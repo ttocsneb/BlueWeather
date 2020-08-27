@@ -8,10 +8,26 @@ from stevedore.extension import Extension, ExtensionManager
 from blueweather.config import Config
 
 from . import dao
-from .managers.settings import SettingsManager
+
+from typing import Dict
 
 
 class ExtensionsSingleton:
+    """
+    This is the central manager for all plugins.
+
+    There should only exist one ExtensionsSingleton object which will be held
+    in the django settings module.
+
+    You can get the django settings from calling
+
+    .. code-block:: python
+
+        from django.conf import settings
+        settings.EXTENSIONS
+
+    """
+
     def __init__(self, config: Config, invoke_on_load=False):
         self._logger = logging.getLogger(__name__)
 
@@ -42,7 +58,7 @@ class ExtensionsSingleton:
             check_func=check,
             on_load_failure_callback=self._on_load_fail
         )
-        self.settings = SettingsManager(
+        self.settings = EnabledExtensionManager(
             "blueweather.plugins.settings",
             check_func=check,
             on_load_failure_callback=self._on_load_fail
@@ -67,7 +83,29 @@ class ExtensionsSingleton:
         if invoke_on_load:
             self.invoke()
 
-    def getPluginList(self):
+    def getPluginList(self) -> Dict[str, dict]:
+        """
+        Get a list of all the plugins
+
+        Example of a plugin dict
+
+        .. code-block:: python
+
+            {
+                'human_name': 'Simple Plugin',
+                'description': 'Description',
+                'author': 'Author',
+                'url': 'url',
+                'entrypoints': [
+                    'blueweather.plugins.startup'
+                ],
+                'builtin': False,
+                'enabled': True,
+                'disableable': True
+            }
+        
+        :return: a list of plugins
+        """
         extensions = self.getAllExtensions()
         data = dict()
 
@@ -89,7 +127,12 @@ class ExtensionsSingleton:
             }
         return data
 
-    def getAllExtensions(self):
+    def getAllExtensions(self) -> Dict[str, Dict[str, Extension]]:
+        """
+        Get all extensions
+
+        :return: extensions
+        """
         extensions = dict()
 
         def collect(man: ExtensionManager):
@@ -109,6 +152,9 @@ class ExtensionsSingleton:
     def invoke(self):
         """
         Invoke the classes that have been loaded
+
+        The act of invoking, initializes the plugin
+        objects and is required for any functionality.
         """
         objects = dict()
 

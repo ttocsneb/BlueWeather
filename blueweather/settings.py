@@ -56,7 +56,7 @@ CONFIG.load()
 # because django is set to reload, two instances of extensions will always be
 # loaded. to stop this, use 'manage.py runserver --noreload'
 EXTENSIONS = ExtensionsSingleton(CONFIG, True)
-EXTENSIONS.settings.load_settings(CONFIG)
+dao.Settings.load_settings(EXTENSIONS.settings, CONFIG)
 if CONFIG.modified:
     CONFIG.save()
 

@@ -114,6 +114,62 @@ class API:
 
 class Settings:
     @staticmethod
+    def load_settings(man: EnabledExtensionManager, config: Config):
+        """
+        Load the plugins' settings from the supplied config
+
+        All the plugins' settings will be processed and loaded into memory.
+
+        .. note::
+
+            If any changes were made while loading the settings,
+            :code:`config.modified` will be set.
+
+        :param man: Settings Extension Manager
+        :param config: configuration
+        """
+
+        for ext in man.extensions:
+            if ext.name not in config.extensions.settings:
+                config.extensions.settings[ext.name] = dict()
+            
+            # Migrate the settings
+            settings = config.extensions.settings[ext.name]
+            migration, changed = Settings.settings_migrate(ext, settings)
+            config.extensions.settings[ext.name] = migration
+            if changed:
+                config.modified = True
+
+            # Deserialize the settings
+            Settings.settings_deserialize(ext, migration)
+        
+        # After all the settings have been loaded, notify the extensions that
+        # the settings have been loaded
+        for ext in man.extensions:
+            Settings.on_settings_initialized(ext)
+
+    
+    @staticmethod
+    def unload_settings(man: EnabledExtensionManager, config: Config):
+        """
+        Unload the plugins' settings to the supplied config.
+
+        The settings stored in memory will be processed and dumped into the supplied config.
+
+        :param man: Settings Extension Manager
+        :param config: configuration
+        """
+
+        for ext in man.extensions:
+            # Serialize the settings
+            settings = config.extensions.settings[ext.name]
+            serialized = Settings.settings_serialize(ext, settings)
+
+            # Apply the settings
+            config.extensions.settings[ext.name] = serialized
+
+
+    @staticmethod
     def settings_serialize(ext: Extension, settings: dict) -> dict:
         """
         Serialize an extension's settings

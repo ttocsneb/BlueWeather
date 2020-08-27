@@ -53,9 +53,9 @@ For this example, we have defined two extensions:
 * blueweather.plugins.plugin
 * blueweather.plugins.startup
 
-The :ref:`plugin` extension gives usefull
+The :class:`~blueweather.plugins.base.Plugin` extension gives usefull
 information about the plugin, and is required for all plugins. The 
-:ref:`startup` extension requests a message 
+:class:`~blueweather.plugins.base.Startup` extension requests a message 
 for when the server is up and running.
 
 Next we will create the file `simplePlugin/__init__.py`
@@ -76,10 +76,10 @@ Next we will create the file `simplePlugin/__init__.py`
             print("Everything works!")
 
 This is where the code for the plugin lives. We have defined two required
-functions for the :ref:`plugin` extension (:meth:`blueweather.plugins.base.Plugin.get_plugin_name`,
-and :meth:`blueweather.plugins.base.Plugin.get_plugin_description`)
-This simply gives information about our plugin to the user. Then from the :ref:`startup`
-extension, we implement :meth:`blueweather.plugins.base.Startup.on_startup` where we print to the console that everything
+functions for the :class:`~blueweather.plugins.base.Plugin` extension (:meth:`~blueweather.plugins.base.Plugin.get_plugin_name`,
+and :meth:`~blueweather.plugins.base.Plugin.get_plugin_description`)
+This simply gives information about our plugin to the user. Then from the :class:`~blueweather.plugins.base.Startup`
+extension, we implement :meth:`~blueweather.plugins.base.Startup.on_startup` where we print to the console that everything
 is working.
 
 This is an exceedingly simple plugin, but it should be enough to get you started
