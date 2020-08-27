@@ -28,7 +28,9 @@ Contents
 .. toctree::
    :maxdepth: 5
 
-   plugins/api
+   pluginApi
+   config
+   docs
 
 Installation
 ------------

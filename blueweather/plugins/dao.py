@@ -5,6 +5,8 @@ from stevedore import EnabledExtensionManager
 
 from blueweather.config import Config
 
+from typing import List, Dict, Set, Tuple
+
 prettyNames = {
     "blueweather.plugins.plugin": "Plugin-Info",
     "blueweather.plugins.weather": "Weather",
@@ -28,24 +30,57 @@ def strip_name(tup: tuple):
 class Plugin:
     @staticmethod
     def get_plugin_name(ext: Extension) -> str:
+        """
+        Get the human readable name of the plugin
+
+        :param ext: extension
+
+        :return: plugin name
+        """
         return ext.obj.get_plugin_name()
 
     @staticmethod
     def get_plugin_description(ext: Extension) -> str:
+        """
+        Get the human readable description of the plugin
+
+        :param ext: extension
+
+        :return: plugin description
+        """
         return ext.obj.get_plugin_description()
 
     @staticmethod
-    def get_plugin_author(ext: Extension) -> str:
+    def get_plugin_author(ext: Extension) -> List[str]:
+        """
+        Get the authors of the plugin
+
+        :param ext: extension
+
+        :return: plugin authors
+        """
         return ext.obj.get_plugin_author()
 
     @staticmethod
     def get_plugin_url(ext: Extension) -> str:
+        """
+        Get the url for the plugin
+
+        :param ext: extension
+
+        :return: plugin url
+        """
         return ext.obj.get_plugin_url()
 
 
 class Startup:
     @staticmethod
     def on_startup(man: EnabledExtensionManager):
+        """
+        Send a message to all the plugins that the server has started.
+
+        :param man: startup extension manager
+        """
         for ext in man.extensions:
             ext.obj.on_startup()
 
@@ -53,27 +88,43 @@ class Startup:
 class API:
     @staticmethod
     def allApiPatterns(man: ExtensionManager) -> list:
+        """
+        Get all the API patterns for each api extension
+
+        :param man: API Extension Manager
+
+        :return: list of api patterns
+        """
         patterns = list()
         for ext in man.extensions:
-            patterns.extend(API.get_api_urlpatterns(ext)[1])
+            patterns.extend(API.get_api_urlpatterns(ext))
         return patterns
 
     @staticmethod
     def get_api_urlpatterns(ext: Extension) -> (str, list):
-        return ext.name, ext.obj.get_api_urlpatterns()
+        """
+        Get the API Patterns for an extension
+
+        :param ext: extension
+
+        :return: API Patterns
+        """
+        return ext.obj.get_api_urlpatterns()
 
 
 class Settings:
     @staticmethod
-    def get_default_settings(ext: Extension) -> dict:
-        return ext.obj.get_default_settings()
-
-    @staticmethod
-    def get_required_settings(ext: Extension) -> dict:
-        return ext.obj.get_required_settings()
-
-    @staticmethod
     def settings_serialize(ext: Extension, settings: dict) -> dict:
+        """
+        Serialize an extension's settings
+
+        This serializes the extensions local settings, and returns it
+
+        :param ext: extension
+        :param setings: saved settings
+
+        :return: serialized settings
+        """
         key = ext.obj.config_version_key
         try:
             version = int(settings.get(key, 0))
@@ -87,6 +138,12 @@ class Settings:
 
     @staticmethod
     def settings_deserialize(ext: Extension, settings: dict):
+        """
+        Deserialize the settings of an extension.
+
+        :param ext: extension
+        :param settings: saved settings
+        """
         key = ext.obj.config_version_key
 
         temp = dict(settings)
@@ -98,6 +155,14 @@ class Settings:
 
     @staticmethod
     def settings_migrate(ext: Extension, settings: dict) -> dict:
+        """
+        Migrate the settings of the extension
+
+        :param ext: extension
+        :param settings: saved settings
+
+        :return: migrated settings
+        """
         key = ext.obj.config_version_key
         try:
             version = int(settings.get(key, 0))
@@ -115,21 +180,41 @@ class Settings:
 
     @staticmethod
     def on_settings_initialized(ext: Extension):
+        """
+        Send a message to the extension that the settings have been initialized
+
+        :param ext: extension
+        """
         ext.obj.on_settings_initialized()
 
 
 class Weather:
     @staticmethod
     def on_weather_request(ext: Extension) -> dict:
+        """
+        request the weather from the weather driver
+
+        :param ext: driver
+
+        :return: weather data
+        """
         return ext.obj.on_weather_request()
 
 
 class UnitConversion:
     @staticmethod
-    def conversions(man: DispatchExtensionManager) -> dict:
+    def conversions(man: DispatchExtensionManager) -> Dict[str, Set[str]]:
+        """
+        Get all the basic conversions
+
+        :param man: UnitConversion Extension Manager
+
+        :return: Possible Conversions
+        """
         units = dict()
-        for name, conversions in man.map(lambda *args, **kwargs: True,
-                                         UnitConversion.get_conversion_types):
+        for name, conversions in man.map(
+                lambda *args, **kwargs: True,
+                UnitConversion.get_conversion_types):
             if conversions is None:
                 continue
             for from_type, to_type in conversions:
@@ -140,7 +225,17 @@ class UnitConversion:
 
     @staticmethod
     def all_conversions(man: DispatchExtensionManager = None,
-                        units: dict = None) -> dict:
+                        units: Dict[str, Set[str]] = None) -> Dict[str, Set[str]]:
+        """
+        Get all the possible conversions
+
+        This finds all the possible conversions by using recursive conversions
+
+        :param man: UnitConversion Extension Manager
+        :param units: All the basic conversions
+
+        :return: All the possible conversions
+        """
         if units is None:
             units = UnitConversion.conversions(man)
         # Add secondary conversions (Conversions that can be made by
@@ -153,7 +248,17 @@ class UnitConversion:
 
     @staticmethod
     def convert(man: DispatchExtensionManager, data: float, from_type: str,
-                to_type: str) -> (str, float):
+                to_type: str) -> Tuple[List[str], float]:
+        """
+        Convert from one type to another
+
+        :param man: UnitConversion Extension Manager
+        :param data: value to convert from
+        :param from_type: type to convert from
+        :param to_type: type to convert to
+
+        :return: name(s) of the extensions that performed the conversion, and the converted value
+        """
         units = UnitConversion.conversions(man)
 
         if from_type not in units:
@@ -199,12 +304,29 @@ class UnitConversion:
         return (name1, name2), data
 
     @staticmethod
-    def get_conversion_types(ext: Extension) -> (str, list):
+    def get_conversion_types(ext: Extension) -> Tuple[str, List[Tuple[str, str]]]:
+        """
+        Get the types that an extension can convert
+
+        :param ext: extension
+
+        :return: extension name, and possible conversions
+        """
         return ext.name, ext.obj.get_conversion_types()
 
     @staticmethod
     def on_request_conversion_check(ext: Extension, data: float,
                                     from_type: str, to_type: str) -> bool:
+        """
+        Check if a conversion can be performed
+
+        :param ext: extension
+        :param data: value to convert from
+        :param from_type: type to convert from
+        :param to_type: type to convert to
+
+        :return: True if the conversion is possible
+        """
         _, types = UnitConversion.get_conversion_types(ext)
         return next(
             (True for t in types if t[0] == from_type and t[1] == to_type),
@@ -214,6 +336,16 @@ class UnitConversion:
     @staticmethod
     def request_conversion(ext: Extension, data: float, from_type: str,
                               to_type: str) -> (str, float):
+        """
+        Request a conversion to be made
+
+        :param ext: extension
+        :param data: value to convert from
+        :param from_type: type to convert from
+        :param to_type: type to convert to
+
+        :return: the name of the extension, and the converted value
+        """
         data = ext.obj.request_conversion(data, from_type, to_type)
         if data is not None:
             return ext.name, data

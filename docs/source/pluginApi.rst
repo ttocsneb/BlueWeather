@@ -1,3 +1,5 @@
+.. _plugins:
+
 Plugins
 ====================
 
@@ -51,9 +53,10 @@ For this example, we have defined two extensions:
 * blueweather.plugins.plugin
 * blueweather.plugins.startup
 
-The `plugin` extension gives usefull information about the plugin, and is required
-for all plugins. The `startup` extension requests a message for when the
-server is up and running.
+The :ref:`plugin` extension gives usefull
+information about the plugin, and is required for all plugins. The 
+:ref:`startup` extension requests a message 
+for when the server is up and running.
 
 Next we will create the file `simplePlugin/__init__.py`
 
@@ -73,9 +76,10 @@ Next we will create the file `simplePlugin/__init__.py`
             print("Everything works!")
 
 This is where the code for the plugin lives. We have defined two required
-functions for the `Plugin` extension (`get_plugin_name`, and `get_plugin_description`)
-This simply gives information about our plugin to the user. Then from the `Startup`
-extension, we implement `on_startup` where we print to the console that everything
+functions for the :ref:`plugin` extension (:meth:`blueweather.plugins.base.Plugin.get_plugin_name`,
+and :meth:`blueweather.plugins.base.Plugin.get_plugin_description`)
+This simply gives information about our plugin to the user. Then from the :ref:`startup`
+extension, we implement :meth:`blueweather.plugins.base.Startup.on_startup` where we print to the console that everything
 is working.
 
 This is an exceedingly simple plugin, but it should be enough to get you started
@@ -84,11 +88,15 @@ in creating your own plugins.
 API Reference
 -------------
 
+.. _plugin:
+
 Plugin
 ^^^^^^
 
 .. autoclass:: blueweather.plugins.base.Plugin
     :members:
+
+.. _startup:
 
 Startup
 ^^^^^^^
@@ -96,11 +104,15 @@ Startup
 .. autoclass:: blueweather.plugins.base.Startup
     :members:
 
+.. _api:
+
 API
 ^^^
 
 .. autoclass:: blueweather.plugins.base.API
     :members:
+
+.. _settings:
 
 Settings
 ^^^^^^^^
@@ -108,17 +120,23 @@ Settings
 .. autoclass:: blueweather.plugins.base.Settings
     :members:
 
+.. _weather:
+
 Weather
 ^^^^^^^
 
 .. autoclass:: blueweather.plugins.base.Weather
     :members:
 
+.. _unitConversion:
+
 UnitConversion
 ^^^^^^^^^^^^^^
 
 .. autoclass:: blueweather.plugins.base.UnitConversion
     :members:
+
+.. _hooks:
 
 Hooks
 -----
@@ -130,10 +148,14 @@ A hook is a list of functions that can be called. At any point in time, anyone
 can create or subscribe to a hook. When the hook is called, all subscribed
 functions will be called.
 
+.. _get_hook:
+
 get_hook
 ^^^^^^^^
 
 .. autofunction:: blueweather.plugins.hooks.get_hook
+
+.. _hook:
 
 Hook
 ^^^^
