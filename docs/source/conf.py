@@ -32,6 +32,7 @@ release = '0.3.0-alpha'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.todo',
     'sphinx_rtd_theme'
 ]
 
@@ -57,3 +58,5 @@ html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 master_doc = "index"
+
+todo_include_todos = True

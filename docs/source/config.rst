@@ -36,157 +36,178 @@ Example Config
       template_globals: 
       title: BlueWeather
 
-
-Base Group
+Secret Key
 ----------
 
-.. _secret_key:
+.. attribute:: secret_key
 
-secret_key
-^^^^^^^^^^
+    :type: str
 
-The secret key used by django. This is auto-generated and should not be shared
-with anyone.
+    The secret key used by django. This is auto-generated and should not be shared
+    with anyone.
 
-.. _debug:
+Debug
+-----
 
-debug
-^^^^^
+.. attribute:: debug
 
-Should the server start in debug mode
+    :type: bool
+    :default: false
 
-    default: false
+    Should the server start in debug mode
 
-.. note::
+    .. note::
 
-    This should be set to false in almost all circumstances.
+        This should be set to false in almost all circumstances.
 
-.. _time_zone:
-
-time_zome
-^^^^^^^^^
-
-The time zone that your server is located in.
-
-.. _commands:
-
-commands
-^^^^^^^^
-
-A list of system commands that can control the server
-
-.. code-block:: python
-
-    [
-        'restart': 'command to restart the server',
-        'shutdown': 'command to shutdown the computer',
-        'stop': 'command to stop the server'
-    ]
-
-.. _web:
-
-web Group
+Time Zone
 ---------
 
-.. _static_url:
+.. attribute:: time_zone
 
-static_url
+    :type: str
+
+    The time zone that your server is located in.
+
+Commands
+--------
+
+.. attribute:: commands
+
+    :type: dict
+
+    A list of system commands that can control the server
+
+    .. code-block:: python
+
+        {
+            'restart': 'command to restart the server',
+            'shutdown': 'command to shutdown the computer',
+            'stop': 'command to stop the server'
+        }
+
+Web
+---
+
+Static URL
 ^^^^^^^^^^
 
-the endpoint of the static url.
+.. attribute:: web.static_url
 
-    default: `static`
+    :type: str
+    :default: `static`
 
-.. _databases:
+    the endpoint of the static url.
 
-databases
+Databases
 ^^^^^^^^^
 
-All the databases. I'm not entirely sure why I would need multiple databases,
-but the support is there.
+.. attribute:: web.databases
 
-.. _password_validation:
+    All the databases. I'm not entirely sure why I would need multiple databases,
+    but the support is there.
 
-password_validation
+    .. todo::
+    
+        Figure out what's going on.
+
+Password Validation
 ^^^^^^^^^^^^^^^^^^^
 
-A list of django password validators used to validate passwords.
+.. attribute:: web.password_validation
 
-default:
+    :type: list
 
-.. code-block:: python
+    A list of django password validators used to validate passwords.
 
-    [
-        "userAttributeSimilarityValidator",
-        "MinimumLengthValidator",
-        "CommonPasswordValidator",
-        "NumericPasswordValidator"
-    ]
+    :default:
 
-.. _allowed_hosts:
+        .. code-block:: python
 
-allowed_hosts
+            [
+                "userAttributeSimilarityValidator",
+                "MinimumLengthValidator",
+                "CommonPasswordValidator",
+                "NumericPasswordValidator"
+            ]
+
+Allowed Hosts
 ^^^^^^^^^^^^^
 
-A list of hosts that the server will listen on.
+.. attribute:: web.allowed_hosts
 
-.. _template_globals:
+    :type: list
 
-template_globals
+    A list of hosts that the server will listen on.
+
+Template Globals
 ^^^^^^^^^^^^^^^^
 
-Global variables to be inserted into templates.
+.. attribute:: web.template_globals
 
-.. _sidebar:
+    :type: dict
 
-sidebar
+    Global variables to be inserted into templates.
+
+Sidebar
 ^^^^^^^
 
-The structure of the sidebar.
+.. attribute:: web.sidebar
 
-TODO, add more info
+    The structure of the sidebar.
 
-.. _api_keys:
+    .. todo::
+    
+        Add more info
 
-api_keys
+Api Keys
 ^^^^^^^^
 
-A list of API keys and their permissions
+.. attribute:: web.api_keys
 
-.. code-block:: python
+    :type: list
 
-    {
-        'key': 'key-value',
-        'name': 'name of the key',
-        'permissions': [
-            'permission'
+    A list of API keys and their permissions
+
+    .. code-block:: python
+
+        [
+            {
+                'key': 'key-value',
+                'name': 'name of the key',
+                'permissions': [
+                    'permission'
+                ]
+            }
         ]
-    }
 
-.. _extensions:
+Extensions
+----------
 
-extensions Group
-----------------
-
-.. _weather_driver:
-
-weather_driver
+Weather Driver
 ^^^^^^^^^^^^^^
 
-The driver to use to get the weather.
+.. attribute:: extensions.weather_driver
 
-    default: `dummyWeather`
+    :type: str
+    :default: `dummyWeather`
 
-.. _disabled:
+    The driver to use to get the weather.
 
-disabled
+Disabled
 ^^^^^^^^
 
-A list of disabled plugins
+.. attribute:: extensions.disabled
 
-.. _settings_config:
+    :type: list
 
-settings
+    A list of disabled plugins
+
+Settings
 ^^^^^^^^
 
-The settings for each plugin.
+.. attribute:: extensions.settings
+
+    :type: dict
+
+    The settings for each plugin.

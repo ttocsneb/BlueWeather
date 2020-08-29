@@ -38,6 +38,13 @@ Installation
 
 To install BlueWeather, the first step is to download it, which you can do by
 
+.. note::
+
+   Required Software
+
+   * Python 3.6
+   * npm
+
 .. code-block:: shell
 
    git clone https://github.com/ttocsneb/blueweather.git
@@ -47,9 +54,14 @@ Once you have the source downloaded, you can install it by running
 .. code-block:: shell
 
    cd blueweather
-   pip install .
+   python -m pip install .
+   npm i
 
-Make sure that your version of python is at least 3.7
+To start the server
+
+.. code-block:: shell
+
+   python manage.py runserver
 
 Contribute
 ----------
