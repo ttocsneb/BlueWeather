@@ -6,6 +6,12 @@ mobile apps or in other use cases. In order to use the API, you first need to
 get access to an API Key. At the moment, the only way to get an API key is to
 add one manually in the config.
 
+General Usage
+-------------
+
+API Token
+^^^^^^^^^
+
 All API requests will have to supply the API key somewhere in the request:
 
     For GET Requests, add the :code:`key` GET parameter.
@@ -15,6 +21,23 @@ All API requests will have to supply the API key somewhere in the request:
         /api/apiStuff?key='your-api-key'
     
     For POST Requests, add the :code:`key` header
+
+Errors
+^^^^^^
+
+All requests will return either success, or failure. On failure, a return code
+will be given, as well as context for more information.
+
+The return code is used to let the program know what happened, and the context
+is used to let the user know what happened.
+
+.. code-block:: json
+
+    {
+        "success": false,
+        "error": 0,
+        "context": "Some context for the error"
+    }
 
 Weather API
 -----------
@@ -35,11 +58,14 @@ Current Weather
         .. code-block:: json
 
             {
-                "time": "The time when the data was recorded",
-                "data": {
-                    "tempurature": {
-                        "value": 27.4,
-                        "type": "c"
+                "success": true,
+                "weather": {
+                    "time": "The time when the data was recorded",
+                    "data": {
+                        "tempurature": {
+                            "value": 27.4,
+                            "type": "c"
+                        }
                     }
                 }
             }
@@ -90,21 +116,22 @@ Weather history
             /api/weather/history?date='2020-8-28'&days=2
 
     :return:
-        A list of weather data objects
-
         .. code-block:: json
 
-            [
-                {
-                    "time": "The time when the data was recorded",
-                    "data": {
-                        "tempurature": {
-                            "value": 27.4,
-                            "type": "c"
+            {
+                "success": true,
+                "history": [
+                    {
+                        "time": "The time when the data was recorded",
+                        "data": {
+                            "tempurature": {
+                                "value": 27.4,
+                                "type": "c"
+                            }
                         }
                     }
-                }
-            ]
+                ]
+            }
 
 Settings
 --------
@@ -121,7 +148,14 @@ Get
 
     :param group: The optional groupname. If no group is given, all groups are returned
 
-    :return: The settings
+    :return:
+
+        .. code-block:: json
+
+            {
+                "success": true,
+                "settings": {}
+            }
 
 Change
 ^^^^^^
@@ -139,4 +173,32 @@ Change
 
             {
                 "group:setting-name": "Whatever-Settings-Object Required"
+            }
+    
+    :return:
+
+        .. code-block:: json
+
+            {
+                "success": true
+            }
+
+Apply
+^^^^^
+
+.. function:: /api/settings/apply
+
+    :type: GET
+    :permissions: Settings
+
+    Apply the changed settings to disk. This may require a restart of the
+    server to take effect.
+
+    :return:
+
+        .. code-block:: json
+
+            {
+                "success": true,
+                "restart_required": true
             }

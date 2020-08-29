@@ -30,8 +30,8 @@ Contents
 
    pluginApi
    config
-   docs
    web/api
+   docs
 
 Installation
 ------------
