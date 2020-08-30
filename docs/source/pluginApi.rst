@@ -1,3 +1,5 @@
+.. currentmodule:: blueweather.plugins.base
+
 .. _plugins:
 
 Plugins
@@ -53,9 +55,9 @@ For this example, we have defined two extensions:
 * blueweather.plugins.plugin
 * blueweather.plugins.startup
 
-The :class:`~blueweather.plugins.base.Plugin` extension gives usefull
+The :class:`~Plugin` extension gives usefull
 information about the plugin, and is required for all plugins. The 
-:class:`~blueweather.plugins.base.Startup` extension requests a message 
+:class:`~Startup` extension requests a message 
 for when the server is up and running.
 
 Next we will create the file `simplePlugin/__init__.py`
@@ -76,10 +78,10 @@ Next we will create the file `simplePlugin/__init__.py`
             print("Everything works!")
 
 This is where the code for the plugin lives. We have defined two required
-functions for the :class:`~blueweather.plugins.base.Plugin` extension (:meth:`~blueweather.plugins.base.Plugin.get_plugin_name`,
-and :meth:`~blueweather.plugins.base.Plugin.get_plugin_description`)
-This simply gives information about our plugin to the user. Then from the :class:`~blueweather.plugins.base.Startup`
-extension, we implement :meth:`~blueweather.plugins.base.Startup.on_startup` where we print to the console that everything
+functions for the :class:`~Plugin` extension (:meth:`~Plugin.get_plugin_name`,
+and :meth:`~Plugin.get_plugin_description`)
+This simply gives information about our plugin to the user. Then from the :class:`~Startup`
+extension, we implement :meth:`~Startup.on_startup` where we print to the console that everything
 is working.
 
 This is an exceedingly simple plugin, but it should be enough to get you started
@@ -88,12 +90,23 @@ in creating your own plugins.
 API Reference
 -------------
 
+.. autosummary::
+
+    Plugin
+    Startup
+    API
+    Settings
+    Weather
+    UnitConversion
+    blueweather.plugins.hooks.get_hook
+    blueweather.plugins.hooks.Hook
+
 .. _plugin:
 
 Plugin
 ^^^^^^
 
-.. autoclass:: blueweather.plugins.base.Plugin
+.. autoclass:: Plugin
     :members:
 
 .. _startup:
@@ -101,7 +114,7 @@ Plugin
 Startup
 ^^^^^^^
 
-.. autoclass:: blueweather.plugins.base.Startup
+.. autoclass:: Startup
     :members:
 
 .. _api:
@@ -109,7 +122,7 @@ Startup
 API
 ^^^
 
-.. autoclass:: blueweather.plugins.base.API
+.. autoclass:: API
     :members:
 
 .. _settings:
@@ -117,7 +130,7 @@ API
 Settings
 ^^^^^^^^
 
-.. autoclass:: blueweather.plugins.base.Settings
+.. autoclass:: Settings
     :members:
 
 .. _weather:
@@ -125,7 +138,7 @@ Settings
 Weather
 ^^^^^^^
 
-.. autoclass:: blueweather.plugins.base.Weather
+.. autoclass:: Weather
     :members:
 
 .. _unitConversion:
@@ -133,7 +146,7 @@ Weather
 UnitConversion
 ^^^^^^^^^^^^^^
 
-.. autoclass:: blueweather.plugins.base.UnitConversion
+.. autoclass:: UnitConversion
     :members:
 
 .. _hooks:

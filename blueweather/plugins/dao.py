@@ -28,6 +28,9 @@ def strip_name(tup: tuple):
 
 
 class Plugin:
+    """
+    Get Plugin Info
+    """
     @staticmethod
     def get_plugin_name(ext: Extension) -> str:
         """
@@ -74,6 +77,9 @@ class Plugin:
 
 
 class Startup:
+    """
+    Send messages to plugins on startup
+    """
     @staticmethod
     def on_startup(man: EnabledExtensionManager):
         """
@@ -86,6 +92,10 @@ class Startup:
 
 
 class API:
+    """
+    Get API Configurations from plugins.
+    """
+
     @staticmethod
     def allApiPatterns(man: ExtensionManager) -> list:
         """
@@ -113,6 +123,10 @@ class API:
 
 
 class Settings:
+    """
+    Manage plugins' settings
+    """
+
     @staticmethod
     def load_settings(man: EnabledExtensionManager, config: Config):
         """
@@ -245,6 +259,10 @@ class Settings:
 
 
 class Weather:
+    """
+    Get the weather from the weather driver
+    """
+
     @staticmethod
     def on_weather_request(ext: Extension) -> dict:
         """
@@ -258,6 +276,10 @@ class Weather:
 
 
 class UnitConversion:
+    """
+    Convert diffent units of measurement
+    """
+
     @staticmethod
     def conversions(man: DispatchExtensionManager) -> Dict[str, Set[str]]:
         """

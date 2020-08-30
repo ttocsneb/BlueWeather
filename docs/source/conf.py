@@ -33,6 +33,7 @@ release = '0.3.0-alpha'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.todo',
+    'sphinx.ext.autosummary',
     'sphinx_rtd_theme'
 ]
 
@@ -60,3 +61,6 @@ html_static_path = ['_static']
 master_doc = "index"
 
 todo_include_todos = True
+
+autodoc_default_flags = ['members']
+# autosummary_generate = True

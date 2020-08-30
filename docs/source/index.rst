@@ -31,7 +31,8 @@ Contents
    pluginApi
    config
    web/api
-   docs
+   internal/docs
+
 
 Installation
 ------------
