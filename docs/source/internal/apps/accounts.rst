@@ -1,8 +1,6 @@
 Accounts
 ========
 
-.. currentmodule:: blueweather.apps.accounts
-
 Manages the Accounts Page using :code:`auth` middleware from django.
 
 AccountsConfig
@@ -15,6 +13,8 @@ AccountsConfig
     .. autoattribute:: AccountsConfig.label
     .. autoattribute:: AccountsConfig.verbose_name
     .. autoattribute:: AccountsConfig.icon
+
+.. currentmodule:: blueweather.apps.accounts
 
 URLS
 ----
