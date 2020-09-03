@@ -62,9 +62,7 @@ def parse_sidebar(obj: dict):
     return item
 
 
-if settings.configured:
-
-    sidebar = [parse_sidebar(x) for x in settings.SIDEBAR]
+sidebar = [parse_sidebar(x) for x in settings.SIDEBAR]
 
 
 def now():

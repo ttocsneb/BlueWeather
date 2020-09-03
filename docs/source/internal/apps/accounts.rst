@@ -52,7 +52,7 @@ URLS
         :view: :meth:`views.index`
 
 Views
---------
+-----
 
 .. automodule:: blueweather.apps.accounts.views
     :members:

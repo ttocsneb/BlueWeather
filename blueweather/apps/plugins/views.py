@@ -11,7 +11,10 @@ from blueweather.apps.api.decorators import csrf_authorization_required
 
 
 @login_required
-def index(request):
+def index(request: HttpRequest):
+    """
+    The main page for managing plugins
+    """
     return render(request, 'plugins/plugins.html', context={
         'name': 'Plugins',
         'extensions': settings.EXTENSIONS.getPluginList()
@@ -21,6 +24,33 @@ def index(request):
 @csrf_authorization_required
 @require_POST
 def plugin_list(request: HttpRequest):
+    """
+    Get a list of all the plugins as a json list.
+
+    .. note::
+
+        The shown parameters are GET parameters
+
+    :param page: page number (default: 0)
+    :param items: number of items per page (default: 10)
+
+    :return:
+
+        .. code-block:: json
+
+            {
+                "plugins": {
+                    "plugin-name": {}
+                },
+                "page": "page-number",
+                "items": "plugins-per-page",
+                "pages": "total-pages",
+                "total": "total-plugins"
+            }
+
+        See :meth:`~blueweather.plugins.ExtensionsSingleton.getPluginList` for
+        plugin object description.
+    """
     plugins_raw = settings.EXTENSIONS.getPluginList()
 
     page = int(request.GET.get('page', 0))

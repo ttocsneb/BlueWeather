@@ -15,6 +15,9 @@ class ExtensionsConfig(AppConfig):
     login_required = True
 
     def ready(self):
+        """
+        When the App is ready, let all the plugins know that the server is ready
+        """
         logger = logging.getLogger(__name__)
         logger.info("Server is now ready")
         dao.Startup.on_startup(settings.EXTENSIONS.startup)
