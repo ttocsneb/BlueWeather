@@ -1,6 +1,9 @@
 # BlueWeather
 
 [![tb]][Trello]
+[![docsb]][docs]
+[![Build Master]][bd]
+[![Grade Master]][gm]
 
 > This software is still in early development.
 
@@ -177,3 +180,6 @@ with things such as Android/iOS/desktop apps.
 
 [Trello]: https://trello.com/b/fhguq1j3/blueweather
 [tb]: https://img.shields.io/badge/Trello-View-blue
+
+[docsb]: https://img.shields.io/readthedocs/blueweather
+[docs]: https://blueweather.readthedocs.io
