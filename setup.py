@@ -36,7 +36,7 @@ EXTRAS_REQUIRE = {}
 
 setup(
     name="BlueWeather",
-    version='0.3.0',
+    version='0.4.0-alpha',
 
     description="A web-app for your Personal Weather Staion",
     long_description=LONG_DESCRIPTION,
@@ -46,7 +46,7 @@ setup(
     extras_require=EXTRAS_REQUIRE,
 
     classifiers=[
-        "Development Status :: 1 - Planning",
+        "Development Status :: 2 - Pre-Alpha",
         "Environment :: Web Environment",
         "Framework :: Django",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",

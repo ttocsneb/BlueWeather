@@ -10,7 +10,7 @@ class AccountsConfig(AppConfig):
 
     def route(self, request: HttpRequest) -> str:
         """
-        Get the route for the sidebar 
+        Get the route for the sidebar
 
         :param request: request
 

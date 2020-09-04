@@ -1,14 +1,13 @@
 # BlueWeather
 
+[![tb]][Trello]
+
 > This software is still in early development.
 
-| Branch   | Build | Grade | Progress | Lines |
-|----------|-------|-------|----------|-------|
-| [Master] | [![Build Master]][bd] | [![Grade Master]][gm] | [![Progress Master]][Master] | [![Lines Master]][Master] |
-| [Plugin] | [![Build Plugin]][bd] | [![Grade Plugin]][gp] | [![Progress Plugin]][Plugin] | [![Lines Plugin]][Plugin] |
-
-> Progress comes from the number of checked check boxes in this readme. The
-> Progress may not be accurate as I do not yet have the TODOs set in stone
+| Branch   | Build                 | Grade                 |
+|----------|-----------------------|-----------------------|
+| [Master] | [![Build Master]][bd] | [![Grade Master]][gm] |
+| [Plugin] | [![Build Plugin]][bd] | [![Grade Plugin]][gp] |
 
 BlueWeather is an open-source personal weather station (PWS) web-app. It
 connects your weather station hardware to a website allowing you to view
@@ -115,10 +114,10 @@ processing, django sub-app, and possibly more I haven't yet thought of.
     * [X] Implement it
     * [ ] Add Testing
   * [X] Create Startup/Shutdown Extension
-    * [ ] Implement it
+    * [X] Implement it
     * [ ] Add Testing
   * [X] Create Settings Extension
-    * [ ] Implement it
+    * [X] Implement it
     * [ ] Add Testing
   * [X] Create Unit-Conversion Extension
     * [X] Implement it
@@ -126,7 +125,7 @@ processing, django sub-app, and possibly more I haven't yet thought of.
   * [X] Create API Extension
     * [X] Implement it
     * [ ] Add Testing
-* [ ] Add plugin hooks (_Ability for plugins to interact with other plugins_)
+* [X] Add plugin hooks (_Ability for plugins to interact with other plugins_)
 * [X] Create Plugin Management App
   * [X] View list of plugins
   * [ ] Disable/enable plugins
@@ -173,12 +172,8 @@ with things such as Android/iOS/desktop apps.
 [Grade Plugin]: https://www.codefactor.io/repository/github/ttocsneb/blueweather/badge/plugin
 [gp]: https://www.codefactor.io/repository/github/ttocsneb/blueweather/overview/plugin
 
-[Progress Master]: ../master/badges/progress.svg
-[Progress Plugin]: ../plugin/badges/progress.svg
-
-[Lines Master]: ../master/badges/lines.svg
-[Lines Plugin]: ../plugin/badges/lines.svg
-
 [Master]: https://github.com/ttocsneb/BlueWeather/
 [Plugin]: https://github.com/ttocsneb/BlueWeather/tree/plugin
 
+[Trello]: https://trello.com/b/fhguq1j3/blueweather
+[tb]: https://img.shields.io/badge/Trello-View-blue

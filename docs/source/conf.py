@@ -21,7 +21,7 @@ copyright = '2020, Benjamin Jacobs'
 author = 'Benjamin Jacobs'
 
 # The full version, including alpha/beta/rc tags
-release = '0.3.0-alpha'
+release = '0.4.0-alpha'
 
 
 # -- General configuration ---------------------------------------------------
@@ -64,4 +64,3 @@ master_doc = "index"
 todo_include_todos = True
 
 autodoc_default_flags = ['members']
-# autosummary_generate = True
