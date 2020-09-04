@@ -1,5 +1,7 @@
-from marshmallow import fields, exceptions
 import collections
+import re
+
+from marshmallow import fields
 
 from . import objects
 
@@ -22,6 +24,27 @@ def strip_defaults(self, data, **kwargs):
             new_data[k] = v
             continue
     return new_data
+
+
+class APIKey(fields.String):
+    """
+    A Uuid formatted string
+    """
+
+    def _format(self, value: str) -> str:
+        return re.sub(r"[^0-9a-f]+", "", value.lower())
+
+    def _deserialize(self, value, attr, data, **kwargs):
+        uuid = super()._deserialize(value, attr, data, **kwargs)
+        return self._format(uuid)
+
+    def _serialize(self, value, attr, obj, **kwargs):
+        uuid = self._format(value)
+        chunk_size = 8
+        chunks = [
+            uuid[i:i + chunk_size] for i in range(0, len(uuid), chunk_size)
+        ]
+        return super()._serialize('-'.join(chunks), attr, obj, **kwargs)
 
 
 class ClassString(fields.String):

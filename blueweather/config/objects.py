@@ -12,7 +12,7 @@ def _print_attrs(obj, *args, join="\n  "):
     return join + join.join(split)
 
 
-def generate_secret():
+def generate_key(alphabet, length=50):
     """
     > Inspired from https://gist.github.com/ndarville/3452907
 
@@ -23,12 +23,19 @@ def generate_secret():
     _logger.info("Generating Secret Key..")
 
     SECRET_KEY = ''.join(
-        [random.SystemRandom().choice(
-            'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)')
-         for i in range(50)
+        [random.SystemRandom().choice(alphabet)
+         for i in range(length)
          ]
     )
     return SECRET_KEY
+
+
+def generate_secret():
+    return generate_key('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)')
+
+
+def generate_api():
+    return generate_key('1234567890abcdef', length=32)
 
 
 class Settings:
@@ -112,17 +119,97 @@ class Database(Settings, dict):
         return final
 
 
-class Web(Settings):
-    _required = []
+class APIKey(Settings):
+    _required = ['key', 'name']
     _defaults = dict(
-        static_url="/static/",
-        allowed_hosts=[]
+        name='default',
+        permissions=[]
     )
     _modifiable = []
 
+    def __init__(self, key: str = None, name: str = None,
+                 permissions: list = None):
+        super().__init__()
+
+        self.key = key
+        if self.key is None:
+            self.key = generate_api()
+            self._modified = True
+
+        if name is None:
+            self._modified = True
+        self.name = name or self._defaults['name']
+        self.permissions = permissions or self._defaults['permissions']
+
+    def check_api(self, key: str) -> bool:
+        """
+        Check if the supplied api key matches the stored api key
+        """
+        from . import fields
+        if not key:
+            return False
+        key = fields.APIKey()._deserialize(str(key), None, None)
+        return key == self.key
+
+    def __str__(self):
+        from . import fields
+        return fields.APIKey()._serialize(str(self.key), None, None)
+
+    def __repr__(self):
+        return "<APIKey(name='{name}', permissions={permissions})>".format(
+            name=self.name, permissions=self.permissions
+        )
+
+
+class APIList(list):
+    def __init__(self, iterable: list = None):
+        if iterable is None:
+            iterable = [APIKey()]
+        super().__init__(iterable)
+
+    def find(self, key: str) -> APIKey:
+        """
+        Find the key object from the key
+
+        :raises KeyError: when no key object is found
+        """
+        for k in self:
+            if k.check_api(key):
+                return k
+        raise KeyError
+
+    def get(self, key: str, default=None) -> APIKey:
+        """
+        Like find, but will not through a key error
+        """
+        try:
+            return self.find(key)
+        except KeyError:
+            return default
+
+    @property
+    def modified(self):
+        return any(map(lambda x: x.modified, self))
+
+    @modified.setter
+    def modified(self, value):
+        for i in self:
+            i.modified = value
+
+
+class Web(Settings):
+    _required = ['api_keys']
+    _defaults = dict(
+        static_url="/static/",
+        allowed_hosts=[],
+        sidebar=None
+    )
+    _modifiable = ['api_keys']
+
     def __init__(self, static_url: str = None, databases: dict = None,
                  password_validation: dict = None, allowed_hosts: list = None,
-                 template_globals: dict = None, sidebar: list = None):
+                 template_globals: dict = None, sidebar: list = None,
+                 api_keys: str = None):
         super().__init__()
         self.static_url = static_url or self._defaults['static_url']
 
@@ -150,6 +237,7 @@ class Web(Settings):
             self._modified = True
 
         self.sidebar = sidebar
+        self.api_keys = APIList(api_keys)
 
         self._init = False
 
@@ -165,6 +253,34 @@ class Web(Settings):
         return str(self)
 
 
+class Extensions(Settings):
+    _required = ['weather_driver']
+    _defaults = dict(
+        weather_driver='dummyWeather'
+    )
+
+    def __init__(self, weather_driver: str = None, disabled: list = None,
+                 settings: dict = None):
+        super().__init__()
+
+        self.weather_driver = weather_driver or \
+            self._defaults['weather_driver']
+
+        self.disabled = disabled or list()
+        self.settings = settings or dict()
+
+
+class Commands(Settings):
+    def __init__(self, stop: str = None, restart: str = None,
+                 shutdown: str = None):
+        super().__init__()
+        self.stop = stop or ''
+        self.restart = restart or ''
+        self.shutdown = shutdown or ''
+
+        self._init = False
+
+
 class Config(Settings):
     _required = ["secret_key"]
     _defaults = dict(
@@ -172,10 +288,11 @@ class Config(Settings):
         web=dict(),
         time_zone="UTC"
     )
-    _modifiable = ["web"]
+    _modifiable = ["web", "commands", "extensions"]
 
     def __init__(self, secret_key: str = None, debug: bool = None,
-                 web: Web = None, time_zone: str = None):
+                 web: Web = None, time_zone: str = None,
+                 commands: Commands = None, extensions: Extensions = None):
         super().__init__()
         self.secret_key = secret_key
         if self.secret_key is None:
@@ -187,6 +304,14 @@ class Config(Settings):
         self.web = web
         if self.web is None:
             self.web = Web()
+
+        self.commands = commands
+        if self.commands is None:
+            self.commands = Commands()
+
+        self.extensions = extensions
+        if self.extensions is None:
+            self.extensions = Extensions()
 
         self._init = False
 

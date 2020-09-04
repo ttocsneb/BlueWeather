@@ -1,15 +1,23 @@
 {
   "name": "blueweather",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "description": "A web-app for your Personal Weather Station",
   "main": "index.js",
   "dependencies": {
     "bootstrap": "^4.4.1",
+    "js-cookie": "^2.2.1",
+    "lodash": "^4.17.20",
     "popper.js": "^1.16.1",
-    "startbootstrap-sb-admin-2": "^4.0.7",
+    "startbootstrap-sb-admin-2": "^4.1.1",
+    "vue": "^2.6.11",
     "weather-icons": "^1.3.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/jquery": "^3.3.35",
+    "@types/js-cookie": "^2.2.6",
+    "@types/lodash": "^4.14.150",
+    "typescript": "^3.8.3"
+  },
   "scripts": {
     "test": "./test.sh"
   },

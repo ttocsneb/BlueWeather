@@ -9,7 +9,7 @@ import testing
 if "-prog" in sys.argv:
     i = sys.argv.index("-prog")
     prog = sys.argv[i + 1]
-    del sys.argv[i:i+2]
+    del sys.argv[i:i + 2]
 else:
     prog = sys.argv[0]
 

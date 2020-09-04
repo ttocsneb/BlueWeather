@@ -10,19 +10,60 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
+import logging.config
 import os
 
 from .config import Config
+from .plugins import ExtensionsSingleton
+from .plugins import dao
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+LOGGING_CONFIG = None
+logging.config.dictConfig({
+    'version': 1,
+    'formatters': {
+        'brief': {
+            'format': '%(levelname)-5.5s [%(asctime)s - %(name)s] %(message)s',
+            'datefmt': '%I:%M:%S %p'
+        },
+        'default': {
+            'format': '%(levelname)-5.5s [%(asctime)s - %(name)s] %(message)s',
+            'datefmt': '%m/%d/%Y %I:%M:%S %p'
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'brief',
+            'level': 'INFO',
+            'stream': 'ext://sys.stdout'
+        }
+    },
+    'root': {
+        'level': 'INFO',
+        'handlers': ['console']
+    },
+    #  'incremental': True
+})
 
 # Configuration are user-defined settings. They are all stored in the CONFIG
 # object, and follow a different convention from Settings to differentiate them
 CONFIG = Config(os.path.join(BASE_DIR, "config.yml"))
 CONFIG.load()
+
+# because django is set to reload, two instances of extensions will always be
+# loaded. to stop this, use 'manage.py runserver --noreload'
+EXTENSIONS = ExtensionsSingleton(CONFIG, True)
+dao.Settings.load_settings(EXTENSIONS.settings, CONFIG)
 if CONFIG.modified:
     CONFIG.save()
+
+
+# Unit Conversions
+UNITS = dao.UnitConversion.all_conversions(EXTENSIONS.unitConversion)
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -40,10 +81,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'blueweather.weather',
-    'blueweather.accounts'
+    'blueweather.apps.weather',
+    'blueweather.apps.accounts',
+    'blueweather.apps.plugins',
+    'blueweather.apps.api'
 ]
-
 
 # A list of apps that should be linked in the sidebar
 SIDEBAR = CONFIG.web.sidebar or [
@@ -52,14 +94,18 @@ SIDEBAR = CONFIG.web.sidebar or [
     },
     {
         "category": "item",
-        "value": "blueweather.weather"
+        "value": "blueweather.apps.weather"
+    },
+    {
+        "category": "item",
+        "value": "blueweather.apps.plugins"
     },
     {
         "category": "divider"
     },
     {
         "category": "item",
-        "value": "blueweather.accounts"
+        "value": "blueweather.apps.accounts"
     }
 ]
 
@@ -116,9 +162,6 @@ TEMPLATES = [
     },
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            os.path.join(BASE_DIR, "templates")
-        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'debug': DEBUG,

@@ -1,11 +1,10 @@
 from django.apps.registry import apps
 from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
+from django.forms import Widget
 from django.urls import reverse
 from django.utils import dateformat, datetime_safe, formats, timezone
 from jinja2 import Environment
-
-from django.forms import Widget
 
 
 def get_or_call(request, setting):
@@ -55,11 +54,11 @@ def parse_sidebar(obj: dict):
         item['path'] = get_attr(item['value'], 'route') \
             or get_attr(item['value'], 'name') + ':index'
         item['item'] = True
+        item['login_required'] = get_attr(item['value'], 'login_required')
     else:
         item['item'] = False
     item['header'] = item['category'] == 'header'
     item['divider'] = item['category'] == 'divider'
-    print(item)
     return item
 
 

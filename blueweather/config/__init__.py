@@ -12,7 +12,7 @@ class Config(objects.Config):
     def __init__(self, directory: str):
         # Secret_key is populated with an empty string to prevent a new key
         # from being generated everytime config is initialized
-        super().__init__(secret_key="")
+        super().__init__(secret_key="", web=objects.Web(api_keys=''))
         self._directory = directory
 
     def __apply(self, obj: objects.Config):
@@ -21,6 +21,8 @@ class Config(objects.Config):
         self.secret_key = obj.secret_key
         self.time_zone = obj.time_zone
         self.modified = obj.modified
+        self.extensions = obj.extensions
+        self.commands = obj.commands
 
     def set_defaults(self):
         self.__apply(objects.Config())

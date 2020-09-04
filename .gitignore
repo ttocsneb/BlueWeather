@@ -116,8 +116,8 @@ venv.bak/
 # NPM
 node_modules
 
-# django
-static
-
 # Configs
 /*.yml
+
+# readthedocs
+!.readthedocs.yml

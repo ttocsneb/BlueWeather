@@ -1,5 +1,4 @@
-from marshmallow import (Schema, fields, post_dump, post_load, pre_dump,
-                         validate)
+from marshmallow import Schema, fields, post_dump, post_load, pre_dump
 
 from . import fields as customFields
 from . import objects
@@ -29,6 +28,19 @@ class SidebarSchema(Schema):
     value = fields.String()
 
 
+class APIKeySchema(Schema):
+    key = customFields.APIKey()
+    name = fields.String()
+    permissions = fields.List(fields.String())
+
+    get_object = pre_dump(fn=customFields.get_object)
+    strip_defaults = post_dump(fn=customFields.strip_defaults)
+
+    @post_load
+    def makeAPIKey(self, data, **kwargs):
+        return objects.APIKey(**data)
+
+
 class WebSchema(Schema):
     static_url = fields.String()
     databases = fields.Dict(fields.String(), customFields.Database())
@@ -38,16 +50,42 @@ class WebSchema(Schema):
     allowed_hosts = fields.List(fields.String(), allow_none=True)
     template_globals = fields.Dict(fields.String(), fields.String())
 
+    sidebar = customFields.NamedList(
+        fields.Nested(SidebarSchema), "category", "value", value_only=True,
+        allow_none=True
+    )
+
+    api_keys = fields.List(fields.Nested(APIKeySchema))
+
     get_object = pre_dump(fn=customFields.get_object)
     strip_defaults = post_dump(fn=customFields.strip_defaults)
-
-    sidebar = customFields.NamedList(
-        fields.Nested(SidebarSchema), "category", "value", value_only=True
-    )
 
     @post_load
     def makeWeb(self, data, **kwargs):
         return objects.Web(**data)
+
+
+class ExtensionsSchema(Schema):
+    weather_driver = fields.String()
+    disabled = fields.List(fields.String())
+    settings = fields.Dict(fields.String(), fields.Dict())
+
+    get_object = pre_dump(fn=customFields.get_object)
+    strip_defaults = post_dump(fn=customFields.strip_defaults)
+
+    @post_load
+    def makeExtensions(self, data, **kwargs):
+        return objects.Extensions(**data)
+
+
+class CommandsSchema(Schema):
+    stop = fields.String()
+    restart = fields.String()
+    shutdown = fields.String()
+
+    @post_load
+    def makeCommands(self, data, **kwargs):
+        return objects.Commands(**data)
 
 
 class ConfigSchema(Schema):
@@ -55,6 +93,8 @@ class ConfigSchema(Schema):
     debug = fields.Boolean()
     web = fields.Nested(WebSchema)
     time_zone = fields.String()
+    commands = fields.Nested(CommandsSchema)
+    extensions = fields.Nested(ExtensionsSchema)
 
     get_object = pre_dump(fn=customFields.get_object)
     strip_defaults = post_dump(fn=customFields.strip_defaults)

@@ -29,14 +29,14 @@ INSTALL_REQUIRES = [
     'Jinja2==2.11.1',
     'ruamel.yaml==0.16.10',
     'marshmallow==3.5.1',
-    'stevedore'
+    'stevedore==1.32.0'
 ]
 
 EXTRAS_REQUIRE = {}
 
 setup(
     name="BlueWeather",
-    version='0.2.0',
+    version='0.4.0-alpha',
 
     description="A web-app for your Personal Weather Staion",
     long_description=LONG_DESCRIPTION,
@@ -46,7 +46,7 @@ setup(
     extras_require=EXTRAS_REQUIRE,
 
     classifiers=[
-        "Development Status :: 1 - Planning",
+        "Development Status :: 2 - Pre-Alpha",
         "Environment :: Web Environment",
         "Framework :: Django",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
@@ -66,5 +66,18 @@ setup(
     include_package_data=True,
     zip_safe=False,
 
-    entry_points={}
+    entry_points={
+        'blueweather.plugins.unitconv': [
+            'imperialConverter = blueweather.plugins.integrated.converters:ImperialConversion',
+            'metricConverter = blueweather.plugins.integrated.converters:MetricConversion'
+        ],
+        'blueweather.plugins.weather': [
+            'dummyWeather = blueweather.plugins.integrated.dummyWeather:DummyWeather'
+        ],
+        'blueweather.plugins.plugin': [
+            'imperialConverter = blueweather.plugins.integrated.converters:ImperialConversion',
+            'metricConverter = blueweather.plugins.integrated.converters:MetricConversion',
+            'dummyWeather = blueweather.plugins.integrated.dummyWeather:DummyWeather'
+        ]
+    }
 )
