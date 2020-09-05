@@ -84,7 +84,8 @@ INSTALLED_APPS = [
     'blueweather.apps.weather',
     'blueweather.apps.accounts',
     'blueweather.apps.plugins',
-    'blueweather.apps.api'
+    'blueweather.apps.api',
+    'blueweather.apps.settings'
 ]
 
 # A list of apps that should be linked in the sidebar
@@ -97,11 +98,15 @@ SIDEBAR = CONFIG.web.sidebar or [
         "value": "blueweather.apps.weather"
     },
     {
+        "category": "divider"
+    },
+    {
         "category": "item",
         "value": "blueweather.apps.plugins"
     },
     {
-        "category": "divider"
+        "category": "item",
+        "value": "blueweather.apps.settings"
     },
     {
         "category": "item",

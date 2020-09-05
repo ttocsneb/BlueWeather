@@ -35,6 +35,10 @@ urlpatterns = [
         ('blueweather.apps.plugins.urls', 'plugins'),
         namespace='plugins'
     )),
+    path('settings/', include(
+        ('blueweather.apps.settings.urls', 'settings'),
+        namespace='settings'
+    )),
     path('api/', include(
         ('blueweather.apps.api.urls', 'api'),
         namespace='api'
