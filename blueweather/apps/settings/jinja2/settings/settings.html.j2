@@ -1,0 +1,38 @@
+{% extends "main.html" %}
+
+{% block content %}
+<div id="settings">
+    <template>
+        <settings-card
+            title="Settings"
+            child="settings-component"
+            config="{{ settings() }}"
+            @popup="onPopup" />
+    </template>
+    <template>
+        <settings-card
+            title="Web Settings"
+            child="web-settings-component"
+            config="{{ settings('web') }}"
+            @popup="onPopup" />
+    </template>
+    <div class="modal fade" id="settings-modal" tabindex="-1" aria-labelledby="popup-label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="popup-label">[[ popup.title ]]</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <component :is="popup.component" :payload="popup.payload" @close="close()" />
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script src="{{ static('settings/settings_component.js') }}"></script>
+<script src="{{ static('settings/settings.js') }}"></script>
+{% endblock scripts %}

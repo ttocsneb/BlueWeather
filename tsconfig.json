@@ -8,13 +8,15 @@
     "target": "ES5",
     "allowSyntheticDefaultImports": true,
     "module": "none",
+    "moduleResolution": "node",
     "typeRoots": [
       "node_modules/vue/types/",
       "node_modules/@types"
     ]
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "venv"
   ],
   "include": [
     "**/*"

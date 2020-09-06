@@ -77,3 +77,13 @@ class Config(objects.Config):
             yaml.dump(data, conf)
 
         self.modified = False
+
+    def dump(self) -> dict:
+        """
+        Dump the settings into a dictionary
+        """
+        schema = schemes.ConfigSchema()
+        data = schema.dump(self)
+        # Prevent the secret key from being sent!
+        del data['secret_key']
+        return data
