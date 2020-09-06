@@ -11,7 +11,8 @@
     "moduleResolution": "node",
     "typeRoots": [
       "node_modules/vue/types/",
-      "node_modules/@types"
+      "node_modules/@types",
+      "typescript"
     ]
   },
   "exclude": [

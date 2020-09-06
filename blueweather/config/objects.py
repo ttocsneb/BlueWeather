@@ -237,6 +237,26 @@ class Web(Settings):
             self._modified = True
 
         self.sidebar = sidebar
+        if self.sidebar is None:
+            self.sidebar = [
+                {
+                    "category": "item",
+                    "value": "blueweather.apps.weather"
+                },
+                {"category": "divider"},
+                {
+                    "category": "item",
+                    "value": "blueweather.apps.plugins"
+                },
+                {
+                    "category": "item",
+                    "value": "blueweather.apps.settings"
+                },
+                {
+                    "category": "item",
+                    "value": "blueweather.apps.accounts"
+                }
+            ]
         self.api_keys = APIList(api_keys)
 
         self._init = False

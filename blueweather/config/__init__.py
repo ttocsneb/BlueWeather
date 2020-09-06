@@ -3,7 +3,7 @@ import os
 
 from ruamel import yaml
 
-from . import objects, schemes
+from . import objects, schemes, ischema
 
 _logger = logging.getLogger(__name__)
 
@@ -82,8 +82,6 @@ class Config(objects.Config):
         """
         Dump the settings into a dictionary
         """
-        schema = schemes.ConfigSchema()
+        schema = ischema.ConfigSchema()
         data = schema.dump(self)
-        # Prevent the secret key from being sent!
-        del data['secret_key']
         return data

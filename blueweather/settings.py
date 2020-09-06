@@ -89,30 +89,7 @@ INSTALLED_APPS = [
 ]
 
 # A list of apps that should be linked in the sidebar
-SIDEBAR = CONFIG.web.sidebar or [
-    {
-        "category": "divider"
-    },
-    {
-        "category": "item",
-        "value": "blueweather.apps.weather"
-    },
-    {
-        "category": "divider"
-    },
-    {
-        "category": "item",
-        "value": "blueweather.apps.plugins"
-    },
-    {
-        "category": "item",
-        "value": "blueweather.apps.settings"
-    },
-    {
-        "category": "item",
-        "value": "blueweather.apps.accounts"
-    }
-]
+SIDEBAR = CONFIG.web.sidebar
 
 
 MIDDLEWARE = [

@@ -1,12 +1,7 @@
 /// <reference types="vue" />
 /// <reference types="jquery" />
 /// <reference types="lodash" />
-
-interface APIKey {
-    name: string
-    key: string
-    permissions: Array<string>
-}
+/// <reference types="settings" />
 
 Vue.component('settings-component', {
     props: {
@@ -18,6 +13,34 @@ Vue.component('settings-component', {
     template: `
 <p>Settings</p>
 `
+})
+
+Vue.component('web-apikey-view', {
+    props: {
+        payload: Object
+    },
+    data() {
+        return {
+            size: {
+                x: 200,
+                y: 200
+            }
+        }
+    },
+    computed: {
+        qrimg() {
+            return `https://api.qrserver.com/v1/create-qr-code/?size=${this.size.x}x${this.size.y}&data=${this.payload}`
+        }
+    },
+    template: `<div>
+    <div class="modal-body text-center">
+        <h6>{{ payload }}</h6>
+        <img :src="qrimg" width="size.x" height="size.y"></img>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Done</button>
+    </div>
+</div>`
 })
 
 Vue.component('web-apikey-create', {
@@ -107,6 +130,14 @@ Vue.component('web-settings-component', {
     props: {
         config: Object
     },
+    data: function() {
+        return {
+            sidebar: {
+                type: "item",
+                value: ""
+            }
+        }
+    },
     beforeMount: function() {
         console.log(this.config)
         console.log(this.settings)
@@ -117,7 +148,15 @@ Vue.component('web-settings-component', {
         }
     },
     methods: {
-        delete_apikey: function(name: string) {
+        view_apikey(name: string) {
+            let key: APIKey = this.config.api_keys.find((el: APIKey) => el.name == name )
+            this.$emit('popup', {
+                component: "web-apikey-view",
+                title: name,
+                payload: key.key
+            })
+        },
+        delete_apikey(name: string) {
             this.$emit('popup', {
                 component: "web-apikey-delete",
                 title: 'Delete API Key',
@@ -127,7 +166,7 @@ Vue.component('web-settings-component', {
                 }
             })
         },
-        create_apikey: function() {
+        create_apikey() {
             console.log("Create API KEY")
             this.$emit('popup', {
                 component: "web-apikey-create",
@@ -137,15 +176,14 @@ Vue.component('web-settings-component', {
                     keys: this.config.api_keys
                 }
             })
-            // TODO Create a web-apikey-create component
         },
-        on_delete_apikey: function(name: string) {
+        on_delete_apikey(name: string) {
             console.log(`Going to delete ${name} key`)
             const key = this.config.api_keys.findIndex((el: APIKey) => el.name == name )
             this.$delete(this.config.api_keys, key)
             // TODO Actually send the message to the server
         },
-        on_create_apikey: function(name: string, permissions: Array<string>) {
+        on_create_apikey(name: string, permissions: Array<string>) {
             console.log(`Going to create ${name} key`)
             this.config.api_keys.push({
                 name: name,
@@ -153,14 +191,42 @@ Vue.component('web-settings-component', {
                 permissions: permissions
             })
             // TODO Actually send the message to the server
+        },
+        sidebar_down(i: number) {
+            let temp1 = this.config.sidebar[i]
+            let temp2 = this.config.sidebar[i + 1]
+            Vue.set(this.config.sidebar, i, temp2)
+            Vue.set(this.config.sidebar, i + 1, temp1)
+            // TODO Actually send the message to the server
+        },
+        sidebar_up(i: number) {
+            let temp1 = this.config.sidebar[i]
+            let temp2 = this.config.sidebar[i - 1]
+            Vue.set(this.config.sidebar, i, temp2)
+            Vue.set(this.config.sidebar, i - 1, temp1)
+            // TODO Actually send the message to the server
+        },
+        sidebar_del(i: number) {
+            Vue.delete(this.config.sidebar, i)
+            // TODO Actually send the message to the server
+        },
+        sidebar_new() {
+            let obj: SidebarItem = {
+                category: this.sidebar.type,
+            }
+            if(obj.category == "item") {
+                obj.value = this.sidebar.value
+            }
+            this.config.sidebar.push(obj)
+            // TODO Actually send the message to the server
         }
     },
     template: `
-<form>
+<form action="#">
     <div class="form-group">
         <h4>API Keys</h4>
         <div class="table-responsive">
-            <table class="table table-striped width">
+            <table class="table table-striped">
                 <thead>
                     <tr>
                         <th scope="col">Name</th>
@@ -174,7 +240,9 @@ Vue.component('web-settings-component', {
                 <tbody>
                     <tr v-for="key in config.api_keys">
                         <th class="px-2" scope="row">{{ key.name }}</th>
-                        <td class="pr-2 text-uppercase">{{ key.key }}</td>
+                        <td class="pr-2 text-uppercase">
+                            <button type="button" class="btn btn-link" @click="view_apikey(key.name)">{{ key.key }}</button>
+                        </td>
                         <td class="pr-2">
                             <ul v-if="key.permissions && key.permissions.length">
                                 <li v-for="i in key.permissions">
@@ -201,6 +269,54 @@ Vue.component('web-settings-component', {
     <hr>
     <div class="form-group">
         <h4>Sidebar</h4>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Type</th>
+                        <th>Value</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(el, i) in config.sidebar">
+                        <td>
+                            <button :disabled="i == config.sidebar.length - 1" @click="sidebar_down(i)" type="button" class="btn btn-sm btn-link">
+                                <i class="fas fa-level-down-alt"></i>
+                            </button>
+                            <button :disabled="i == 0" @click="sidebar_up(i)" type="button" class="btn btn-sm btn-link">
+                                <i class="fas fa-level-up-alt"></i>
+                            </button>
+                        </td>
+                        <td>{{ el.category }}</td>
+                        <td>{{ el.value }}</td>
+                        <td>
+                            <button type="button" @click="sidebar_del(i)" class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <select class="form-control" v-model="sidebar.type">
+                                <option>item</option>
+                                <option>divider</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control" :disabled="sidebar.type == 'divider'" v-model="sidebar.value" placeholder="Value"/>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-primary" @click="sidebar_new">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </form>
 `
