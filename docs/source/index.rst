@@ -29,6 +29,7 @@ Contents
    :maxdepth: 2
 
    pluginApi
+   plugins/frontend/frontend
    config
    web/api
    internal/docs

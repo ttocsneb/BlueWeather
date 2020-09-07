@@ -7,4 +7,5 @@ urlpatterns = [
 
 def get_api_urlpatterns():
     return [
+        path("apply/", views.set_settings, name="apply")
     ]
