@@ -3,6 +3,15 @@
 /// <reference types="lodash" />
 /// <reference types="settings" />
 
+type successCallback = (data: ApplyResponse, textStatus: string, jqXHR: JQueryXHR) => void
+type errorCallback = (jqXHR: JQueryXHR, textStatus: String, errorThrown: string) => void
+
+interface UpdateSettings {
+    data: any
+    success?: successCallback
+    error?: errorCallback
+}
+
 Vue.component('settings-component', {
     props: {
         config: Object
@@ -177,11 +186,48 @@ Vue.component('web-settings-component', {
                 }
             })
         },
+        update_settings(config: UpdateSettings) {
+            console.log(`Updating Data`)
+            $.ajax("/api/settings/apply/", {
+                method: "POST",
+                data: JSON.stringify({
+                    namespace: "web",
+                    settings: config.data
+                }),
+                success: config.success,
+                error: config.error
+            })
+        },
+        check_success(data: ApplyResponse) {
+            if(data.success == false) {
+                var message = data.reason
+
+                if(data.validation != null) {
+                    message += "\n"
+                    for(var k in data.validation) {
+                        message += `\n${k}: ${_.join(data.validation[k], ', ')}`
+                    }
+                }
+                alert(message)
+            }
+        },
+        update_api() {
+            let settings: UpdateSettings = {
+                data: {
+                    "api_keys": this.config.api_keys
+                },
+                success: this.check_success,
+                error(jqXHR: JQueryXHR, textStatus: string, errorThrown: string) {
+                    alert(`An error occurred: ${errorThrown}`)
+                }
+            }
+            this.update_settings(settings)
+        },
         on_delete_apikey(name: string) {
             console.log(`Going to delete ${name} key`)
             const key = this.config.api_keys.findIndex((el: APIKey) => el.name == name )
             this.$delete(this.config.api_keys, key)
-            // TODO Actually send the message to the server
+            this.update_api()
         },
         on_create_apikey(name: string, permissions: Array<string>) {
             console.log(`Going to create ${name} key`)
@@ -190,25 +236,37 @@ Vue.component('web-settings-component', {
                 key: "AAAAAAAAAAAAAA",
                 permissions: permissions
             })
-            // TODO Actually send the message to the server
+            this.update_api()
+        },
+        update_sidebar() {
+            let settings: UpdateSettings = {
+                data: {
+                    "sidebar": this.config.api_keys
+                },
+                success: this.check_success,
+                error(jqXHR: JQueryXHR, textStatus: string, errorThrown: string) {
+                    alert(`An error occurred: ${errorThrown}`)
+                }
+            }
+            this.update_settings(settings)
         },
         sidebar_down(i: number) {
             let temp1 = this.config.sidebar[i]
             let temp2 = this.config.sidebar[i + 1]
             Vue.set(this.config.sidebar, i, temp2)
             Vue.set(this.config.sidebar, i + 1, temp1)
-            // TODO Actually send the message to the server
+            this.update_sidebar()
         },
         sidebar_up(i: number) {
             let temp1 = this.config.sidebar[i]
             let temp2 = this.config.sidebar[i - 1]
             Vue.set(this.config.sidebar, i, temp2)
             Vue.set(this.config.sidebar, i - 1, temp1)
-            // TODO Actually send the message to the server
+            this.update_sidebar()
         },
         sidebar_del(i: number) {
             Vue.delete(this.config.sidebar, i)
-            // TODO Actually send the message to the server
+            this.update_sidebar()
         },
         sidebar_new() {
             let obj: SidebarItem = {
@@ -218,7 +276,7 @@ Vue.component('web-settings-component', {
                 obj.value = this.sidebar.value
             }
             this.config.sidebar.push(obj)
-            // TODO Actually send the message to the server
+            this.update_settings(settings)
         }
     },
     template: `

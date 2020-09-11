@@ -1,3 +1,11 @@
+// API
+
+interface ApplyResponse {
+    success: boolean,
+    reason?: string,
+    validation?: {[key: string]: Array<String>}
+}
+
 
 // Web
 

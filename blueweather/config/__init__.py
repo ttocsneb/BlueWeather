@@ -78,10 +78,22 @@ class Config(objects.Config):
 
         self.modified = False
 
-    def dump(self) -> dict:
+    def serialize(self) -> dict:
         """
-        Dump the settings into a dictionary
+        Serialize the settings into a dictionary
+
+        :return: settings
         """
         schema = ischema.ConfigSchema()
         data = schema.dump(self)
         return data
+
+    def deserialize(self, data: dict):
+        """
+        Deserialize the settings from a dictionary
+
+        :param data: settings
+        """
+
+        schema = ischema.ConfigSchema()
+        self.__apply(schema.load(data))

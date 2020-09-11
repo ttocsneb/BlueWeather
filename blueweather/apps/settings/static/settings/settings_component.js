@@ -128,10 +128,47 @@ Vue.component('web-settings-component', {
                 }
             });
         },
+        update_settings: function (config) {
+            console.log("Updating Data");
+            $.ajax("/api/settings/apply/", {
+                method: "POST",
+                data: JSON.stringify({
+                    namespace: "web",
+                    settings: config.data
+                }),
+                success: config.success,
+                error: config.error
+            });
+        },
+        check_success: function (data) {
+            if (data.success == false) {
+                var message = data.reason;
+                if (data.validation != null) {
+                    message += "\n";
+                    for (var k in data.validation) {
+                        message += "\n" + k + ": " + _.join(data.validation[k], ', ');
+                    }
+                }
+                alert(message);
+            }
+        },
+        update_api: function () {
+            var settings = {
+                data: {
+                    "api_keys": this.config.api_keys
+                },
+                success: this.check_success,
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("An error occurred: " + errorThrown);
+                }
+            };
+            this.update_settings(settings);
+        },
         on_delete_apikey: function (name) {
             console.log("Going to delete " + name + " key");
             var key = this.config.api_keys.findIndex(function (el) { return el.name == name; });
             this.$delete(this.config.api_keys, key);
+            this.update_api();
         },
         on_create_apikey: function (name, permissions) {
             console.log("Going to create " + name + " key");
@@ -140,21 +177,37 @@ Vue.component('web-settings-component', {
                 key: "AAAAAAAAAAAAAA",
                 permissions: permissions
             });
+            this.update_api();
+        },
+        update_sidebar: function () {
+            var settings = {
+                data: {
+                    "sidebar": this.config.api_keys
+                },
+                success: this.check_success,
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("An error occurred: " + errorThrown);
+                }
+            };
+            this.update_settings(settings);
         },
         sidebar_down: function (i) {
             var temp1 = this.config.sidebar[i];
             var temp2 = this.config.sidebar[i + 1];
             Vue.set(this.config.sidebar, i, temp2);
             Vue.set(this.config.sidebar, i + 1, temp1);
+            this.update_sidebar();
         },
         sidebar_up: function (i) {
             var temp1 = this.config.sidebar[i];
             var temp2 = this.config.sidebar[i - 1];
             Vue.set(this.config.sidebar, i, temp2);
             Vue.set(this.config.sidebar, i - 1, temp1);
+            this.update_sidebar();
         },
         sidebar_del: function (i) {
             Vue.delete(this.config.sidebar, i);
+            this.update_sidebar();
         },
         sidebar_new: function () {
             var obj = {
@@ -164,6 +217,7 @@ Vue.component('web-settings-component', {
                 obj.value = this.sidebar.value;
             }
             this.config.sidebar.push(obj);
+            this.update_settings(settings);
         }
     },
     template: "\n<form action=\"#\">\n    <div class=\"form-group\">\n        <h4>API Keys</h4>\n        <div class=\"table-responsive\">\n            <table class=\"table table-striped\">\n                <thead>\n                    <tr>\n                        <th scope=\"col\">Name</th>\n                        <th scope=\"col\">Key</th>\n                        <th class=\"pr-2\" scope=\"col\">Permissions</th>\n                        <th class=\"py-1\" scope=\"col\">\n                            <button type=\"button\" @click=\"create_apikey\" class=\"btn btn-primary\">Create</button>\n                        </th>\n                    </tr>\n                </thead>\n                <tbody>\n                    <tr v-for=\"key in config.api_keys\">\n                        <th class=\"px-2\" scope=\"row\">{{ key.name }}</th>\n                        <td class=\"pr-2 text-uppercase\">\n                            <button type=\"button\" class=\"btn btn-link\" @click=\"view_apikey(key.name)\">{{ key.key }}</button>\n                        </td>\n                        <td class=\"pr-2\">\n                            <ul v-if=\"key.permissions && key.permissions.length\">\n                                <li v-for=\"i in key.permissions\">\n                                    {{ i }}\n                                </li>\n                            </ul>\n                            <span v-else>\n                                None\n                            </span>\n                        </td>\n                        <td class=\"pr-2 py-1\">\n                            <button type=\"button\" @click=\"delete_apikey(key.name)\" class=\"btn btn-danger\">Delete</button>\n                        </td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n        <p class=\"mt-2\">\n            Each Key has permissions associated with them, that way, you can\n            allow those you don't trust to get access to the server without\n            comprimising security.\n        </p>\n    </div>\n    <hr>\n    <div class=\"form-group\">\n        <h4>Sidebar</h4>\n        <div class=\"table-responsive\">\n            <table class=\"table table-striped\">\n                <thead>\n                    <tr>\n                        <th></th>\n                        <th>Type</th>\n                        <th>Value</th>\n                        <th></th>\n                    </tr>\n                </thead>\n                <tbody>\n                    <tr v-for=\"(el, i) in config.sidebar\">\n                        <td>\n                            <button :disabled=\"i == config.sidebar.length - 1\" @click=\"sidebar_down(i)\" type=\"button\" class=\"btn btn-sm btn-link\">\n                                <i class=\"fas fa-level-down-alt\"></i>\n                            </button>\n                            <button :disabled=\"i == 0\" @click=\"sidebar_up(i)\" type=\"button\" class=\"btn btn-sm btn-link\">\n                                <i class=\"fas fa-level-up-alt\"></i>\n                            </button>\n                        </td>\n                        <td>{{ el.category }}</td>\n                        <td>{{ el.value }}</td>\n                        <td>\n                            <button type=\"button\" @click=\"sidebar_del(i)\" class=\"btn btn-sm btn-danger\">\n                                <i class=\"fas fa-trash\"></i>\n                            </button>\n                        </td>\n                    </tr>\n                    <tr>\n                        <td></td>\n                        <td>\n                            <select class=\"form-control\" v-model=\"sidebar.type\">\n                                <option>item</option>\n                                <option>divider</option>\n                            </select>\n                        </td>\n                        <td>\n                            <input type=\"text\" class=\"form-control\" :disabled=\"sidebar.type == 'divider'\" v-model=\"sidebar.value\" placeholder=\"Value\"/>\n                        </td>\n                        <td>\n                            <button type=\"button\" class=\"btn btn-primary\" @click=\"sidebar_new\">\n                                <i class=\"fas fa-plus\"></i>\n                            </button>\n                        </td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n    </div>\n</form>\n"

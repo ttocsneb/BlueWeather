@@ -7,6 +7,7 @@ from django.http.request import HttpRequest
 from django.http.response import JsonResponse
 from django.views.decorators.http import require_POST
 from blueweather.apps.api.decorators import csrf_authorization_required
+from marshmallow.exceptions import MarshmallowError, ValidationError
 
 
 @login_required
@@ -15,7 +16,7 @@ def index(request: HttpRequest):
     The main page for the settings
     """
 
-    conf = settings.CONFIG.dump()
+    conf = settings.CONFIG.serialize()
 
     def getSetting(key: str = None) -> str:
         if key is None:
@@ -38,7 +39,7 @@ def set_settings(request: HttpRequest):
     """
     Set a value of the settings
 
-    :type POST:
+    :type: POST
 
     :param namespace: The starting point of each setting
 
@@ -59,12 +60,24 @@ def set_settings(request: HttpRequest):
 
     :return:
 
+        * **success** - whether successful
+        * **reason** - A human readable error why it was unsuccessful.
+        * **validation** - An object describing which parameters were invalid.
+
         .. code-block:: json
 
             {
                 "success": "true or false",
-                "reason": "Reason why unsuccessful"
+                "reason": "Reason why unsuccessful",
+                "validation": {
+                    "key": ["Reason why it's invalid"]
+                }
             }
+
+        .. note::
+
+            **reason** and **validation** are only supplied if **success**
+            is :code:`false`.
     """
 
     config = dict()
@@ -93,6 +106,47 @@ def set_settings(request: HttpRequest):
         keys = [i for i in namespace + k.split('.') if i]
         load_settings(config, keys, v)
 
-    # TODO merge the new settings with the existing settings
+    # Merge the new settings with the existing settings
+
+    conf = settings.CONFIG.serialize()
+
+    def merge(orig: dict, new: dict):
+        for k, v in new.items():
+            if k in orig and isinstance(v, dict) and isinstance(orig[k], dict):
+                merge(orig[k], v)
+            else:
+                orig[k] = v
+
+    merge(conf, config)
+
+    try:
+        settings.CONFIG.deserialize(conf)
+    except ValidationError as e:
+        logger.exception("The settings could not be deserialized")
+        return JsonResponse({
+            "success": False,
+            "reason": "Invalid Settings",
+            "validation": e.messages
+        })
+    except MarshmallowError as e:
+        logger.exception("An error occurred while deserializing the settings")
+        logger.error("Exception: %s", e)
+
+        return JsonResponse({
+            "success": False,
+            "reason": str(e)
+        })
 
     return JsonResponse({"success": True})
+
+
+@csrf_authorization_required
+@require_POST
+def save_settings(request: HttpRequest):
+    """
+    Save the loaded settings
+
+    :type: POST
+    """
+
+    settings.CONFIG.save()
