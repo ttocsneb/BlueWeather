@@ -63,6 +63,8 @@ def set_settings(request: HttpRequest):
         * **success** - whether successful
         * **reason** - A human readable error why it was unsuccessful.
         * **validation** - An object describing which parameters were invalid.
+        * **namespace** - The namespace from the request
+        * **settings** - The current settings based on the given settings
 
         .. code-block:: json
 
@@ -71,6 +73,10 @@ def set_settings(request: HttpRequest):
                 "reason": "Reason why unsuccessful",
                 "validation": {
                     "key": ["Reason why it's invalid"]
+                },
+                "namespace": "given.namespace"
+                "settings": {
+                    "key": "saved settings"
                 }
             }
 
@@ -137,7 +143,27 @@ def set_settings(request: HttpRequest):
             "reason": str(e)
         })
 
-    return JsonResponse({"success": True})
+    # Return the updated settings
+    current = settings.CONFIG.serialize()
+
+    response = {
+        "success": True,
+        "namespace": namespace,
+        "settings": {}
+    }
+
+    def unload_settings(k: str, source: dict, keys: list, destination: dict):
+        if len(keys) == 1:
+            destination[k] = source[keys[0]]
+        else:
+            unload_settings(k, source[keys[0]], keys[1:], destination)
+
+    # Unload the setings into the response
+    for k, v in new_settings.items():
+        keys = [i for i in namespace + k.split('.') if i]
+        unload_settings(k, current, keys, response['settings'])
+
+    return JsonResponse(response)
 
 
 @csrf_authorization_required

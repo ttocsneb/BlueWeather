@@ -10,7 +10,7 @@ class SidebarSchema(Schema):
 
 class APIKeySchema(Schema):
     key = customFields.APIKey()
-    name = fields.String()
+    name = fields.String(allow_none=True)
     permissions = fields.List(fields.String())
 
     @post_load

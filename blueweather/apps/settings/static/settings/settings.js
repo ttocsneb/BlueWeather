@@ -1,3 +1,36 @@
+function validationToString(error, base) {
+    if (base === void 0) { base = ""; }
+    if (!Array.isArray(error)) {
+        var groups = error;
+        var messages = [];
+        if (base != "") {
+            base += ".";
+        }
+        for (var k in groups) {
+            messages.push(validationToString(groups[k], "" + base + k));
+        }
+        return _.join(messages, "\n");
+    }
+    else {
+        return base + ":\n - " + _.join(error, '\n - ');
+    }
+}
+function update_settings(config) {
+    $.ajax("/api/settings/apply/", {
+        method: "POST",
+        data: JSON.stringify({
+            namespace: config.namespace,
+            settings: config.data
+        }),
+        success: function (data, textStatus, jqXHR) {
+            if (data.success == false && data.validation != null) {
+                console.error(data.reason + ":\n" + validationToString(data.validation));
+            }
+            config.success(data, textStatus, jqXHR);
+        },
+        error: config.error
+    });
+}
 function loadedComponents() {
     var loaded = [];
     var components = this.$options.components;

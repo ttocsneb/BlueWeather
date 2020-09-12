@@ -2,11 +2,45 @@
 /// <reference types="jquery" />
 /// <reference types="lodash" />
 /// <reference types="bootstrap" />
+/// <reference types="settings" />
 
 interface Popup {
     component: string
     payload: object
     title: string
+}
+
+function validationToString(error: ValidationType, base: string = ""): string {
+    if(!Array.isArray(error)) {
+        const groups = error as ValidationObject
+        let messages = []
+        if(base != "") {
+            base += "."
+        }
+        for(var k in groups) {
+            messages.push(validationToString(groups[k], `${base}${k}`))
+        }
+        return _.join(messages, "\n")
+    } else {
+        return `${base}:\n - ${_.join(error, '\n - ')}`
+    }
+}
+
+function update_settings(config: UpdateSettings) {
+    $.ajax("/api/settings/apply/", {
+        method: "POST",
+        data: JSON.stringify({
+            namespace: config.namespace,
+            settings: config.data
+        }),
+        success(data: ApplyResponse, textStatus: string, jqXHR: JQueryXHR) {
+            if(data.success == false && data.validation != null) {
+                console.error(`${data.reason}:\n${validationToString(data.validation)}`)
+            }
+            config.success(data, textStatus, jqXHR)
+        },
+        error: config.error
+    })
 }
 
 function loadedComponents(): Array<string> {

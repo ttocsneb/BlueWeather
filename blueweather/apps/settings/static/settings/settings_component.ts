@@ -3,15 +3,6 @@
 /// <reference types="lodash" />
 /// <reference types="settings" />
 
-type successCallback = (data: ApplyResponse, textStatus: string, jqXHR: JQueryXHR) => void
-type errorCallback = (jqXHR: JQueryXHR, textStatus: String, errorThrown: string) => void
-
-interface UpdateSettings {
-    data: any
-    success?: successCallback
-    error?: errorCallback
-}
-
 Vue.component('settings-component', {
     props: {
         config: Object
@@ -43,7 +34,7 @@ Vue.component('web-apikey-view', {
     },
     template: `<div>
     <div class="modal-body text-center">
-        <h6>{{ payload }}</h6>
+        <h6 class="text-uppercase">{{ payload }}</h6>
         <img :src="qrimg" width="size.x" height="size.y"></img>
     </div>
     <div class="modal-footer">
@@ -116,6 +107,7 @@ Vue.component('web-apikey-delete', {
     methods: {
         remove: function() {
             this.payload.delete(this.payload.name)
+            this.$emit("close")
         }
     },
     template: `<div>
@@ -157,6 +149,16 @@ Vue.component('web-settings-component', {
         }
     },
     methods: {
+        update_data(data: ApplyResponse) {
+            if(data.success === true) {
+                if("api_keys" in data.settings) {
+                    this.config.api_keys = data.settings.api_keys
+                }
+                if("sidebar" in data.settings) {
+                    this.config.sidebar = data.settings.sidebar
+                }
+            }
+        },
         view_apikey(name: string) {
             let key: APIKey = this.config.api_keys.find((el: APIKey) => el.name == name )
             this.$emit('popup', {
@@ -186,42 +188,18 @@ Vue.component('web-settings-component', {
                 }
             })
         },
-        update_settings(config: UpdateSettings) {
-            console.log(`Updating Data`)
-            $.ajax("/api/settings/apply/", {
-                method: "POST",
-                data: JSON.stringify({
-                    namespace: "web",
-                    settings: config.data
-                }),
-                success: config.success,
-                error: config.error
-            })
-        },
-        check_success(data: ApplyResponse) {
-            if(data.success == false) {
-                var message = data.reason
-
-                if(data.validation != null) {
-                    message += "\n"
-                    for(var k in data.validation) {
-                        message += `\n${k}: ${_.join(data.validation[k], ', ')}`
-                    }
-                }
-                alert(message)
-            }
-        },
         update_api() {
             let settings: UpdateSettings = {
+                namespace:"web",
                 data: {
                     "api_keys": this.config.api_keys
                 },
-                success: this.check_success,
+                success: this.update_data,
                 error(jqXHR: JQueryXHR, textStatus: string, errorThrown: string) {
                     alert(`An error occurred: ${errorThrown}`)
                 }
             }
-            this.update_settings(settings)
+            update_settings(settings)
         },
         on_delete_apikey(name: string) {
             console.log(`Going to delete ${name} key`)
@@ -233,22 +211,22 @@ Vue.component('web-settings-component', {
             console.log(`Going to create ${name} key`)
             this.config.api_keys.push({
                 name: name,
-                key: "AAAAAAAAAAAAAA",
                 permissions: permissions
             })
             this.update_api()
         },
         update_sidebar() {
             let settings: UpdateSettings = {
+                namespace:"web",
                 data: {
-                    "sidebar": this.config.api_keys
+                    "sidebar": this.config.sidebar
                 },
-                success: this.check_success,
+                success: this.update_data,
                 error(jqXHR: JQueryXHR, textStatus: string, errorThrown: string) {
                     alert(`An error occurred: ${errorThrown}`)
                 }
             }
-            this.update_settings(settings)
+            update_settings(settings)
         },
         sidebar_down(i: number) {
             let temp1 = this.config.sidebar[i]
@@ -276,7 +254,7 @@ Vue.component('web-settings-component', {
                 obj.value = this.sidebar.value
             }
             this.config.sidebar.push(obj)
-            this.update_settings(settings)
+            this.update_sidebar()
         }
     },
     template: `
@@ -298,8 +276,8 @@ Vue.component('web-settings-component', {
                 <tbody>
                     <tr v-for="key in config.api_keys">
                         <th class="px-2" scope="row">{{ key.name }}</th>
-                        <td class="pr-2 text-uppercase">
-                            <button type="button" class="btn btn-link" @click="view_apikey(key.name)">{{ key.key }}</button>
+                        <td class="pr-2">
+                            <button type="button" class="btn btn-link text-uppercase" @click="view_apikey(key.name)">{{ key.key }}</button>
                         </td>
                         <td class="pr-2">
                             <ul v-if="key.permissions && key.permissions.length">
