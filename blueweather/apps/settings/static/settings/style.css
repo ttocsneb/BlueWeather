@@ -1,0 +1,15 @@
+.bottom {
+    position: fixed;
+    bottom: 1em;
+    display: none;
+}
+
+.bottom .btn {
+    width: 2.75em;
+    height: 2.75em;
+    opacity: 0.66;
+}
+
+.bottom .btn:hover {
+    opacity: 1;
+}

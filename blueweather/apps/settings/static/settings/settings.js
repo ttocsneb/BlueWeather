@@ -70,9 +70,12 @@ var settings_component = Vue.extend({
     methods: {
         onPopup: function (popup) {
             this.$emit('popup', popup);
+        },
+        onChanged: function () {
+            this.$emit('change');
         }
     },
-    template: "\n<div class=\"card shadow mb-2\">\n    <div class=\"card-header\">{{ title }}</div>\n    <div class=\"card-body\">\n        <component :is=\"child\" :config=\"settings\" @popup=\"onPopup\" />\n    </div>\n</div>\n"
+    template: "\n<div class=\"card shadow mb-2\">\n    <div class=\"card-header\">{{ title }}</div>\n    <div class=\"card-body\">\n        <component :is=\"child\" :config=\"settings\" @popup=\"onPopup\" @change=\"onChanged\" />\n    </div>\n</div>\n"
 });
 var settings = new Vue({
     delimiters: ['[[', ']]'],
@@ -87,8 +90,19 @@ var settings = new Vue({
                 component: null,
                 title: "Title",
                 payload: {}
-            }
+            },
+            changed: modified
         };
+    },
+    computed: {
+        save: function () {
+            if (this.changed) {
+                return "inline";
+            }
+            else {
+                return "none";
+            }
+        }
     },
     methods: {
         onPopup: function (popup) {
@@ -113,6 +127,32 @@ var settings = new Vue({
         close: function () {
             console.log("Closing Modal");
             $("#settings-modal").modal("hide");
+        },
+        onSave: function () {
+            $.ajax("/api/settings/save/", {
+                method: "POST",
+                success: function (data, textStatus, jqXHR) {
+                    console.log("Settings have been saved");
+                    this.changed = false;
+                },
+                error: function () {
+                    alert("The settings could not be saved :/");
+                }
+            });
+        },
+        onReset: function () {
+            $.ajax("/api/settings/revert/", {
+                method: "POST",
+                success: function (data, textStatus, jqXHR) {
+                    location.reload();
+                },
+                error: function () {
+                    alert("The settings could not be reverted :/");
+                }
+            });
+        },
+        onChanged: function () {
+            this.changed = true;
         }
     }
 });

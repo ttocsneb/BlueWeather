@@ -4,6 +4,9 @@
 /// <reference types="bootstrap" />
 /// <reference types="settings" />
 
+declare var modified: boolean
+
+
 interface Popup {
     component: string
     payload: object
@@ -86,13 +89,16 @@ const settings_component = Vue.extend({
     methods: {
         onPopup: function(popup: Popup) {
             this.$emit('popup', popup)
+        },
+        onChanged() {
+            this.$emit('change')
         }
     },
     template: `
 <div class="card shadow mb-2">
     <div class="card-header">{{ title }}</div>
     <div class="card-body">
-        <component :is="child" :config="settings" @popup="onPopup" />
+        <component :is="child" :config="settings" @popup="onPopup" @change="onChanged" />
     </div>
 </div>
 `
@@ -111,6 +117,16 @@ const settings = new Vue({
                 component: null,
                 title: "Title",
                 payload: {}
+            },
+            changed: modified
+        }
+    },
+    computed: {
+        save() {
+            if(this.changed) {
+                return "inline"
+            } else {
+                return "none"
             }
         }
     },
@@ -135,6 +151,32 @@ const settings = new Vue({
         close: function() {
             console.log("Closing Modal")
             $("#settings-modal").modal("hide")
+        },
+        onSave() {
+            $.ajax("/api/settings/save/", {
+                method: "POST",
+                success(data: object, textStatus: string, jqXHR: JQueryXHR) {
+                    console.log("Settings have been saved")
+                    this.changed = false
+                },
+                error() {
+                    alert("The settings could not be saved :/")
+                }
+            })
+        },
+        onReset() {
+            $.ajax("/api/settings/revert/", {
+                method: "POST",
+                success(data: object, textStatus: string, jqXHR: JQueryXHR) {
+                    location.reload()
+                },
+                error() {
+                    alert("The settings could not be reverted :/")
+                }
+            })
+        },
+        onChanged() {
+            this.changed = true
         }
     }
 })

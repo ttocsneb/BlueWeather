@@ -1,5 +1,9 @@
 {% extends "main.html" %}
 
+{% block styles %}
+<link href="{{ static('settings/style.css') }}" rel="stylesheet" type="text/css">
+{% endblock styles %}
+
 {% block content %}
 <div id="settings">
     <template>
@@ -7,14 +11,16 @@
             title="Settings"
             child="settings-component"
             config="{{ settings() }}"
-            @popup="onPopup" />
+            @popup="onPopup"
+            @change="onChanged" />
     </template>
     <template>
         <settings-card
             title="Web Settings"
             child="web-settings-component"
             config="{{ settings('web') }}"
-            @popup="onPopup" />
+            @popup="onPopup"
+            @change="onChanged" />
     </template>
     <div class="modal fade" id="settings-modal" tabindex="-1" aria-labelledby="popup-label" aria-hidden="true">
         <div class="modal-dialog">
@@ -29,10 +35,21 @@
             </div>
         </div>
     </div>
+    <div class="bottom" :style="{display: save}">
+        <button type="submit" class="btn btn-warning mr-2" data-toggle="tooltip" data-placement="top" title="Save" @click="onSave">
+            <i class="fas fa-save"></i>
+        </button>
+        <button type="reset" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Revert" @click="onReset">
+            <i class="fas fa-recycle"></i>
+        </button>
+    </div>
 </div>
 {% endblock content %}
 
 {% block scripts %}
+<script>
+var modified = {{ modified }}
+</script>
 <script src="{{ static('settings/settings_component.js') }}"></script>
 <script src="{{ static('settings/settings.js') }}"></script>
 {% endblock scripts %}

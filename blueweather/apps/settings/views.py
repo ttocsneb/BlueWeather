@@ -29,7 +29,8 @@ def index(request: HttpRequest):
 
     return render(request, 'settings/settings.html.j2', context={
         'name': 'Settings',
-        'settings': getSetting
+        'settings': getSetting,
+        'modified': json.dumps(settings.CONFIG.modified)
     })
 
 
@@ -98,6 +99,24 @@ def set_settings(request: HttpRequest):
                 obj[keys[0]] = dict()
             load_settings(obj[keys[0]], keys[1:], value)
 
+    def apply_settings() -> dict:
+        dest = dict()
+        current = settings.CONFIG.serialize()
+
+        def unload_settings(k: str, source: dict, keys: list,
+                            destination: dict):
+            if len(keys) == 1:
+                destination[k] = source[keys[0]]
+            else:
+                unload_settings(k, source[keys[0]], keys[1:], destination)
+
+        # Unload the setings into the response
+        for k, v in new_settings.items():
+            keys = [i for i in namespace + k.split('.') if i]
+            unload_settings(k, current, keys, dest)
+
+        return dest
+
     # Load the data
     try:
         data = json.loads(request.body)
@@ -105,7 +124,12 @@ def set_settings(request: HttpRequest):
         namespace = data.get('namespace', '').split('.')
     except json.decoder.JSONDecodeError as e:
         logger.exception("Could not parse Settings")
-        return JsonResponse({"success": False, "reason": str(e)})
+        return JsonResponse({
+            "success": False,
+            "reason": str(e),
+            "namespace": namespace,
+            "settings": apply_settings()
+        })
 
     # Parse the settings into a settings object
     for k, v in new_settings.items():
@@ -127,12 +151,15 @@ def set_settings(request: HttpRequest):
 
     try:
         settings.CONFIG.deserialize(conf)
+        settings.CONFIG.modified = True
     except ValidationError as e:
         logger.exception("The settings could not be deserialized")
         return JsonResponse({
             "success": False,
             "reason": "Invalid Settings",
-            "validation": e.messages
+            "validation": e.messages,
+            "namespace": namespace,
+            "settings": apply_settings()
         })
     except MarshmallowError as e:
         logger.exception("An error occurred while deserializing the settings")
@@ -140,30 +167,18 @@ def set_settings(request: HttpRequest):
 
         return JsonResponse({
             "success": False,
-            "reason": str(e)
+            "reason": str(e),
+            "namespace": namespace,
+            "settings": apply_settings()
         })
 
     # Return the updated settings
-    current = settings.CONFIG.serialize()
 
-    response = {
+    return JsonResponse({
         "success": True,
         "namespace": namespace,
-        "settings": {}
-    }
-
-    def unload_settings(k: str, source: dict, keys: list, destination: dict):
-        if len(keys) == 1:
-            destination[k] = source[keys[0]]
-        else:
-            unload_settings(k, source[keys[0]], keys[1:], destination)
-
-    # Unload the setings into the response
-    for k, v in new_settings.items():
-        keys = [i for i in namespace + k.split('.') if i]
-        unload_settings(k, current, keys, response['settings'])
-
-    return JsonResponse(response)
+        "settings": apply_settings()
+    })
 
 
 @csrf_authorization_required
@@ -176,3 +191,15 @@ def save_settings(request: HttpRequest):
     """
 
     settings.CONFIG.save()
+
+
+@csrf_authorization_required
+@require_POST
+def revert_settings(request: HttpRequest):
+    """
+    Revert the settings to what is stored on disk
+
+    :type: POST
+    """
+
+    settings.CONFIG.load()

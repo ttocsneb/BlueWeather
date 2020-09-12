@@ -150,13 +150,14 @@ Vue.component('web-settings-component', {
     },
     methods: {
         update_data(data: ApplyResponse) {
+            if("api_keys" in data.settings) {
+                this.config.api_keys = data.settings.api_keys
+            }
+            if("sidebar" in data.settings) {
+                this.config.sidebar = data.settings.sidebar
+            }
             if(data.success === true) {
-                if("api_keys" in data.settings) {
-                    this.config.api_keys = data.settings.api_keys
-                }
-                if("sidebar" in data.settings) {
-                    this.config.sidebar = data.settings.sidebar
-                }
+                this.$emit("change")
             }
         },
         view_apikey(name: string) {
