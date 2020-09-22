@@ -12,11 +12,11 @@ from . import dao
 from typing import Dict
 
 
-class ExtensionsSingleton:
+class Extensions:
     """
     This is the central manager for all plugins.
 
-    There should only exist one ExtensionsSingleton object which will be held
+    There should only exist one Extensions object which will be held
     in the django settings module.
 
     You can get the django settings from calling
@@ -32,7 +32,7 @@ class ExtensionsSingleton:
         self._logger = logging.getLogger(__name__)
 
         self.failed_plugins = list()
-        self._disabled_plugins = config.extensions.disabled
+        self._disabled_plugins = config.plugins.disabled
 
         self._settings_initialized = False
 
@@ -41,7 +41,7 @@ class ExtensionsSingleton:
 
         self.weather = DriverManager(
             "blueweather.plugins.weather",
-            config.extensions.weather_driver,
+            config.plugins.weather_driver,
             on_load_failure_callback=self._on_load_fail
         )
         self.plugins = ExtensionManager(
@@ -103,7 +103,7 @@ class ExtensionsSingleton:
                 'enabled': True,
                 'disableable': True
             }
-        
+
         :return: a list of plugins
         """
         extensions = self.getAllExtensions()
@@ -197,6 +197,6 @@ class ExtensionsSingleton:
         """
         Check if a function should be enabled
         """
-        if extension.name in config.extensions.disabled:
+        if extension.name in config.plugins.disabled:
             return False
         return True

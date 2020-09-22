@@ -144,13 +144,13 @@ class Settings:
         """
 
         for ext in man.extensions:
-            if ext.name not in config.extensions.settings:
-                config.extensions.settings[ext.name] = dict()
+            if ext.name not in config.plugins.settings:
+                config.plugins.settings[ext.name] = dict()
             
             # Migrate the settings
-            settings = config.extensions.settings[ext.name]
+            settings = config.plugins.settings[ext.name]
             migration, changed = Settings.settings_migrate(ext, settings)
-            config.extensions.settings[ext.name] = migration
+            config.plugins.settings[ext.name] = migration
             if changed:
                 config.modified = True
 
@@ -176,11 +176,11 @@ class Settings:
 
         for ext in man.extensions:
             # Serialize the settings
-            settings = config.extensions.settings[ext.name]
+            settings = config.plugins.settings[ext.name]
             serialized = Settings.settings_serialize(ext, settings)
 
             # Apply the settings
-            config.extensions.settings[ext.name] = serialized
+            config.plugins.settings[ext.name] = serialized
 
 
     @staticmethod

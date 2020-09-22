@@ -33,6 +33,7 @@ Contents
    config
    web/api
    internal/docs
+   plans/index
 
 
 Installation

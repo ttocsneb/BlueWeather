@@ -3,7 +3,7 @@ import unittest
 from stevedore.extension import Extension
 
 from blueweather.config import objects
-from blueweather.plugins import ExtensionsSingleton
+from blueweather.plugins import Extensions
 from blueweather.plugins import dao
 
 
@@ -17,7 +17,7 @@ class UnitConversionTester(unittest.TestCase):
             extensions=objects.Extensions(
             )
         )
-        self.extensions = ExtensionsSingleton(settings, True)
+        self.extensions = Extensions(settings, True)
 
     def tearDown(self):
         self.extensions = None

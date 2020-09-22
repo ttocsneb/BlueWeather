@@ -140,6 +140,4 @@ def environment(**options):
         [(s, getattr(settings, s, d)) for s, d in global_settings.items()]
     ))
 
-    env.globals.update(settings.CONFIG.web.template_globals)
-
     return env

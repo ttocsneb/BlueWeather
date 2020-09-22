@@ -11,3 +11,4 @@ a mess, but I do plan to clean it up a bit as time goes on (hopefully).
    apps/apps
    templates
    plugins
+   settings

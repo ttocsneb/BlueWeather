@@ -14,7 +14,7 @@ import logging.config
 import os
 
 from .config import Config
-from .plugins import ExtensionsSingleton
+from .plugins import Extensions
 from .plugins import dao
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -55,7 +55,7 @@ CONFIG.load()
 
 # because django is set to reload, two instances of extensions will always be
 # loaded. to stop this, use 'manage.py runserver --noreload'
-EXTENSIONS = ExtensionsSingleton(CONFIG, True)
+EXTENSIONS = Extensions(CONFIG, True)
 dao.Settings.load_settings(EXTENSIONS.settings, CONFIG)
 if CONFIG.modified:
     CONFIG.save()
@@ -68,8 +68,8 @@ UNITS = dao.UnitConversion.all_conversions(EXTENSIONS.unitConversion)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
-SECRET_KEY = CONFIG.secret_key
-DEBUG = CONFIG.debug
+SECRET_KEY = CONFIG.web.secret_key
+DEBUG = CONFIG.web.debug
 ALLOWED_HOSTS = CONFIG.web.allowed_hosts
 
 # Application definition
@@ -90,6 +90,10 @@ INSTALLED_APPS = [
 
 # A list of apps that should be linked in the sidebar
 SIDEBAR = CONFIG.web.sidebar
+
+MODEL_SETTINGS = [
+    'blueweather.apps.api.model_loaders.model_settings'
+]
 
 
 MIDDLEWARE = [
@@ -163,15 +167,28 @@ WSGI_APPLICATION = 'blueweather.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = dict(
-    [(k, v.get_data(BASE_DIR)) for k, v in CONFIG.web.databases.items()]
-)
+DATABASES = {
+    'default': CONFIG.web.database.get_data(BASE_DIR)
+}
 
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = CONFIG.web.password_validation
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
 
 
 # Internationalization
@@ -179,7 +196,7 @@ AUTH_PASSWORD_VALIDATORS = CONFIG.web.password_validation
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = CONFIG.time_zone
+TIME_ZONE = CONFIG.web.time_zone
 
 USE_I18N = True
 
@@ -191,4 +208,4 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_URL = CONFIG.web.static_url
+STATIC_URL = '/static/'

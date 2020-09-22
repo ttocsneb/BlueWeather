@@ -191,6 +191,9 @@ def save_settings(request: HttpRequest):
     """
 
     settings.CONFIG.save()
+    return JsonResponse({
+        "success": True
+    })
 
 
 @csrf_authorization_required
@@ -203,3 +206,6 @@ def revert_settings(request: HttpRequest):
     """
 
     settings.CONFIG.load()
+    return JsonResponse({
+        "success": True
+    })

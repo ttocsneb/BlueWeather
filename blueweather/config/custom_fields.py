@@ -26,6 +26,26 @@ def strip_defaults(self, data, **kwargs):
     return new_data
 
 
+class ClassedList(fields.List):
+    """
+    A List Field that deserializes to a custom List Object
+    """
+
+    def __init__(self, cls, cls_or_instance, **kwargs):
+        """
+        Create A ClassedList Field
+
+        :param cls: The class to deserialize to
+        :param cls_or_instance: The type that the list contains
+        """
+        super().__init__(cls_or_instance, **kwargs)
+        self._cls = cls
+
+    def _deserialize(self, value, attr, data, **kwargs):
+        lst = super()._deserialize(value, attr, data, **kwargs)
+        return self._cls(lst)
+
+
 class APIKey(fields.String):
     """
     A Uuid formatted string
@@ -76,74 +96,89 @@ class NamedList(fields.List):
     """
     A data object that is serialized as a dictionary, and deserialized as a
     list of named objects
+
+    The output of the serialized data will look something like this
+
+    .. code-block:: json
+
+        [
+            {"key": {
+                "val_key": "value",
+                "other_data": "data"
+            }}
+            {"key": "value_only"},
+            "key_only"
+        ]
+
+    This isn't very pretty, but looks very good in yaml
+
+    .. code-block:: yaml
+
+        list:
+        - key:
+            val_key: value
+            other_data: data
+        - key: value_only
+        - key_only
+
     """
 
-    def __init__(self, cls_or_instance, name_attr="name", value_attr="value",
-                 remove_attr=True, value_only=False, **kwargs):
+    def __init__(self, cls_or_instance, key_attr="name", value_attr="value",
+                 **kwargs):
         """
         Create a NamedList Field
 
-        :param str name_attr: attribute name of the key
-        :param str value_attr: attribute name of the value if no dict is
-            provided
-        :param bool remove_attr: should the name attribute be removed when
-            serializing
-        :param bool value_only: is the value the only other value in the object
+        :param cls_or_instance: The nested object
+        :param key_attr: The attribute for the key
+        :param value_attr: The attribute for the value
+
         """
         super().__init__(cls_or_instance, **kwargs)
-        self._name_attr = name_attr
-        self._value_attr = value_attr
-        self._remove_attr = remove_attr
-        self._value_only = value_only
 
-    def _serialize(self, values, attr, obj, **kwargs):
+        self._key_attr = key_attr
+        self._val_attr = value_attr
+
+    def _serialize(self, values: list, attr, obj, **kwargs):
         serialized = super()._serialize(values, attr, obj, **kwargs)
         if serialized is None:
             return None
-        obj = list()
-        for value in serialized:
-            name = value[self._name_attr]
-            if self._remove_attr:
-                del value[self._name_attr]
+        output = list()
+        # Conver the serialized list into a named list
+        for obj in serialized:
+            # Get the key
+            key = obj[self._key_attr]
+            del obj[self._key_attr]
+            # If the object only contains the key, then add the item as a
+            # string
+            if not obj:
+                output.append(key)
+                continue
+            val = obj[self._val_attr]
+            if len(obj) == 1 and not isinstance(val, dict):
+                # If the value is the only other value, and it is not a dict
+                output.append({key: val})
+                continue
+            output.append({key: obj})
+        return output
 
-            if self._value_only:
-                value = value[self._value_attr]
-            elif len(value) == 1:
-                try:
-                    value = value[self._value_attr]
-                except KeyError:
-                    pass
-            if not value:
-                obj.append(name)
-            else:
-                obj.append({name: value})
-
-        return obj
-
-    def _deserialize(self, value, attr, data, **kwargs):
+    def _deserialize(self, value: list, attr, data, **kwargs):
         deserialized = list()
 
-        def parse_dict(k: str, v):
-            if not isinstance(value, collections.Mapping):
-                v = {self._value_attr: v}
-            v[self._name_attr] = k
-            deserialized.append(v)
-
-        if isinstance(value, collections.Mapping):
-            for k, v in value.items():
-                parse_dict(k, v)
-        else:
-            for d in value:
-                if isinstance(d, collections.Mapping):
-                    # There should only be one key in this dict
-                    k = list(d.keys())[0]
-                    v = d[k]
-                    parse_dict(k, v)
+        for obj in value:
+            if isinstance(obj, dict):
+                # Parse the key -> data
+                key, value = next(iter(obj.items()))
+                if isinstance(value, dict):
+                    value[self._key_attr] = key
+                    deserialized.append(value)
                 else:
                     deserialized.append({
-                        self._name_attr: d
+                        self._key_attr: key,
+                        self._val_attr: value
                     })
-
+            else:
+                # The obj is only the key
+                deserialized.append({self._key_attr: obj})
         return super()._deserialize(deserialized, attr, data, **kwargs)
 
 

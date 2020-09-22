@@ -3,26 +3,23 @@ import os
 
 from ruamel import yaml
 
-from . import objects, schemes, ischema
-
-_logger = logging.getLogger(__name__)
+from . import objects, schemas
 
 
 class Config(objects.Config):
     def __init__(self, directory: str):
         # Secret_key is populated with an empty string to prevent a new key
         # from being generated everytime config is initialized
-        super().__init__(secret_key="", web=objects.Web(api_keys=''))
+        super().__init__(calculate_secret=False)
         self._directory = directory
+        self._logger = logging.getLogger(__name__)
 
     def __apply(self, obj: objects.Config):
         self.web = obj.web
-        self.debug = obj.debug
-        self.secret_key = obj.secret_key
-        self.time_zone = obj.time_zone
+        self.system = obj.system
+        self.plugins = obj.plugins
+        self.version = obj.version
         self.modified = obj.modified
-        self.extensions = obj.extensions
-        self.commands = obj.commands
 
     def set_defaults(self):
         self.__apply(objects.Config())
@@ -36,13 +33,14 @@ class Config(objects.Config):
             with open(self._directory) as conf:
                 config = yaml.safe_load(conf)
         except FileNotFoundError:
-            _logger.warn("Could not find %s! Creating default config..",
-                         self._directory)
+            self._logger.warn(
+                "Could not find %s! Creating default config..",
+                self._directory)
             self.set_defaults()
             self.save()
             return
 
-        schema = schemes.ConfigSchema()
+        schema = schemas.Config()
 
         self.__apply(schema.load(config))
 
@@ -51,29 +49,11 @@ class Config(objects.Config):
         Save the config file
         """
 
-        schema = schemes.ConfigSchema()
+        schema = schemas.Config()
         data = schema.dump(self)
 
-        # Merge the original settings with the new settings
-        if os.path.isfile(self._directory):
-            with open(self._directory) as conf:
-                old_data = yaml.safe_load(conf)
-
-            def recursive_merge(orig: dict, new: dict):
-                for k, v in new.items():
-                    if k in orig:
-                        if isinstance(v, dict):
-                            orig[k] = recursive_merge(orig[k], v)
-                        elif orig[k] != v:
-                            orig[k] = v
-                    else:
-                        orig[k] = v
-                return orig
-
-            data = recursive_merge(old_data, data)
-
         with open(self._directory, 'w') as conf:
-            _logger.info("Saving config to %s", self._directory)
+            self._logger.info("Saving config to %s", self._directory)
             yaml.dump(data, conf)
 
         self.modified = False
@@ -84,7 +64,9 @@ class Config(objects.Config):
 
         :return: settings
         """
-        schema = ischema.ConfigSchema()
+        from . import internal_schemas
+
+        schema = internal_schemas.Config()
         data = schema.dump(self)
         return data
 
@@ -94,6 +76,7 @@ class Config(objects.Config):
 
         :param data: settings
         """
+        from . import internal_schemas
 
-        schema = ischema.ConfigSchema()
+        schema = internal_schemas.Config()
         self.__apply(schema.load(data))
