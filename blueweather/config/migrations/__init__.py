@@ -1,8 +1,9 @@
 import logging
-from . import migrate_orig
+from . import migrate_orig, migrate_apps
 
 migrations = [
-    migrate_orig
+    migrate_orig,
+    migrate_apps
 ]
 
 

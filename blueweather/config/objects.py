@@ -190,13 +190,16 @@ class Web(Settings):
 
 
 class Plugins(Settings):
-    def __init__(self, weather_driver: str = None, disabled: list = None,
-                 settings: dict = None):
+    def __init__(self, weather_driver: str = None, disabled: list = None):
         super().__init__()
 
         self.weather_driver = weather_driver or 'dummyWeather'
 
         self.disabled = disabled or list()
+
+
+class Apps(Settings):
+    def __init__(self, settings: dict = None):
         self.settings = settings or dict()
 
 
@@ -209,8 +212,8 @@ class System(Settings):
 
 class Config(Settings):
     def __init__(self, web: Web = None, system: System = None,
-                 plugins: Plugins = None, version: int = None,
-                 calculate_secret: bool = True):
+                 plugins: Plugins = None, apps: Apps = None,
+                 version: int = None, calculate_secret: bool = True):
         super().__init__()
 
         self.web = web
@@ -225,4 +228,8 @@ class Config(Settings):
         if self.plugins is None:
             self.plugins = Plugins()
 
-        self.version = version or 1
+        self.apps = apps
+        if self.apps is None:
+            self.apps = Apps()
+
+        self.version = version or 2

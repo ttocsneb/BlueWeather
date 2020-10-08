@@ -9,6 +9,8 @@ from django.views.decorators.http import require_POST
 from blueweather.apps.api.decorators import csrf_authorization_required
 from marshmallow.exceptions import MarshmallowError, ValidationError
 
+from . import config
+
 
 @login_required
 def index(request: HttpRequest):
@@ -34,178 +36,62 @@ def index(request: HttpRequest):
     })
 
 
-@csrf_authorization_required
-@require_POST
+def get_settings_interface(request: HttpRequest):
+    """
+    Get the settings interface
+
+    :param app: app to get the settings from
+    """
+
+    app = request.GET.get('app')
+
+    interface = config.get_settings_interface(app)
+
+    # TODO Return the settings interface
+
+
+def get_settings(request: HttpRequest):
+    """
+    Get the current settings
+
+    :param app: app to get the settings from
+    """
+
+    app = request.GET.get('app')
+
+    settings = config.get_settings(app)
+
+    # TODO Return the App Config
+
+
 def set_settings(request: HttpRequest):
     """
-    Set a value of the settings
+    Apply the settings
 
-    :type: POST
-
-    :param namespace: The starting point of each setting
-
-        .. note::
-
-            Each value can be any type of object
-
-    :param settings: A dictionary of settings, and their values
-
-    .. code-block:: json
-
-        {
-            "namespace": "starting.point",
-            "settings": {
-                "name.of.setting": "value"
-            }
-        }
-
-    :return:
-
-        * **success** - whether successful
-        * **reason** - A human readable error why it was unsuccessful.
-        * **validation** - An object describing which parameters were invalid.
-        * **namespace** - The namespace from the request
-        * **settings** - The current settings based on the given settings
-
-        .. code-block:: json
-
-            {
-                "success": "true or false",
-                "reason": "Reason why unsuccessful",
-                "validation": {
-                    "key": ["Reason why it's invalid"]
-                },
-                "namespace": "given.namespace"
-                "settings": {
-                    "key": "saved settings"
-                }
-            }
-
-        .. note::
-
-            **reason** and **validation** are only supplied if **success**
-            is :code:`false`.
+    :param app: app to set the settings to
+    :param setting: name of the setting to change
+    :param value: value of the new setting
     """
 
-    config = dict()
+    app = request.POST.get('app')
+    setting = request.POST.get('setting')
+    value = request.POST.get('value')
 
-    logger = logging.getLogger(__name__)
-
-    def load_settings(obj: dict, keys: list, value):
-        if len(keys) == 1:
-            obj[keys[0]] = value
-        else:
-            if keys[0] not in obj:
-                obj[keys[0]] = dict()
-            load_settings(obj[keys[0]], keys[1:], value)
-
-    def apply_settings() -> dict:
-        dest = dict()
-        current = settings.CONFIG.serialize()
-
-        def unload_settings(k: str, source: dict, keys: list,
-                            destination: dict):
-            if len(keys) == 1:
-                destination[k] = source[keys[0]]
-            else:
-                unload_settings(k, source[keys[0]], keys[1:], destination)
-
-        # Unload the setings into the response
-        for k, v in new_settings.items():
-            keys = [i for i in namespace + k.split('.') if i]
-            unload_settings(k, current, keys, dest)
-
-        return dest
-
-    # Load the data
-    try:
-        data = json.loads(request.body)
-        new_settings = data.get('settings')
-        namespace = data.get('namespace', '').split('.')
-    except json.decoder.JSONDecodeError as e:
-        logger.exception("Could not parse Settings")
-        return JsonResponse({
-            "success": False,
-            "reason": str(e),
-            "namespace": namespace,
-            "settings": apply_settings()
-        })
-
-    # Parse the settings into a settings object
-    for k, v in new_settings.items():
-        keys = [i for i in namespace + k.split('.') if i]
-        load_settings(config, keys, v)
-
-    # Merge the new settings with the existing settings
-
-    conf = settings.CONFIG.serialize()
-
-    def merge(orig: dict, new: dict):
-        for k, v in new.items():
-            if k in orig and isinstance(v, dict) and isinstance(orig[k], dict):
-                merge(orig[k], v)
-            else:
-                orig[k] = v
-
-    merge(conf, config)
-
-    try:
-        settings.CONFIG.deserialize(conf)
-        settings.CONFIG.modified = True
-    except ValidationError as e:
-        logger.exception("The settings could not be deserialized")
-        return JsonResponse({
-            "success": False,
-            "reason": "Invalid Settings",
-            "validation": e.messages,
-            "namespace": namespace,
-            "settings": apply_settings()
-        })
-    except MarshmallowError as e:
-        logger.exception("An error occurred while deserializing the settings")
-        logger.error("Exception: %s", e)
-
-        return JsonResponse({
-            "success": False,
-            "reason": str(e),
-            "namespace": namespace,
-            "settings": apply_settings()
-        })
-
-    # Return the updated settings
-
-    return JsonResponse({
-        "success": True,
-        "namespace": namespace,
-        "settings": apply_settings()
-    })
+    # TODO Find the App config in the config obj
+    # TODO Apply the setting to the config
 
 
-@csrf_authorization_required
-@require_POST
-def save_settings(request: HttpRequest):
-    """
-    Save the loaded settings
-
-    :type: POST
-    """
-
-    settings.CONFIG.save()
-    return JsonResponse({
-        "success": True
-    })
-
-
-@csrf_authorization_required
-@require_POST
 def revert_settings(request: HttpRequest):
     """
-    Revert the settings to what is stored on disk
-
-    :type: POST
+    Revert the changes to what's stored on disk
     """
 
-    settings.CONFIG.load()
-    return JsonResponse({
-        "success": True
-    })
+    # TODO read the settings from disk, replacing the settings in memory
+
+
+def apply_settings(request: HttpRequest):
+    """
+    Apply the changes made to disk
+    """
+
+    # TODO Save the settings to disk

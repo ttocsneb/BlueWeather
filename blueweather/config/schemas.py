@@ -79,6 +79,16 @@ class Plugins(Schema):
     '''The weather driver extension'''
     disabled = fields.List(fields.String())
     '''A list of disabled plugins'''
+
+    @post_load
+    def make_plugins(self, data: dict, **kwargs):
+        return objects.Plugins(**data)
+
+
+class Apps(Schema):
+    """
+    The Apps Schema
+    """
     settings = fields.Dict(
         fields.String(),
         fields.Dict(fields.String())
@@ -86,8 +96,8 @@ class Plugins(Schema):
     '''A dictionary of plugin settings'''
 
     @post_load
-    def make_plugins(self, data: dict, **kwargs):
-        return objects.Plugins(**data)
+    def make_apps(self, data: dict, **kwargs):
+        return objects.Apps(**data)
 
 
 class Config(Schema):
