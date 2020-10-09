@@ -36,7 +36,7 @@ EXTRAS_REQUIRE = {}
 
 setup(
     name="BlueWeather",
-    version='0.4.0-alpha',
+    version='0.4.1-alpha',
 
     description="A web-app for your Personal Weather Staion",
     long_description=LONG_DESCRIPTION,

@@ -1,15 +1,19 @@
-.. currentmodule:: blueweather.plugins.base
-
-.. _plugins:
-
 Plugins
-====================
+=======
 
-Plugins are included using `stevedore <https://docs.openstack.org/stevedore/latest/>`_
-This means that any package installed with `setup.py` can be turned into a plugin.
+All of the information you need to know about creating plugins can be found here
+
+.. toctree::
+
+    frontend/frontend
+    apps
+    pluginApi
 
 Creating A Plugin
 -----------------
+
+Plugins are included using `stevedore <https://docs.openstack.org/stevedore/latest/>`_
+This means that any package installed with `setup.py` can be turned into a plugin.
 
 To create a simple plugin, you first need two files:
 
@@ -86,92 +90,3 @@ is working.
 
 This is an exceedingly simple plugin, but it should be enough to get you started
 in creating your own plugins.
-
-API Reference
--------------
-
-.. autosummary::
-
-    Plugin
-    Startup
-    API
-    Settings
-    Weather
-    UnitConversion
-    blueweather.plugins.hooks.get_hook
-    blueweather.plugins.hooks.Hook
-
-.. _plugin:
-
-Plugin
-^^^^^^
-
-.. autoclass:: Plugin
-    :members:
-
-.. _startup:
-
-Startup
-^^^^^^^
-
-.. autoclass:: Startup
-    :members:
-
-.. _api:
-
-API
-^^^
-
-.. autoclass:: API
-    :members:
-
-.. _settings:
-
-Settings
-^^^^^^^^
-
-.. autoclass:: Settings
-    :members:
-
-.. _weather:
-
-Weather
-^^^^^^^
-
-.. autoclass:: Weather
-    :members:
-
-.. _unitConversion:
-
-UnitConversion
-^^^^^^^^^^^^^^
-
-.. autoclass:: UnitConversion
-    :members:
-
-.. _hooks:
-
-Hooks
------
-
-Hooks are ways that plugins can interact with eachother. They should not be
-confused with stevedore's hooks though.
-
-A hook is a list of functions that can be called. At any point in time, anyone
-can create or subscribe to a hook. When the hook is called, all subscribed
-functions will be called.
-
-.. _get_hook:
-
-get_hook
-^^^^^^^^
-
-.. autofunction:: blueweather.plugins.hooks.get_hook
-
-.. _hook:
-
-Hook
-^^^^
-
-.. autoclass:: blueweather.plugins.hooks.Hook
-    :members:

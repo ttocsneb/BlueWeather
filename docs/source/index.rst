@@ -28,11 +28,10 @@ Contents
 .. toctree::
    :maxdepth: 2
 
-   pluginApi
-   plugins/frontend/frontend
+   plugins/index
    config
    web/api
-   internal/docs
+   internal/index
    plans/index
 
 

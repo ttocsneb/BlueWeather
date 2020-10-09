@@ -110,6 +110,8 @@ class Config(Schema):
     ''':class:`System`'''
     plugins = fields.Nested(Plugins)
     ''':class:`Plugins`'''
+    apps = fields.Nested(Apps)
+    ''':class:`Apps`'''
     version = fields.Integer()
     '''The version of settings'''
 

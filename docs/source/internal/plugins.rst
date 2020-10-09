@@ -5,7 +5,7 @@ Plugins
 
 .. autosummary::
 
-    ExtensionsSingleton
+    Extensions
     dao.Plugin
     dao.Startup
     dao.API
@@ -17,7 +17,7 @@ Plugins
 ExtensionSingleton
 ------------------
 
-.. autoclass:: ExtensionsSingleton
+.. autoclass:: Extensions
     :members:
 
 DAO

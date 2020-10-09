@@ -39,5 +39,5 @@ class Item(Schema):
 
 
 class Settings(Schema):
-    settings = fields.Nested(SettingItem, many=True)
-    items = fields.Nested(Item, many=True)
+    settings = fields.Nested(SettingItem, many=True, missing=list)
+    items = fields.Nested(Item, many=True, missing=list)

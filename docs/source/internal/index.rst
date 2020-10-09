@@ -8,7 +8,7 @@ a mess, but I do plan to clean it up a bit as time goes on (hopefully).
 .. toctree::
    :maxdepth: 2
 
-   apps/apps
+   apps/index
    templates
    plugins
    settings

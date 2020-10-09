@@ -4,10 +4,10 @@ import json
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http.request import HttpRequest
-from django.http.response import JsonResponse
+from django.http.response import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
-from blueweather.apps.api.decorators import csrf_authorization_required
-from marshmallow.exceptions import MarshmallowError, ValidationError
+
+from marshmallow import ValidationError
 
 from . import config
 
@@ -44,10 +44,18 @@ def get_settings_interface(request: HttpRequest):
     """
 
     app = request.GET.get('app')
-
-    interface = config.get_settings_interface(app)
-
-    # TODO Return the settings interface
+    try:
+        interface = config.get_settings_interface(app)
+        return JsonResponse(interface)
+    except KeyError:
+        return JsonResponse({
+            'message': 'app does not exist'
+        }, status=400)
+    except Exception:
+        logging.getLogger(__name__).exception()
+        return JsonResponse({
+            'message': 'app improperly configured'
+        }, status=500)
 
 
 def get_settings(request: HttpRequest):
@@ -59,11 +67,29 @@ def get_settings(request: HttpRequest):
 
     app = request.GET.get('app')
 
-    settings = config.get_settings(app)
+    try:
+        return JsonResponse(config.get_settings(app))
+    except KeyError:
+        return JsonResponse({
+            'message': 'app does not exist'
+        }, status=400)
+    except ValidationError:
+        logging.getLogger(__name__).exception(
+            'Could not validate settings'
+        )
+        return JsonResponse({
+            'message': 'settings improperly configured'
+        }, status=500)
+    except Exception:
+        logging.getLogger(__name__).exception(
+            'An exception occurred while getting the settings'
+        )
+        return JsonResponse({
+            'message': 'app improperly configured'
+        }, status=500)
 
-    # TODO Return the App Config
 
-
+@require_POST
 def set_settings(request: HttpRequest):
     """
     Apply the settings
@@ -77,8 +103,23 @@ def set_settings(request: HttpRequest):
     setting = request.POST.get('setting')
     value = request.POST.get('value')
 
-    # TODO Find the App config in the config obj
-    # TODO Apply the setting to the config
+    try:
+        config.set_setting(app, setting, value)
+    except KeyError:
+        return JsonResponse({
+            'message': 'app does not exist'
+        }, status=400)
+    except ValidationError as error:
+        return JsonResponse({
+            'message': error.messages
+        }, status=400)
+    except Exception:
+        logging.getLogger(__name__).exception(
+            'An exception occurred while setting a setting'
+        )
+        return JsonResponse({
+            'message': 'app improperly configured'
+        }, status=500)
 
 
 def revert_settings(request: HttpRequest):
@@ -86,7 +127,9 @@ def revert_settings(request: HttpRequest):
     Revert the changes to what's stored on disk
     """
 
-    # TODO read the settings from disk, replacing the settings in memory
+    config.revert_settings()
+
+    return HttpResponse('')
 
 
 def apply_settings(request: HttpRequest):
@@ -94,4 +137,6 @@ def apply_settings(request: HttpRequest):
     Apply the changes made to disk
     """
 
-    # TODO Save the settings to disk
+    config.apply_settings()
+
+    return HttpResponse('')
