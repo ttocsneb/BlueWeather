@@ -5,7 +5,11 @@ from stevedore.extension import Extension, ExtensionManager
 from stevedore.dispatch import DispatchExtensionManager
 from stevedore.exception import NoMatches
 
-from importlib import metadata
+try:
+    from importlib import metadata
+except ImportError:
+    print("warning: Could not import importlib")
+    metadata = None
 
 from typing import List, Dict, Set, Tuple
 

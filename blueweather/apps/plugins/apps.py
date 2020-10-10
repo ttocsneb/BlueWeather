@@ -8,8 +8,10 @@ import logging
 
 class ExtensionsConfig(AppConfig):
     name = 'blueweather.apps.plugins'
-    label = 'blueweather.apps.plugins'
+    label = 'plugins'
     verbose_name = 'Plugins'
     icon = 'fas fa-puzzle-piece'
     route = 'plugins:index'
     login_required = True
+
+    api = 'blueweather.apps.plugins.api'

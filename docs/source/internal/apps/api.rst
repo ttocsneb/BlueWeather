@@ -8,3 +8,9 @@ Decorators
 
 .. automodule:: blueweather.apps.api.decorators
     :members:
+
+URLS
+----
+
+.. automodule:: blueweather.apps.api.loader
+    :members:
