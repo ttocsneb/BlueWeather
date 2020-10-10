@@ -1,11 +1,12 @@
 import inspect
 import logging
 
+
 class Hook:
     """
     Holds all the functions that are subscribed to this hook.
     """
-    
+
     def __init__(self, name: str, signature: inspect.Signature):
         self.__name = name
         self.__hooks = dict()

@@ -1,261 +1,110 @@
-from marshmallow import Schema
+"""
+The DAO is the link between BlueWeather and the plugins.
+"""
 from stevedore.extension import Extension, ExtensionManager
 from stevedore.dispatch import DispatchExtensionManager
-from stevedore import EnabledExtensionManager
+from stevedore.exception import NoMatches
 
-from blueweather.config import Config
+from importlib import metadata
 
 from typing import List, Dict, Set, Tuple
 
 prettyNames = {
-    "blueweather.plugins.plugin": "Plugin-Info",
-    "blueweather.plugins.weather": "Weather",
-    'blueweather.plugins.django': "Web-App",
-    'blueweather.plugins.startup': "Startup",
-    'blueweather.plugins.settings': "Settings",
+    'blueweather.plugins.weather': "Weather",
     'blueweather.plugins.unitconv': "Unit-Conversion",
-    'blueweather.plugins.api': "ReST-API"
+    'blueweather.plugins.app': "App"
 }
+'''Pretty Names for each Plugin Type'''
 builtins = [
     'imperialConverter',
     'metricConverter',
     'dummyWeather'
 ]
+'''Built-in plugins'''
 
 
-def strip_name(tup: tuple):
-    return map(lambda x: x[1], tup)
-
-
-class Plugin:
+class PluginInfo:
     """
-    Get Plugin Info
+    Get info about a plugin
     """
-    @staticmethod
-    def get_plugin_name(ext: Extension) -> str:
+    @classmethod
+    def metadata(cls, ext: Extension) -> dict:
         """
-        Get the human readable name of the plugin
+        Get the metadata for a plugin
 
-        :param ext: extension
+        :param ext: any extension that belongs to the plugin
 
-        :return: plugin name
+        :return: metadata for the plugin
         """
-        return ext.obj.get_plugin_name()
+        return metadata.metadata(ext.entry_point_target.split('.')[0])
 
-    @staticmethod
-    def get_plugin_description(ext: Extension) -> str:
+    @classmethod
+    def get_author(cls, ext: Extension):
         """
-        Get the human readable description of the plugin
+        Get the author for a plugin
 
-        :param ext: extension
+        :param ext: any extension that belongs to the plugin
 
-        :return: plugin description
+        :return: author of the plugin
         """
-        return ext.obj.get_plugin_description()
+        return cls.metadata(ext).get('author')
 
-    @staticmethod
-    def get_plugin_author(ext: Extension) -> List[str]:
+    @classmethod
+    def get_email(cls, ext: Extension):
         """
-        Get the authors of the plugin
+        Get the email for a plugin
 
-        :param ext: extension
+        :param ext: any extension that belongs to the plugin
 
-        :return: plugin authors
+        :return: email of the plugin
         """
-        return ext.obj.get_plugin_author()
+        return cls.metadata(ext).get('author-email')
 
-    @staticmethod
-    def get_plugin_url(ext: Extension) -> str:
+    @classmethod
+    def get_home_page(cls, ext: Extension):
         """
-        Get the url for the plugin
+        Get the home page for a plugin
 
-        :param ext: extension
+        :param ext: any extension that belongs to the plugin
 
-        :return: plugin url
+        :return: home page of the plugin
         """
-        return ext.obj.get_plugin_url()
+        return cls.metadata(ext).get('home-page')
+
+    @classmethod
+    def get_version(cls, ext: Extension):
+        """
+        Get the version of a plugin
+
+        :param ext: any extension that belongs to the plugin
+
+        :return: version of the plugin
+        """
+        return cls.metadata(ext).get('version')
 
 
-class Startup:
+class App:
     """
-    Send messages to plugins on startup
-    """
-    @staticmethod
-    def on_startup(man: EnabledExtensionManager):
-        """
-        Send a message to all the plugins that the server has started.
-
-        :param man: startup extension manager
-        """
-        for ext in man.extensions:
-            ext.obj.on_startup()
-
-
-class API:
-    """
-    Get API Configurations from plugins.
+    Get the app name for the plugin
     """
 
     @staticmethod
-    def allApiPatterns(man: ExtensionManager) -> list:
+    def get_app_names(man: ExtensionManager) -> List[str]:
         """
-        Get all the API patterns for each api extension
+        Get all the app names for the extensions
 
-        :param man: API Extension Manager
+        :param man: app extension manager
 
-        :return: list of api patterns
-        """
-        patterns = list()
-        for ext in man.extensions:
-            patterns.extend(API.get_api_urlpatterns(ext))
-        return patterns
-
-    @staticmethod
-    def get_api_urlpatterns(ext: Extension) -> (str, list):
-        """
-        Get the API Patterns for an extension
-
-        :param ext: extension
-
-        :return: API Patterns
-        """
-        return ext.obj.get_api_urlpatterns()
-
-
-class Settings:
-    """
-    Manage plugins' settings
-    """
-
-    @staticmethod
-    def load_settings(man: EnabledExtensionManager, config: Config):
-        """
-        Load the plugins' settings from the supplied config
-
-        All the plugins' settings will be processed and loaded into memory.
-
-        .. note::
-
-            If any changes were made while loading the settings,
-            :code:`config.modified` will be set.
-
-        :param man: Settings Extension Manager
-        :param config: configuration
+        :return: list of app names
         """
 
-        for ext in man.extensions:
-            if ext.name not in config.plugins.settings:
-                config.plugins.settings[ext.name] = dict()
-            
-            # Migrate the settings
-            settings = config.plugins.settings[ext.name]
-            migration, changed = Settings.settings_migrate(ext, settings)
-            config.plugins.settings[ext.name] = migration
-            if changed:
-                config.modified = True
+        def get_app_name(ext: Extension, *args, **kwds):
+            return ext.obj.app_name
 
-            # Deserialize the settings
-            Settings.settings_deserialize(ext, migration)
-        
-        # After all the settings have been loaded, notify the extensions that
-        # the settings have been loaded
-        for ext in man.extensions:
-            Settings.on_settings_initialized(ext)
-
-    
-    @staticmethod
-    def unload_settings(man: EnabledExtensionManager, config: Config):
-        """
-        Unload the plugins' settings to the supplied config.
-
-        The settings stored in memory will be processed and dumped into the supplied config.
-
-        :param man: Settings Extension Manager
-        :param config: configuration
-        """
-
-        for ext in man.extensions:
-            # Serialize the settings
-            settings = config.plugins.settings[ext.name]
-            serialized = Settings.settings_serialize(ext, settings)
-
-            # Apply the settings
-            config.plugins.settings[ext.name] = serialized
-
-
-    @staticmethod
-    def settings_serialize(ext: Extension, settings: dict) -> dict:
-        """
-        Serialize an extension's settings
-
-        This serializes the extensions local settings, and returns it
-
-        :param ext: extension
-        :param setings: saved settings
-
-        :return: serialized settings
-        """
-        key = ext.obj.config_version_key
         try:
-            version = int(settings.get(key, 0))
-        except ValueError:
-            version = 0
-        
-        config = ext.obj.settings_serialize(ext.obj._settings)
-        config[key] = version
-
-        return config
-
-    @staticmethod
-    def settings_deserialize(ext: Extension, settings: dict):
-        """
-        Deserialize the settings of an extension.
-
-        :param ext: extension
-        :param settings: saved settings
-        """
-        key = ext.obj.config_version_key
-
-        temp = dict(settings)
-        if key in temp:
-            del temp[key]
-        deserialized = ext.obj.settings_deserialize(temp)
-
-        ext.obj._settings = deserialized
-
-    @staticmethod
-    def settings_migrate(ext: Extension, settings: dict) -> dict:
-        """
-        Migrate the settings of the extension
-
-        :param ext: extension
-        :param settings: saved settings
-
-        :return: migrated settings
-        """
-        key = ext.obj.config_version_key
-        try:
-            version = int(settings.get(key, 0))
-        except ValueError:
-            version = 0
-        
-        temp = dict(settings)
-        if key in temp:
-            del temp[key]
-
-        migration = ext.obj.settings_migrate(version, temp)
-        migration[1][key] = migration[0]
-
-        return migration[1], migration[2]
-
-    @staticmethod
-    def on_settings_initialized(ext: Extension):
-        """
-        Send a message to the extension that the settings have been initialized
-
-        :param ext: extension
-        """
-        ext.obj.on_settings_initialized()
+            return man.map(get_app_name)
+        except NoMatches:
+            return []
 
 
 class Weather:
@@ -291,7 +140,7 @@ class UnitConversion:
         """
         units = dict()
         for name, conversions in man.map(
-                lambda *args, **kwargs: True,
+                lambda *args, **kwargs: True,  # Something seems fishy
                 UnitConversion.get_conversion_types):
             if conversions is None:
                 continue
@@ -303,7 +152,8 @@ class UnitConversion:
 
     @staticmethod
     def all_conversions(man: DispatchExtensionManager = None,
-                        units: Dict[str, Set[str]] = None) -> Dict[str, Set[str]]:
+                        units: Dict[str, Set[str]] = None
+                        ) -> Dict[str, Set[str]]:
         """
         Get all the possible conversions
 
@@ -335,7 +185,8 @@ class UnitConversion:
         :param from_type: type to convert from
         :param to_type: type to convert to
 
-        :return: name(s) of the extensions that performed the conversion, and the converted value
+        :return: name(s) of the extensions that performed the conversion, and
+            the converted value
         """
         units = UnitConversion.conversions(man)
 
@@ -382,7 +233,8 @@ class UnitConversion:
         return (name1, name2), data
 
     @staticmethod
-    def get_conversion_types(ext: Extension) -> Tuple[str, List[Tuple[str, str]]]:
+    def get_conversion_types(ext: Extension
+                             ) -> Tuple[str, List[Tuple[str, str]]]:
         """
         Get the types that an extension can convert
 
@@ -413,7 +265,7 @@ class UnitConversion:
 
     @staticmethod
     def request_conversion(ext: Extension, data: float, from_type: str,
-                              to_type: str) -> (str, float):
+                           to_type: str) -> (str, float):
         """
         Request a conversion to be made
 

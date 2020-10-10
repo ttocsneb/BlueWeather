@@ -9,7 +9,7 @@ from blueweather.config import Config
 
 from . import dao
 
-from typing import Dict
+from typing import Dict, List
 
 
 class Extensions:
@@ -28,13 +28,14 @@ class Extensions:
 
     """
 
-    def __init__(self, config: Config, invoke_on_load=False):
+    def __init__(self, config: Config):
         self._logger = logging.getLogger(__name__)
 
         self.failed_plugins = list()
         self._disabled_plugins = config.plugins.disabled
 
         self._settings_initialized = False
+        self.__invoked_plugins = dict()
 
         def check(ext: Extension):
             return self._check_extension(config, ext)
@@ -44,29 +45,15 @@ class Extensions:
             config.plugins.weather_driver,
             on_load_failure_callback=self._on_load_fail
         )
-        self.plugins = ExtensionManager(
-            "blueweather.plugins.plugin",
-            on_load_failure_callback=self._on_load_fail
-        )
-        self.api = EnabledExtensionManager(
-            "blueweather.plugins.api",
-            check_func=check,
-            on_load_failure_callback=self._on_load_fail
-        )
-        self.startup = EnabledExtensionManager(
-            "blueweather.plugins.startup",
-            check_func=check,
-            on_load_failure_callback=self._on_load_fail
-        )
-        self.settings = EnabledExtensionManager(
-            "blueweather.plugins.settings",
-            check_func=check,
-            on_load_failure_callback=self._on_load_fail
-        )
         self.unitConversion = DispatchExtensionManager(
             "blueweather.plugins.unitconv",
             check_func=check,
             on_load_failure_callback=self._on_load_fail
+        )
+        self.apps = EnabledExtensionManager(
+            "blueweather.plugins.app",
+            check_func=check,
+            on_load_failure_callback=self._on_load_fail,
         )
 
         if self._logger.isEnabledFor(logging.INFO):
@@ -75,114 +62,59 @@ class Extensions:
                 extensions[k] = '\n\t'.join(v.keys())
 
             extensions = '\n'.join(
-                ["%s: \n\t%s" % (k, v) for k, v in extensions.items()]
+                ["%s:\n\t%s" % (k, v) for k, v in extensions.items()]
             )
 
             self._logger.info("Discovered Extensions: \n%s", extensions)
 
-        if invoke_on_load:
-            self.invoke()
+        self.invoke(self.apps)
 
-    def getPluginList(self) -> Dict[str, dict]:
+    def getAllExtensions(self) -> Dict[str, List[Extension]]:
         """
-        Get a list of all the plugins
+        Get all the loaded extensions
 
-        Example of a plugin dict
-
-        .. code-block:: python
-
-            {
-                'human_name': 'Simple Plugin',
-                'description': 'Description',
-                'author': 'Author',
-                'url': 'url',
-                'entrypoints': [
-                    'blueweather.plugins.startup'
-                ],
-                'builtin': False,
-                'enabled': True,
-                'disableable': True
-            }
-
-        :return: a list of plugins
+        :return: dict of plugins -> list of extensions
         """
-        extensions = self.getAllExtensions()
-        data = dict()
+        plugins = dict()
 
-        for name, exts in extensions.items():
-            desc = exts['blueweather.plugins.plugin']
-            data[name] = {
-                'human_name': dao.Plugin.get_plugin_name(desc),
-                'description': dao.Plugin.get_plugin_description(desc),
-                'author': dao.Plugin.get_plugin_author(desc),
-                'url': dao.Plugin.get_plugin_url(desc),
-                'entrypoints': [
-                    dao.prettyNames[man]
-                    for man, ext in exts.items()
-                    if man != 'blueweather.plugins.plugin'
-                ],
-                'builtin': desc.builtin,
-                'enabled': name not in self._disabled_plugins,
-                'disableable': name != self.weather.extensions[0].name
-            }
-        return data
+        def get_manager_extensions(manager: ExtensionManager):
+            for name, ext in manager.items():
+                if name not in plugins:
+                    plugins[name] = dict()
+                plugins[name][manager.namespace] = ext
 
-    def getAllExtensions(self) -> Dict[str, Dict[str, Extension]]:
+        get_manager_extensions(self.apps)
+        get_manager_extensions(self.weather)
+        get_manager_extensions(self.unitConversion)
+
+        return plugins
+
+    def invoke_all(self):
         """
-        Get all extensions
-
-        :return: extensions
+        Invoke the extensions that have been loaded
         """
-        extensions = dict()
+        self.invoke(self.weather)
+        self.invoke(self.unitConversion)
 
-        def collect(man: ExtensionManager):
-            for ext in man.extensions:
-                if ext.name not in extensions:
-                    extensions[ext.name] = dict()
-                extensions[ext.name][man.namespace] = ext
+    def invoke(self, manager: ExtensionManager):
+        for ext in manager:
+            self._invoke_one(ext)
 
-        collect(self.plugins)
-        collect(self.weather)
-        collect(self.startup)
-        collect(self.settings)
-        collect(self.unitConversion)
-        collect(self.api)
-        return extensions
-
-    def invoke(self):
-        """
-        Invoke the classes that have been loaded
-
-        The act of invoking, initializes the plugin
-        objects and is required for any functionality.
-        """
-        objects = dict()
-
-        def invoke_plugins(plugin: ExtensionManager):
-            for ext in plugin.extensions:
-                self._invoke_one(ext, objects)
-
-        invoke_plugins(self.plugins)
-        invoke_plugins(self.weather)
-        invoke_plugins(self.api)
-        invoke_plugins(self.startup)
-        invoke_plugins(self.settings)
-        invoke_plugins(self.unitConversion)
-
-    def _invoke_one(self, extension: Extension, objects: dict):
+    def _invoke_one(self, extension: Extension):
+        # Make sure that the extension hasn't already been invoked
         if extension.obj is not None:
             return
         extension.builtin = extension.name in dao.builtins
-        if extension.plugin in objects:
-            extension.obj = objects[extension.plugin]
-        else:
-            try:
-                extension.obj = extension.plugin()
-                objects[extension.plugin] = extension.obj
-                if extension.name not in self._disabled_plugins:
-                    self._logger.info("Loaded Plugin '%s'", extension.name)
-            except Exception as exc:
-                self._on_load_fail(None, extension, exc)
+        # If the class has already been invoked, use the loaded one
+        if extension.plugin in self.__invoked_plugins:
+            extension.obj = self.__invoked_plugins[extension.plugin]
+            return
+        try:
+            extension.obj = extension.plugin()
+            self.__invoked_plugins[extension.plugin] = extension.obj
+            self._logger.info("Loaded Plugin '%s'", extension.name)
+        except Exception as exc:
+            self._on_load_fail(None, extension, exc)
 
     def _on_load_fail(self, manager: ExtensionManager, entrypoint: Extension,
                       exception: Exception):

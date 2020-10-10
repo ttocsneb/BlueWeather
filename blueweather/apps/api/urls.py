@@ -16,12 +16,4 @@ urlpatterns = [
     ))
 ]
 
-# Load all the api extensions
-if settings.EXTENSIONS.api.extensions:
-    for name, patterns in settings.EXTENSIONS.api.map(
-            dao.API.get_api_urlpatterns):
-        urlpatterns.append(
-            path('%s/' % name, include(
-                (patterns, name), namespace=name
-            ))
-        )
+# TODO Load all the api extensions

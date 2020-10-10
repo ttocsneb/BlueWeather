@@ -7,64 +7,14 @@ API Reference
 
 .. autosummary::
 
-    Plugin
-    Startup
-    API
-    Settings
+    App
     Weather
     UnitConversion
     blueweather.plugins.hooks.get_hook
     blueweather.plugins.hooks.Hook
 
-.. _plugin:
-
-Plugin
-^^^^^^
-
-.. autoclass:: Plugin
+.. automodule:: blueweather.plugins.base
     :members:
-
-.. _startup:
-
-Startup
-^^^^^^^
-
-.. autoclass:: Startup
-    :members:
-
-.. _api:
-
-API
-^^^
-
-.. autoclass:: API
-    :members:
-
-.. _settings:
-
-Settings
-^^^^^^^^
-
-.. autoclass:: Settings
-    :members:
-
-.. _weather:
-
-Weather
-^^^^^^^
-
-.. autoclass:: Weather
-    :members:
-
-.. _unitConversion:
-
-UnitConversion
-^^^^^^^^^^^^^^
-
-.. autoclass:: UnitConversion
-    :members:
-
-.. _hooks:
 
 Hooks
 -----

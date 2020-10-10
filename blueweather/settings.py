@@ -55,8 +55,8 @@ CONFIG.load()
 
 # because django is set to reload, two instances of extensions will always be
 # loaded. to stop this, use 'manage.py runserver --noreload'
-EXTENSIONS = Extensions(CONFIG, True)
-dao.Settings.load_settings(EXTENSIONS.settings, CONFIG)
+EXTENSIONS = Extensions(CONFIG)
+# TODO Migrate App Settings
 if CONFIG.modified:
     CONFIG.save()
 
@@ -87,6 +87,10 @@ INSTALLED_APPS = [
     'blueweather.apps.api',
     'blueweather.apps.settings'
 ]
+
+INSTALLED_APPS.extend(
+    dao.App.get_app_names(EXTENSIONS.apps)
+)
 
 # A list of apps that should be linked in the sidebar
 SIDEBAR = CONFIG.web.sidebar
