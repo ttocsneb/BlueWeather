@@ -73,11 +73,6 @@ setup(
         ],
         'blueweather.plugins.weather': [
             'dummyWeather = blueweather.plugins.integrated.dummyWeather:DummyWeather'
-        ],
-        'blueweather.plugins.plugin': [
-            'imperialConverter = blueweather.plugins.integrated.converters:ImperialConversion',
-            'metricConverter = blueweather.plugins.integrated.converters:MetricConversion',
-            'dummyWeather = blueweather.plugins.integrated.dummyWeather:DummyWeather'
         ]
     }
 )

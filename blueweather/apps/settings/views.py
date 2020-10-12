@@ -4,7 +4,7 @@ import json
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http.request import HttpRequest
-from django.http.response import JsonResponse, HttpResponse
+from django.http.response import JsonResponse, HttpResponse, Http404
 from django.views.decorators.http import require_POST
 
 from marshmallow import ValidationError
@@ -39,46 +39,31 @@ def index(request: HttpRequest):
 def get_settings_interface(request: HttpRequest):
     """
     Get the settings interface
-
-    :param app: app to get the settings from
     """
-
-    app = request.GET.get('app')
-    try:
-        interface = config.get_settings_interface(app)
-        return JsonResponse(interface)
-    except KeyError:
-        return JsonResponse({
-            'message': 'app does not exist'
-        }, status=400)
-    except Exception:
-        logging.getLogger(__name__).exception()
-        return JsonResponse({
-            'message': 'app improperly configured'
-        }, status=500)
+    interface = config.get_settings_interface()
+    return JsonResponse(interface)
 
 
-def get_settings(request: HttpRequest):
+def get_settings(request: HttpRequest, app: str):
     """
     Get the current settings
 
     :param app: app to get the settings from
     """
 
-    app = request.GET.get('app')
+    app = app.replace('-', '.')
 
     try:
         return JsonResponse(config.get_settings(app))
-    except KeyError:
-        return JsonResponse({
-            'message': 'app does not exist'
-        }, status=400)
-    except ValidationError:
+    except LookupError:
+        raise Http404
+    except ValidationError as validation:
         logging.getLogger(__name__).exception(
             'Could not validate settings'
         )
         return JsonResponse({
-            'message': 'settings improperly configured'
+            'message': 'settings improperly configured',
+            'validation': validation.messages
         }, status=500)
     except Exception:
         logging.getLogger(__name__).exception(
@@ -90,7 +75,7 @@ def get_settings(request: HttpRequest):
 
 
 @require_POST
-def set_settings(request: HttpRequest):
+def set_settings(request: HttpRequest, app: str):
     """
     Apply the settings
 
@@ -99,13 +84,25 @@ def set_settings(request: HttpRequest):
     :param value: value of the new setting
     """
 
-    app = request.POST.get('app')
+    app = app.replace('-', '.')
     setting = request.POST.get('setting')
     value = request.POST.get('value')
 
+    if setting is None or value is None:
+        return JsonResponse({
+            'message': 'setting and app parameters are required'
+        }, status=400)
+
     try:
         config.set_setting(app, setting, value)
+        return JsonResponse(
+            config.get_settings(app)
+        )
     except KeyError:
+        return JsonResponse({
+            'message': 'setting does not exist'
+        })
+    except LookupError:
         return JsonResponse({
             'message': 'app does not exist'
         }, status=400)

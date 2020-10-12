@@ -91,7 +91,7 @@ class Apps(Schema):
     """
     settings = fields.Dict(
         fields.String(),
-        fields.Dict(fields.String())
+        fields.Dict(fields.String(), fields.Raw())
     )
     '''A dictionary of plugin settings'''
 

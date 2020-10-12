@@ -29,10 +29,8 @@ Contents
    :maxdepth: 2
 
    plugins/index
-   config
    web/api
    internal/index
-   plans/index
 
 
 Installation
@@ -68,6 +66,7 @@ To start the server
 Contribute
 ----------
 
+* Trello: `https://trello.com/b/fhguq1j3/blueweather <https://trello.com/b/fhguq1j3/blueweather>`_
 * Issue Tracker: `github.com/ttocsneb/blueweather/issues <https://github.com/ttocsneb/blueweather/issues>`_
 * Source Code: `github.com/ttocsneb/blueweather <https://github.com/ttocsneb/blueweather>`_
 

@@ -18,6 +18,7 @@ class Config(objects.Config):
         self.web = obj.web
         self.system = obj.system
         self.plugins = obj.plugins
+        self.apps = obj.apps
         self.version = obj.version
         self.modified = obj.modified
 

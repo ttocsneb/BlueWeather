@@ -3,35 +3,6 @@ from marshmallow import fields, ValidationError
 from typing import Tuple, Dict, Any
 
 
-class Choice(fields.String):
-    """
-    The Union between any types.
-    """
-    def __init__(self, options: Tuple[str], case_sensitive: bool = False,
-                 *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if not case_sensitive:
-            self._options = dict(
-                (option.lower(), option)
-                for option in options
-            )
-        else:
-            self._options = dict(
-                (option, option)
-                for option in options
-            )
-        self._case_sensitive = case_sensitive
-
-    def _deserialize(self, value, attr, data, **kwargs):
-        val = super()._deserialize(value, attr, data, **kwargs)
-        if not self._case_sensitive:
-            val = val.lower()
-        try:
-            return self._options[val]
-        except KeyError as error:
-            raise ValidationError('Not a valid option') from error
-
-
 class Typed(fields.Field):
     """
     A field whose type changes depending on another field

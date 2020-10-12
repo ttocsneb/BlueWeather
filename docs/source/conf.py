@@ -45,7 +45,7 @@ templates_path = ['_templates']
 exclude_patterns = []
 
 # Add dummy settings for creating the docs
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
+# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -64,3 +64,15 @@ master_doc = "index"
 todo_include_todos = True
 
 autodoc_default_flags = ['members']
+
+autodoc_default_options = {
+    'member-order': 'bysource',
+    # 'undoc-members': True,
+    'show-inheritance': True
+}
+
+autodoc_mock_imports = ['django']
+
+autodoc_member_order = 'bysource'
+
+autodoc_typehints = 'description'

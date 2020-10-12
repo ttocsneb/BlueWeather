@@ -1,4 +1,4 @@
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, validate
 
 
 def generate_field(setting: dict) -> fields.Field:
@@ -10,15 +10,28 @@ def generate_field(setting: dict) -> fields.Field:
     :return: field for the setting
     """
     typ = setting['type']
+    options = setting['options']
     if typ == 'number':
-        precision = setting['options'].get('precision')
+        precision = options.get('precision')
         if precision == 0:
             return fields.Integer(missing=None)
         else:
             return fields.Float(missing=None)
         return fields.Number(missing=None)
-    if typ in ['select', 'text', 'radio']:
+    if typ == 'text':
         return fields.String(missing=None)
+    if typ == 'select':
+        return fields.String(validate=validate.OneOf(
+            list(map(lambda x: x['key'], options.get('choices', [])))
+        ))
+    if typ == 'radio':
+        choices = fields.String(validate=validate.OneOf(
+            list(map(lambda x: x['key'], options.get('choices', [])))
+        ))
+        if options.get('multiple', False):
+            return fields.List(choices, missing=None)
+        else:
+            return choices
     if typ == 'bool':
         return fields.Boolean(missing=None)
 
