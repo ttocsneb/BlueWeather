@@ -5,6 +5,9 @@ from stevedore.extension import Extension, ExtensionManager
 from stevedore.dispatch import DispatchExtensionManager
 from stevedore.exception import NoMatches
 
+import re
+import markdown2
+
 try:
     from importlib import metadata
 except ImportError:
@@ -32,59 +35,78 @@ class PluginInfo:
     Get info about a plugin
     """
     @classmethod
-    def metadata(cls, ext: Extension) -> dict:
+    def get_metadata(cls, ext: Extension) -> dict:
         """
         Get the metadata for a plugin
 
         :param ext: any extension that belongs to the plugin
 
         :return: metadata for the plugin
+
+            .. code-block:: typescript
+
+                interface Metadata {
+                    name: string
+                    version?: string
+                    summary?: string
+                    homepage?: string
+                    author?: string
+                    email?: string
+                    license?: string
+                    description?: html
+                }
+
         """
-        return metadata.metadata(ext.entry_point_target.split('.')[0])
+        raw = metadata.metadata(ext.entry_point_target.split('.')[0])
 
-    @classmethod
-    def get_author(cls, ext: Extension):
-        """
-        Get the author for a plugin
+        def fix_tabs(text: str) -> str:
+            """
+            When 'description' is used, newlines get 8 spaces of tabs, which
+            mess up markdown parsing
 
-        :param ext: any extension that belongs to the plugin
+            :param text: text to fix
 
-        :return: author of the plugin
-        """
-        return cls.metadata(ext).get('author')
+            :return: fixed tabs
+            """
+            fixed = re.sub(r"^ {8}", '', text, flags=re.MULTILINE)
+            print(fixed)
+            return fixed
 
-    @classmethod
-    def get_email(cls, ext: Extension):
-        """
-        Get the email for a plugin
+        # The description can be either the payload of the message,
+        # or a variable called description
+        raw_description = fix_tabs(raw.get('description', ''))
+        if not raw_description:
+            raw_description = raw.get_payload()
 
-        :param ext: any extension that belongs to the plugin
+        if raw_description:
+            description = markdown2.markdown(
+                raw_description,
+                extras=[
+                    'tables',
+                    'target-blank-lines',
+                    'fenced-code-blocks',
+                    'task_list'
+                ]
+            )
+        else:
+            description = None
 
-        :return: email of the plugin
-        """
-        return cls.metadata(ext).get('author-email')
+        def get(key: str, default: str = None):
+            val = raw.get(key, default)
+            if val == 'UNKNOWN':
+                return None
+            return val
 
-    @classmethod
-    def get_home_page(cls, ext: Extension):
-        """
-        Get the home page for a plugin
-
-        :param ext: any extension that belongs to the plugin
-
-        :return: home page of the plugin
-        """
-        return cls.metadata(ext).get('home-page')
-
-    @classmethod
-    def get_version(cls, ext: Extension):
-        """
-        Get the version of a plugin
-
-        :param ext: any extension that belongs to the plugin
-
-        :return: version of the plugin
-        """
-        return cls.metadata(ext).get('version')
+        return {
+            'name': get('name', ext.name),
+            'version': get('version'),
+            'summary': get('summary'),
+            'homepage': get('home-page'),
+            'author': get('author'),
+            'email': get('author-email'),
+            'license': get('license'),
+            'description': description
+        }
 
 
 class App:

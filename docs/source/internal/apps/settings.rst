@@ -16,8 +16,8 @@ SettingsConfig
     .. autoattribute:: route
     .. autoattribute:: login_required
 
-Config
-------
+Methods
+-------
 
-.. automodule:: blueweather.apps.settings.config
+.. automodule:: blueweather.apps.settings.methods
     :members:

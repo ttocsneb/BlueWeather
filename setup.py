@@ -1,9 +1,15 @@
 import os
+from os import path
 from setuptools import setup, find_packages
 
 
-with open("README.md", 'r') as fh:
-    LONG_DESCRIPTION = fh.read()
+def description():
+    description_file = path.join(
+        path.abspath(path.dirname(__file__)),
+        "README.md"
+    )
+    with open(description_file, encoding='utf-8') as f:
+        return f.read()
 
 
 def package_data_dirs(source, sub_folders):
@@ -29,7 +35,8 @@ INSTALL_REQUIRES = [
     'Jinja2==2.11.1',
     'ruamel.yaml==0.16.10',
     'marshmallow==3.5.1',
-    'stevedore==1.32.0'
+    'stevedore==1.32.0',
+    'markdown2==2.3.9'
 ]
 
 EXTRAS_REQUIRE = {}
@@ -39,7 +46,7 @@ setup(
     version='0.4.1-alpha',
 
     description="A web-app for your Personal Weather Staion",
-    long_description=LONG_DESCRIPTION,
+    long_description=description(),
     long_description_content_type="text/markdown",
 
     install_requires=INSTALL_REQUIRES,

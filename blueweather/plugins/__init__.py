@@ -34,11 +34,7 @@ class Extensions:
         self.failed_plugins = list()
         self._disabled_plugins = config.plugins.disabled
 
-        self._settings_initialized = False
         self.__invoked_plugins = dict()
-
-        def check(ext: Extension):
-            return self._check_extension(config, ext)
 
         self.weather = DriverManager(
             "blueweather.plugins.weather",
@@ -47,12 +43,12 @@ class Extensions:
         )
         self.unitConversion = DispatchExtensionManager(
             "blueweather.plugins.unitconv",
-            check_func=check,
+            check_func=self.is_enabled,
             on_load_failure_callback=self._on_load_fail
         )
         self.apps = EnabledExtensionManager(
             "blueweather.plugins.app",
-            check_func=check,
+            check_func=self.is_enabled,
             on_load_failure_callback=self._on_load_fail,
         )
 
@@ -69,7 +65,7 @@ class Extensions:
 
         self.invoke(self.apps)
 
-    def getAllExtensions(self) -> Dict[str, List[Extension]]:
+    def getAllExtensions(self) -> Dict[str, Dict[str, Extension]]:
         """
         Get all the loaded extensions
 
@@ -125,10 +121,14 @@ class Extensions:
                              exc_info=sys.exc_info(), stack_info=True)
         self.failed_plugins.append((entrypoint, exception))
 
-    def _check_extension(self, config: Config, extension: Extension):
+    def is_enabled(self, extension: Extension):
         """
-        Check if a function should be enabled
+        Check if an extension is disabled
+
+        :param extension: extension to check
+
+        :return: whether the extension is disabled
         """
-        if extension.name in config.plugins.disabled:
+        if extension.name in self._disabled_plugins:
             return False
         return True

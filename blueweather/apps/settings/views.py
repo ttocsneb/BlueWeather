@@ -9,7 +9,7 @@ from django.views.decorators.http import require_POST
 
 from marshmallow import ValidationError
 
-from . import config
+from . import methods
 
 
 @login_required
@@ -36,12 +36,11 @@ def index(request: HttpRequest):
     })
 
 
-def get_settings_interface(request: HttpRequest):
+def get_settings_interfaces(request: HttpRequest):
     """
     Get the settings interface
     """
-    interface = config.get_settings_interface()
-    return JsonResponse(interface)
+    return JsonResponse(methods.get_settings_interfaces())
 
 
 def get_settings(request: HttpRequest, app: str):
@@ -54,7 +53,7 @@ def get_settings(request: HttpRequest, app: str):
     app = app.replace('-', '.')
 
     try:
-        return JsonResponse(config.get_settings(app))
+        return JsonResponse(methods.get_settings(app))
     except LookupError:
         raise Http404
     except ValidationError as validation:
@@ -94,9 +93,9 @@ def set_settings(request: HttpRequest, app: str):
         }, status=400)
 
     try:
-        config.set_setting(app, setting, value)
+        methods.set_setting(app, setting, value)
         return JsonResponse(
-            config.get_settings(app)
+            methods.get_settings(app)
         )
     except KeyError:
         return JsonResponse({
@@ -124,7 +123,7 @@ def revert_settings(request: HttpRequest):
     Revert the changes to what's stored on disk
     """
 
-    config.revert_settings()
+    methods.revert_settings()
 
     return HttpResponse('')
 
@@ -134,6 +133,6 @@ def apply_settings(request: HttpRequest):
     Apply the changes made to disk
     """
 
-    config.apply_settings()
+    methods.apply_settings()
 
     return HttpResponse('')

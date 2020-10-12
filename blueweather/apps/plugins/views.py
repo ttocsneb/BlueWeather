@@ -4,10 +4,9 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http.request import HttpRequest
 from django.http.response import JsonResponse
-from django.views.decorators.http import require_POST
 from django.shortcuts import render
 
-from blueweather.apps.api.decorators import csrf_authorization_required
+from . import methods
 
 
 @login_required
@@ -21,52 +20,38 @@ def index(request: HttpRequest):
     })
 
 
-@csrf_authorization_required
-@require_POST
 def plugin_list(request: HttpRequest):
     """
-    Get a list of all the plugins as a json list.
 
-    .. note::
+    :param page: page number
+    :param size: items per page
 
-        The shown parameters are GET parameters
+    :return: plugin list
 
-    :param page: page number (default: 0)
-    :param items: number of items per page (default: 10)
+        .. code-block:: typescript
 
-    :return:
-
-        .. code-block:: json
-
-            {
-                "plugins": {
-                    "plugin-name": {}
-                },
-                "page": "page-number",
-                "items": "plugins-per-page",
-                "pages": "total-pages",
-                "total": "total-plugins"
+            interface Response {
+                plugins: PluginList
+                pages: number
+                page: number
             }
 
-        See :meth:`~blueweather.plugins.ExtensionsSingleton.getPluginList` for
-        plugin object description.
+        see :meth:`~blueweather.apps.plugins.methods.plugin_list` for
+        :code:`PluginList`
+
     """
-    plugins_raw = settings.EXTENSIONS.getPluginList()
+    try:
+        page = int(request.GET.get('page', 0))
+        size = int(request.GET.get('size', 10))
+    except ValueError:
+        return JsonResponse({
+            'message': 'page and items should be numbers'
+        }, status=400)
 
-    page = int(request.GET.get('page', 0))
-    items = int(request.GET.get('items', 10))
-    pages = math.ceil(len(plugins_raw) / items)
-    page = max(min(page, pages - 1), 0)
+    pages = methods.pageify(methods.plugin_list(), size)
 
-    start = page * items
-    end = start + items
-
-    plugin_names = sorted(list(plugins_raw.keys()))[start:end]
-
-    plugins = dict()
-    plugins['plugins'] = dict([(k, plugins_raw[k]) for k in plugin_names])
-    plugins['page'] = page
-    plugins['items'] = items
-    plugins['pages'] = pages
-    plugins['total'] = len(plugins_raw)
-    return JsonResponse(plugins)
+    return JsonResponse({
+        'plugins': pages[page],
+        'pages': len(pages),
+        'page': page
+    })

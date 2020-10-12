@@ -17,18 +17,23 @@ def get_settings_conf(conf: AppConfig) -> config.Settings:
 
     :return: settings or None
     """
+    # Check if the app is already configured
     if hasattr(conf, 'settings_obj'):
         return conf.settings_obj
+    # Check if the app has settings
     if not hasattr(conf, 'settings'):
         return None
+    # Assert that the settings is a class
     if not isinstance(conf.settings, type):
         logging.getLogger(__name__).warning(
             "'settings' should be a type: '%s'",
             conf.label
         )
+    # Assert that the settings is a subclass of the Settings base class
     if issubclass(conf.settings, config.Settings):
         try:
-            conf.settings_obj = conf.settings()
+            # configure the settings
+            conf.settings_obj = conf.settings(conf.label)
         except Exception:
             logging.getLogger(__name__).exception(
                 "Could not initialize %s for '%s'",
@@ -86,6 +91,9 @@ def initialize():
                 conf.label
             )
 
+        # Let the settings know that everything is ready
+        app_settings.ready(conf_settings[conf.label])
+
 
 def get_settings_app(app: str) -> (config.Settings, str):
     """
@@ -97,7 +105,7 @@ def get_settings_app(app: str) -> (config.Settings, str):
 
     :raise KeyError: if the app doesn't exist or doesn't have a settings object
     :raise ValueError: if the app's settings object is not an instance
-        of :class:`config.Settings`
+        of :class:`~blueweather.plugins.apps.config.Settings`
     """
 
     conf = registry.apps.get_app_config(app)
@@ -106,18 +114,14 @@ def get_settings_app(app: str) -> (config.Settings, str):
     raise LookupError
 
 
-def get_settings_interface() -> dict:
+def get_settings_interfaces() -> dict:
     """
-    Get the settings interface
+    Get the settings interfaces
 
-    :param app: name of the app
+    :return: all app settings interfaces
 
-    :return: interface for the app
-
-    :raise KeyError: if the app doesn't exist or doesn't have a settings
-        interface
     :raise ValueError: if the app's settings object is not an instance
-        of :class:`config.Settings`
+        of :class:`~blueweather.plugins.apps.config.Settings`
     :raise marshmallow.ValidationError: if the settings interface is invalid
     """
 
@@ -151,7 +155,7 @@ def get_settings(app: str) -> dict:
 
     :return: current settings for the app
 
-    :raise: KeyError if the app doesn't exist
+    :raise LookupError: if the app doesn't exist
     :raise marshmallow.ValidationError: if the settings aren't valid
     """
 
@@ -174,7 +178,8 @@ def set_setting(app: str, setting: str, value):
     :param setting: setting name
     :param value: value to set to
 
-    :raise KeyError: if the app doesn't exist
+    :raise LookupError: if the app doesn't exist
+    :raise KeyError: if the setting isn't valid
     :raise marshmallow.ValidationError: if the value isn't valid
     """
 

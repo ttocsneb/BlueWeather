@@ -16,6 +16,12 @@ ExtensionsConfig
     .. autoattribute:: route
     .. autoattribute:: login_required
 
+Methods
+-------
+
+.. automodule:: blueweather.apps.plugins.methods
+    :members:
+
 Views
 -----
 

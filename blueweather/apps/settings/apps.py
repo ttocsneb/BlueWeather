@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 from django.conf import settings
 
-from . import config
+from . import methods
 
 
 class SettingsConfig(AppConfig):
@@ -15,6 +15,6 @@ class SettingsConfig(AppConfig):
     api = 'blueweather.apps.settings.api'
 
     def ready(self):
-        config.initialize()
+        methods.initialize()
         if settings.CONFIG.modified:
             settings.CONFIG.save()

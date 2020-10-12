@@ -33,15 +33,22 @@ To add the settings to the app, set the :class:`Settings` class to the
 """
 import abc
 
-from blueweather.config import interface
+from django.conf import settings
 
 from marshmallow import ValidationError
+
+from blueweather.config import interface
 
 
 class Settings(metaclass=abc.ABCMeta):
     """
     The Settings object that is defined in the AppConfig
+
+    :param app_label: label of the app
     """
+
+    def __init__(self, app_label: str):
+        self.__app_name = app_label
 
     @abc.abstractmethod
     def get_interface(self) -> dict:
@@ -110,6 +117,14 @@ class Settings(metaclass=abc.ABCMeta):
         :return: the new migrated settings
         """
 
+    @abc.abstractmethod
+    def ready(self, config: dict):
+        """
+        Called when the settings are ready
+
+        :param config: config
+        """
+
     @property
     @abc.abstractmethod
     def version(self) -> int:
@@ -134,3 +149,22 @@ class Settings(metaclass=abc.ABCMeta):
             return self._interface
         except ValidationError as error:
             raise SyntaxError from error
+
+    @property
+    def config(self) -> dict:
+        """
+        Get the app's settings
+
+        :return: settings
+        """
+        return settings.CONFIG.apps.settings[self.__app_name]
+
+    @config.setter
+    def config(self, value: dict):
+        """
+        Set the app's settings
+
+        :param value: new settings
+        """
+        settings.CONFIG.apps.settings[self.__app_name] = value
+        settings.CONFIG.modified = True
