@@ -2,7 +2,6 @@
 /// <reference types="jquery" />
 /// <reference types="lodash" />
 /// <reference types="bootstrap" />
-/// <reference types="settings" />
 
 declare var modified: boolean
 

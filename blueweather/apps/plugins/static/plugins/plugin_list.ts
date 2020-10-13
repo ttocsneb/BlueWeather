@@ -1,131 +1,122 @@
 /// <reference types="vue" />
 /// <reference types="jquery" />
 /// <reference types="lodash" />
-/// <reference types="settings" />
 
 
-const plugin_list_component = Vue.extend({
+interface Plugin {
+  pluginName: string
+  enabled: string
+  extensions: Array<string>
+  info: {
+    packageName: string
+    version?: string
+    summary?: string
+    homepage?: string
+    author?: string
+    email?: string
+    license?: string
+    description?: string
+  }
+}
+
+interface PluginListResponse {
+  plugins: Array<Plugin>
+  pages: number
+  page: number
+}
+
+
+const plugin_header = Vue.extend({
   props: {
-    extension: Object,
-    name: String
+    page: Number,
+    pages: Number,
+    pageSize: Number
   },
-  computed: {
-    disableValue: function() {
-      return this.extension.enabled ? "Disable" : "Enable";
-    },
-    disableClass: function() {
-      return {
-        'btn-warning': this.extension.enabled,
-        'btn-success': !this.extension.enabled
-      }
-    },
-    badges: function() {
-      type Badges = {[key: string]: Array<string>};
-      var badges:Badges = {};
-      if(!this.extension.enabled) {
-        badges.disabled = ["badge-warning"];
-      }
-      if(this.extension.builtin) {
-        badges.builtin = ["badge-secondary"];
-      }
-      return badges;
-    }
+  template: `<p><p>`
+})
+
+const plugin_item = Vue.extend({
+  props: {
+    plugin: Object,
   },
-  methods: {
-    toggle: function() {
-      const action = this.extension.enabled ? "disable" : "enable";
-      alert("Cannot " + action + " '" + this.extension.human_name + "' plugin, because this function is not yet implemented :/");
-    }
-  },
-  template: `
-<div class="card">
-  <div class="card-header d-flex flex-row align-items-center justify-content-between p-1 pr-4">
-    <h5 :id="'heading' + name" class="my-auto">
-      <button class="btn btn-link collapsed text-left" data-toggle="collapse" :data-target="'#collapse' + name" aria-expanded="false" :aria-controls="'collapse' + name">
-        {{ extension.human_name }}
-      </button>
-    </h5>
-    <div class="d-flex justify-content-end">
-      <ul class="d-inline d-sm-flex nav nav-tabs card-header-tabs pull-right my-auto" role="tablist">
-        <li class="nav-item text-right text-sm-left" v-for="(cls, name) in badges">
-          <span :class="cls" class="ml-1 badge">{{ name }}</span>
-        </li>
-      </ul>
-    </div>
-  </div>
-  <div :id="'collapse' + name" class="collapse" :aria-labelledby="'heading' + name" data-parent="#plugin-list-accordion">
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item">
-        <p>{{ extension.description }}</p>
-        <p v-if="extension.author != null">Author: {{ extension.author }}</p>
-        <p v-if="extension.url != null"><a :href="extension.url">{{ extension.url }}</a></p>
-      </li>
-    </ul>
-    <div class="card-body">
-      <form class="form form-inline pull-right">
-        <div class="form-group">
-          <button v-if="extension.disableable" @click="toggle" type="button" class="form-control btn" :class="disableClass" >{{ disableValue }}</button>
-          <button v-else type="button" class="form-control btn disabled" :class="disableClass" disabled>{{ disableValue }}</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
+  template: `<li class="list-group-item">
+  <h3>{{ plugin.name }}</h3>
+  <p v-if="plugin.info.summary">{{ plugin.info.summary }}</p>
+  <ul>
+    <li v-if="plugin.info.version">Version: {{ plugin.info.version }}</li>
+    <li v-if="plugin.info.homepage">homepage: {{ plugin.info.homepage }}</li>
+    <li v-if="plugin.info.author">author: {{ plugin.info.author }}</li>
+    <li v-if="plugin.info.email">email: {{ plugin.info.email }}</li>
+    <li v-if="plugin.info.license">license: {{ plugin.info.license }}</li>
+  </ul>
+</li>
 `
-});
+})
+
+const plugin_body = Vue.extend({
+  props: {
+    plugins: Array
+  },
+  components: {
+    'plugin-item': plugin_item
+  },
+  template: `<ul class="list-group list-group-flush">
+  <plugin-item :plugin="plugin" 
+      v-for="plugin in plugins" />
+</ul>
+`
+})
 
 var plugin_list = new Vue({
   el: '#plugin-list',
-  data: function name() {
+  data() {
     return {
-      extensions: {},
+      plugins: {},
       pages: 0,
       page: 0,
-      total: 0,
-      items: 0,
       pageSize: 10
     }
   },
   components: {
-    'plugin-list': plugin_list_component
+    'plugin-header': plugin_header,
+    'plugin-body': plugin_body
   },
-  beforeMount: function () {
+  beforeMount() {
     this.getData();
   },
   methods: {
-    getData: function(page: number = 0) {
-      const _this = this;
+    getData(page: number = 0) {
+      const self = this;
       $.ajax({
         url: "/api/plugins/list",
-        type: "post",
+        type: "get",
         data: {
           page: page,
-          items: _this.pageSize
+          items: self.pageSize
         },
-        success: function(data: PluginResponse) {
-          _this.extensions = data.plugins;
-          _this.page = data.page;
-          _this.items = data.items;
-          _this.pages = data.pages;
-          _this.total = data.total;
+        success: function(data: PluginListResponse) {
+          self.plugins = data.plugins
+          self.page = data.page
+          self.pages = data.pages
+          console.log(data)
         }
       })
     },
-    first: function() {
+    first() {
       this.getData(0);
     },
-    last: function() {
+    last() {
       this.getData(this.pages - 1);
     },
-    next: function() {
+    next() {
       this.getData(Math.min(this.page + 1, this.pages - 1));
     },
-    prev: function() {
+    prev() {
       this.getData(Math.max(this.page - 1, 0))
     }
   },
   computed: {
-    pageList: function() {
+    pageList() {
       const display = 5;
       const half = Math.floor(display / 2);
       // Get the first number of the index

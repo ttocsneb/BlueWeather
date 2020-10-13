@@ -15,8 +15,7 @@ def index(request: HttpRequest):
     The main page for managing plugins
     """
     return render(request, 'plugins/plugins.html', context={
-        'name': 'Plugins',
-        'extensions': settings.EXTENSIONS.getPluginList()
+        'name': 'Plugins'
     })
 
 

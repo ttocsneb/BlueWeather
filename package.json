@@ -4,6 +4,7 @@
   "description": "A web-app for your Personal Weather Station",
   "main": "index.js",
   "dependencies": {
+    "axios": "^0.20.0",
     "bootstrap": "^4.4.1",
     "js-cookie": "^2.2.1",
     "lodash": "^4.17.20",

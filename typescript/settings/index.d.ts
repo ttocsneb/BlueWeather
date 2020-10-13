@@ -21,9 +21,6 @@ interface ApplyResponse {
     settings?: {[key: string]: any}
 }
 
-declare function update_settings(config: UpdateSettings): void
-declare function validationToString(error: ValidationType, base?: string): string
-
 // Web
 
 interface APIKey {

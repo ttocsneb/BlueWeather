@@ -1,51 +1,39 @@
-var plugin_list_component = Vue.extend({
+var plugin_header = Vue.extend({
     props: {
-        extension: Object,
-        name: String
+        page: Number,
+        pages: Number,
+        pageSize: Number
     },
-    computed: {
-        disableValue: function () {
-            return this.extension.enabled ? "Disable" : "Enable";
-        },
-        disableClass: function () {
-            return {
-                'btn-warning': this.extension.enabled,
-                'btn-success': !this.extension.enabled
-            };
-        },
-        badges: function () {
-            var badges = {};
-            if (!this.extension.enabled) {
-                badges.disabled = ["badge-warning"];
-            }
-            if (this.extension.builtin) {
-                badges.builtin = ["badge-secondary"];
-            }
-            return badges;
-        }
+    template: "<p><p>"
+});
+var plugin_item = Vue.extend({
+    props: {
+        plugin: Object,
     },
-    methods: {
-        toggle: function () {
-            var action = this.extension.enabled ? "disable" : "enable";
-            alert("Cannot " + action + " '" + this.extension.human_name + "' plugin, because this function is not yet implemented :/");
-        }
+    template: "<li class=\"list-group-item\">\n  <h3>{{ plugin.name }}</h3>\n  <p v-if=\"plugin.info.summary\">{{ plugin.info.summary }}</p>\n  <ul>\n    <li v-if=\"plugin.info.version\">Version: {{ plugin.info.version }}</li>\n    <li v-if=\"plugin.info.homepage\">homepage: {{ plugin.info.homepage }}</li>\n    <li v-if=\"plugin.info.author\">author: {{ plugin.info.author }}</li>\n    <li v-if=\"plugin.info.email\">email: {{ plugin.info.email }}</li>\n    <li v-if=\"plugin.info.license\">license: {{ plugin.info.license }}</li>\n  </ul>\n</li>\n"
+});
+var plugin_body = Vue.extend({
+    props: {
+        plugins: Array
     },
-    template: "\n<div class=\"card\">\n  <div class=\"card-header d-flex flex-row align-items-center justify-content-between p-1 pr-4\">\n    <h5 :id=\"'heading' + name\" class=\"my-auto\">\n      <button class=\"btn btn-link collapsed text-left\" data-toggle=\"collapse\" :data-target=\"'#collapse' + name\" aria-expanded=\"false\" :aria-controls=\"'collapse' + name\">\n        {{ extension.human_name }}\n      </button>\n    </h5>\n    <div class=\"d-flex justify-content-end\">\n      <ul class=\"d-inline d-sm-flex nav nav-tabs card-header-tabs pull-right my-auto\" role=\"tablist\">\n        <li class=\"nav-item text-right text-sm-left\" v-for=\"(cls, name) in badges\">\n          <span :class=\"cls\" class=\"ml-1 badge\">{{ name }}</span>\n        </li>\n      </ul>\n    </div>\n  </div>\n  <div :id=\"'collapse' + name\" class=\"collapse\" :aria-labelledby=\"'heading' + name\" data-parent=\"#plugin-list-accordion\">\n    <ul class=\"list-group list-group-flush\">\n      <li class=\"list-group-item\">\n        <p>{{ extension.description }}</p>\n        <p v-if=\"extension.author != null\">Author: {{ extension.author }}</p>\n        <p v-if=\"extension.url != null\"><a :href=\"extension.url\">{{ extension.url }}</a></p>\n      </li>\n    </ul>\n    <div class=\"card-body\">\n      <form class=\"form form-inline pull-right\">\n        <div class=\"form-group\">\n          <button v-if=\"extension.disableable\" @click=\"toggle\" type=\"button\" class=\"form-control btn\" :class=\"disableClass\" >{{ disableValue }}</button>\n          <button v-else type=\"button\" class=\"form-control btn disabled\" :class=\"disableClass\" disabled>{{ disableValue }}</button>\n        </div>\n      </form>\n    </div>\n  </div>\n</div>\n"
+    components: {
+        'plugin-item': plugin_item
+    },
+    template: "<ul class=\"list-group list-group-flush\">\n  <plugin-item :plugin=\"plugin\" \n      v-for=\"plugin in plugins\" />\n</ul>\n"
 });
 var plugin_list = new Vue({
     el: '#plugin-list',
-    data: function name() {
+    data: function () {
         return {
-            extensions: {},
+            plugins: {},
             pages: 0,
             page: 0,
-            total: 0,
-            items: 0,
             pageSize: 10
         };
     },
     components: {
-        'plugin-list': plugin_list_component
+        'plugin-header': plugin_header,
+        'plugin-body': plugin_body
     },
     beforeMount: function () {
         this.getData();
@@ -53,20 +41,19 @@ var plugin_list = new Vue({
     methods: {
         getData: function (page) {
             if (page === void 0) { page = 0; }
-            var _this = this;
+            var self = this;
             $.ajax({
                 url: "/api/plugins/list",
-                type: "post",
+                type: "get",
                 data: {
                     page: page,
-                    items: _this.pageSize
+                    items: self.pageSize
                 },
                 success: function (data) {
-                    _this.extensions = data.plugins;
-                    _this.page = data.page;
-                    _this.items = data.items;
-                    _this.pages = data.pages;
-                    _this.total = data.total;
+                    self.plugins = data.plugins;
+                    self.page = data.page;
+                    self.pages = data.pages;
+                    console.log(data);
                 }
             });
         },
