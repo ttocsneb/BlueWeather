@@ -3,7 +3,7 @@
 /// <reference types="lodash" />
 /// <reference types="bootstrap" />
 
-declare var modified: boolean
+declare const modified: boolean
 
 
 interface Popup {

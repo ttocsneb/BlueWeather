@@ -49,13 +49,10 @@ def plugin_list(request: HttpRequest):
 
     pages = methods.pageify(methods.plugin_list(), size)
 
-    try:
-        pg = pages[page]
-    except IndexError:
-        pg = pages[-1]
+    page = max(0, min(page, len(pages) - 1))
 
     return JsonResponse({
-        'plugins': pg,
+        'plugins': pages[page],
         'pages': len(pages),
         'page': page
     }, encoder=utils.JsonEncoder)

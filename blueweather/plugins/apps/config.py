@@ -118,7 +118,7 @@ class Settings(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def ready(self, config: dict):
+    def ready(self):
         """
         Called when the settings are ready
 

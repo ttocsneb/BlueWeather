@@ -18,20 +18,11 @@ def index(request: HttpRequest):
     The main page for the settings
     """
 
-    conf = settings.CONFIG.serialize()
-
-    def getSetting(key: str = None) -> str:
-        if key is None:
-            return json.dumps(conf)
-        keys = key.split('.')
-        setting = conf
-        for k in keys:
-            setting = setting[k]
-        return json.dumps(setting)
+    interfaces = methods.get_settings_interfaces()
 
     return render(request, 'settings/settings.html.j2', context={
         'name': 'Settings',
-        'settings': getSetting,
+        'interfaces': interfaces,
         'modified': json.dumps(settings.CONFIG.modified)
     })
 

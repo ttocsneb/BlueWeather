@@ -8,6 +8,8 @@ from marshmallow import ValidationError
 from blueweather.config import interface
 from blueweather.plugins.apps import config
 
+from typing import List
+
 
 def get_settings_conf(conf: AppConfig) -> config.Settings:
     """
@@ -49,14 +51,19 @@ def get_settings_conf(conf: AppConfig) -> config.Settings:
     )
 
 
-def initialize():
+def initialize() -> List[config.Settings]:
     """
     Initialize all the configs
 
     For each config, make sure that the settings object is correctly
     implemented, the settings exist, and are properly migrated
+
+    :return: list of ready 
     """
     logger = logging.getLogger(__name__)
+
+    ready_settings = []
+
     for conf in registry.apps.get_app_configs():
         app_settings = get_settings_conf(conf)
         # Skip the app if it doesn't have a settings object
@@ -73,7 +80,12 @@ def initialize():
         conf_settings = settings.CONFIG.apps.settings
         version = conf_settings[conf.label].get('version', 0)
         if app_settings.version > version:
-            logger.info("Migrating settings for '%s'", conf.label)
+            logger.info(
+                "Migrating settings for '%s' (%d -> %d)",
+                conf.label,
+                version,
+                app_settings.version
+            )
             # Migrate outdated settings
             try:
                 conf_settings[conf.label] = app_settings.migrate(
@@ -92,7 +104,9 @@ def initialize():
             )
 
         # Let the settings know that everything is ready
-        app_settings.ready(conf_settings[conf.label])
+        ready_settings.append(app_settings)
+
+    return ready_settings
 
 
 def get_settings_app(app: str) -> (config.Settings, str):

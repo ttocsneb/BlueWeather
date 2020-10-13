@@ -6,6 +6,10 @@ from django.urls import reverse
 from django.utils import dateformat, datetime_safe, formats, timezone
 from jinja2 import Environment
 
+import json
+
+from . import utils
+
 
 def get_or_call(request, setting):
     if callable(setting):
@@ -108,6 +112,17 @@ def set_attr(widget, attr, value):
     return widget
 
 
+def to_json(data: dict) -> str:
+    """
+    Convert an object into a json string
+
+    :param data: data to serialize
+
+    :return: serialized json
+    """
+    return json.dumps(data, cls=utils.JsonEncoder)
+
+
 def environment(**options):
     env = Environment(**options)
     env.globals.update({
@@ -121,6 +136,9 @@ def environment(**options):
         'set_attr': set_attr,
         'add_classes': add_classes,
         'get_or_call': get_or_call,
+    })
+    env.filters.update({
+        'json': to_json
     })
 
     global_settings = {
