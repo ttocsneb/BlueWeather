@@ -2,59 +2,19 @@
 
 {% block content %}
 <div class="card shadow mb-4" id="plugin-list">
-  <!-- Card Header -->
-  <!-- <div class="card-header py-2 d-block d-sm-flex flex-row align-items-center justify-content-between">
-    <h5 class="d-block d-sm-inline m-0 font-weight-bold">Installed Plugins</h5>
-    <div class="d-flex justify-content-end">
-      <ul class="nav nav-tabs card-header-tabs pull-right my-auto" id="plugin_list" role="tablist">
-        <li class="nav-item my-auto">
-          <a v-if="page != 0" @click="first" class="nav-link p-1" href=#><i class="fas fa-angle-double-left"></i></a>
-          <span v-else class="nav-link p-1 disabled"><i class="fas fa-angle-double-left"></i></span>
-        </li>
-        <li class="nav-item my-auto">
-          <a v-if="page != 0" @click="prev" class="nav-link p-1" href=#><i class="fas fa-angle-left"></i></a>
-          <span v-else class="nav-link p-1 disabled"><i class="fas fa-angle-left"></i></span>
-        </li>
-        <li v-for="p in pageList" class="nav-item my-auto">
-          <a v-if="p != page" @click="getData(p)" class="nav-link p-1" href="#">{% raw %}{{ p + 1 }}{% endraw %}</a>
-          <span v-else class="nav-link p-1 disabled">{% raw %}{{ p + 1 }}{% endraw %}</span>
-        </li>
-        <li class="nav-item my-auto">
-          <a v-if="page != pages - 1" @click="next" class="nav-link p-1" href=#><i class="fas fa-angle-right"></i></a>
-          <span v-else class="nav-link p-1 disabled"><i class="fas fa-angle-right"></i></span>
-        </li>
-        <li class="nav-item my-auto">
-          <a v-if="page != pages - 1" @click="last" class="nav-link p-1" href=#><i class="fas fa-angle-double-right"></i></a>
-          <span v-else class="nav-link p-1 disabled"><i class="fas fa-angle-double-right"></i></span>
-        </li>
-        <li class="nav-item my-auto">
-          <form class="form-inline ml-1 mr-2">
-            <div class="form-group my-auto" style="width: 60px;">
-              <select v-model.lazy="pageSize" @change="getData(page)" title="Select Items per page shown" class="form-control form-control-sm">
-                {% for i in [5,10,15,20,30] %}
-                  <option >{{ i }}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </form>
-        </li>
-      </ul>
-    </div>
-  </div>
-  <!-- Card Body
-  <div class="card-body">
-
-  <div class="card-body p-0">
-    <div id="plugin-list-accordion">
-        <plugin-list v-for="(ext, name) in extensions" :key="name" :extension="ext" :name="name"></plugin-list>
-      </div>
-    </div>
-  </div> -->
-  <div>
-    <plugin-header :page="page" :pages="pages" pageSize="pageSize" />
+  <div class="card-header">
+    <h3 class="d-inline float-sm-left">Plugins</h3>
+    <plugin-header
+        :page="page" :pages="pages" :page_size="pageSize"
+        @set-page="setPage" @set-size="setPageSize"/>
   </div>
   <div>
     <plugin-body :plugins="plugins" />
+  </div>
+  <div class="card-footer">
+    <plugin-header
+        :page="page" :pages="pages" :page_size="pageSize"
+        @set-page="setPage" @set-size="setPageSize"/>
   </div>
 </div>
 {% endblock content %}

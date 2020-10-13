@@ -1,10 +1,10 @@
-import math
 
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http.request import HttpRequest
 from django.http.response import JsonResponse
 from django.shortcuts import render
+
+from blueweather import utils
 
 from . import methods
 
@@ -49,8 +49,13 @@ def plugin_list(request: HttpRequest):
 
     pages = methods.pageify(methods.plugin_list(), size)
 
+    try:
+        pg = pages[page]
+    except IndexError:
+        pg = pages[-1]
+
     return JsonResponse({
-        'plugins': pages[page],
+        'plugins': pg,
         'pages': len(pages),
         'page': page
-    })
+    }, encoder=utils.JsonEncoder)

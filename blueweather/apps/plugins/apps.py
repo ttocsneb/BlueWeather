@@ -15,3 +15,6 @@ class ExtensionsConfig(AppConfig):
     login_required = True
 
     api = 'blueweather.apps.plugins.api'
+
+    def ready(self):
+        settings.EXTENSIONS.invoke_all()

@@ -30,25 +30,173 @@ const plugin_header = Vue.extend({
   props: {
     page: Number,
     pages: Number,
-    pageSize: Number
+    page_size: Number
   },
-  template: `<p><p>`
+  watch: {
+    page_size: {
+      immediate: true,
+      handler(newVal: number, oldVal: number) {
+        this.pageSize = newVal.toString()
+      }
+    },
+    pageSize(newVal: string, oldVal: string) {
+      if(newVal != this.page_size) {
+        this.$emit('set-size', parseInt(newVal))
+      }
+    }
+  },
+  data() {
+    return {
+      pageSize: '10'
+    }
+  },
+  computed: {
+    page_numbers() {
+      const n = 3
+
+      let start = Math.max(0, Math.floor(this.page - n / 2))
+      let end = Math.min(this.pages, start + n)
+
+      return _.range(start, end)
+    }
+  },
+  methods: {
+    activeClass(enabled: boolean) {
+      if(enabled) {
+        return [
+          'text-primary'
+        ]
+      } else {
+        return [
+          'btn-primary'
+        ]
+      }
+    },
+    endsClass(enabled: boolean) {
+      if(enabled) {
+        return [
+          'text-primary'
+        ]
+      } else {
+        return [
+          'text-secondary'
+        ]
+      }
+    },
+    enabled(index: number) {
+      return index != this.page
+    },
+    setPage(index: number) {
+      this.$emit('set-page', index)
+    }
+  },
+  template: `<form class="form-inline" action="#">
+  <div class="form-group mb-0 ml-sm-auto mr-auto mr-sm-0 mt-2 mt-sm-0">
+    <select v-model="pageSize" class="form-control">
+      <option>1</option>
+      <option>2</option>
+      <option>4</option>
+      <option>5</option>
+      <option>10</option>
+      <option>25</option>
+      <option>50</option>
+      <option>100</option>
+    </select>
+  </div>
+  <div class="form-group mb-0 ml-3">
+    <button role="button" class="btn"
+        :class="endsClass(enabled(0))"
+        :disabled="!enabled(0)"
+        @click="setPage(0)">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <button v-for="i in page_numbers" 
+        :class="activeClass(enabled(i))"
+        :disabled="!enabled(i)"
+        @click="setPage(i)"
+          role="button" class="btn">{{ i + 1 }}</button>
+    <button role="button" class="btn"
+        :class="endsClass(enabled(pages - 1))"
+        :disabled="!enabled(pages - 1)"
+        @click="setPage(pages - 1)">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+  </div>
+</form>`
 })
 
 const plugin_item = Vue.extend({
   props: {
     plugin: Object,
   },
+  computed: {
+    badges() {
+      let badges = []
+
+      if(this.plugin.builtin) {
+        badges.push({
+          color: 'secondary',
+          value: 'builtin'
+        })
+      }
+
+      if(!this.plugin.enabled) {
+        badges.push({
+          color: 'warning',
+          value: 'disabled'
+        })
+      }
+
+      return badges
+    },
+    homepage() {
+      if(this.plugin.info.homepage == null) {
+        return null
+      }
+      let url = new URL(this.plugin.info.homepage)
+      return url.host
+    }
+  },
   template: `<li class="list-group-item">
-  <h3>{{ plugin.name }}</h3>
+  <!-- Header -->
+  <div class="mb-2">
+    <h4 class="d-inline mb-0">{{ plugin.pluginName }}</h4>
+    <small v-if="plugin.pluginName != plugin.info.packageName" class="d-inline">
+    - {{ plugin.info.packageName }}
+    </small>
+
+    <!-- Badges -->
+    <div class="float-md-right">
+      <span v-for="badge in badges"
+          :class="'badge-' + badge.color"
+          class="d-inline badge ml-2">{{ badge.value }}</span>
+    </div>
+  </div>
   <p v-if="plugin.info.summary">{{ plugin.info.summary }}</p>
-  <ul>
-    <li v-if="plugin.info.version">Version: {{ plugin.info.version }}</li>
-    <li v-if="plugin.info.homepage">homepage: {{ plugin.info.homepage }}</li>
-    <li v-if="plugin.info.author">author: {{ plugin.info.author }}</li>
-    <li v-if="plugin.info.email">email: {{ plugin.info.email }}</li>
-    <li v-if="plugin.info.license">license: {{ plugin.info.license }}</li>
-  </ul>
+
+  <!-- Footer -->
+  <div>
+    <small v-if="plugin.info.version" 
+        class="d-inline mr-2">
+      <i class="fas fa-pen"></i>
+      {{ plugin.info.version }}
+    </small>
+    <small v-if="plugin.info.homepage"
+        class="d-inline mr-2">
+      <i class="fas fa-home"></i>
+      <a :href="plugin.info.homepage" target="_blank">{{ homepage }}</a>
+    </small>
+    <small v-if="plugin.info.author"
+        class="d-inline mr-2">
+      <i class="fas fa-address-book"></i>
+      {{ plugin.info.author }}
+    </small>
+    <small v-if="plugin.info.license"
+        class="d-inline">
+      <i class="fas fa-file-contract"></i>
+      {{ plugin.info.license }}
+    </small>
+  </div>
 </li>
 `
 })
@@ -72,7 +220,7 @@ var plugin_list = new Vue({
   data() {
     return {
       plugins: {},
-      pages: 0,
+      pages: 1,
       page: 0,
       pageSize: 10
     }
@@ -85,45 +233,29 @@ var plugin_list = new Vue({
     this.getData();
   },
   methods: {
-    getData(page: number = 0) {
+    getData() {
       const self = this;
       $.ajax({
         url: "/api/plugins/list",
         type: "get",
         data: {
-          page: page,
-          items: self.pageSize
+          page: self.page,
+          size: self.pageSize
         },
         success: function(data: PluginListResponse) {
           self.plugins = data.plugins
           self.page = data.page
           self.pages = data.pages
-          console.log(data)
         }
       })
     },
-    first() {
-      this.getData(0);
+    setPage(page: number) {
+      this.page = page
+      this.getData()
     },
-    last() {
-      this.getData(this.pages - 1);
-    },
-    next() {
-      this.getData(Math.min(this.page + 1, this.pages - 1));
-    },
-    prev() {
-      this.getData(Math.max(this.page - 1, 0))
-    }
-  },
-  computed: {
-    pageList() {
-      const display = 5;
-      const half = Math.floor(display / 2);
-      // Get the first number of the index
-      const start = Math.min(Math.max(this.page - half, 0), this.page + half, Math.max(this.pages - display, 0));
-      // get the size of the index
-      const size = Math.min(display, this.pages - start);
-      return _.range(start, start + size);
+    setPageSize(size: number) {
+      this.pageSize = size
+      this.getData()
     }
   }
 });

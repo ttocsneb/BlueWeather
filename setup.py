@@ -36,7 +36,8 @@ INSTALL_REQUIRES = [
     'ruamel.yaml==0.16.10',
     'marshmallow==3.5.1',
     'stevedore==1.32.0',
-    'markdown2==2.3.9'
+    'markdown2==2.3.9',
+    'stringlike==0.3.3'
 ]
 
 EXTRAS_REQUIRE = {}

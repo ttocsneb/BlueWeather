@@ -33,11 +33,11 @@ def plugin_list() -> List[dict]:
         .. code-block:: ts
 
             interface Plugin {
-                name: string
+                pluginName: string
                 enabled: boolean
                 extensions: Array<string>
                 info: {
-                    name: string
+                    packageName: string
                     version?: string
                     summary?: string
                     homepage?: string
@@ -60,9 +60,10 @@ def plugin_list() -> List[dict]:
     for name, exts in plugins.items():
         ext = list(exts.values())[0]
         out.append({
-            'name': name,
+            'pluginName': name,
             'info': dao.PluginInfo.get_metadata(ext),
             'enabled': extensions.is_enabled(ext),
+            'builtin': ext.builtin,
             'extensions': [
                 k for k in exts.keys()
             ],

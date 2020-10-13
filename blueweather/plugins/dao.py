@@ -7,6 +7,7 @@ from stevedore.exception import NoMatches
 
 import re
 import markdown2
+from stringlike.lazy import CachedLazyString
 
 try:
     from importlib import metadata
@@ -46,7 +47,7 @@ class PluginInfo:
             .. code-block:: typescript
 
                 interface Metadata {
-                    name: string
+                    packageName: string
                     version?: string
                     summary?: string
                     homepage?: string
@@ -69,7 +70,6 @@ class PluginInfo:
             :return: fixed tabs
             """
             fixed = re.sub(r"^ {8}", '', text, flags=re.MULTILINE)
-            print(fixed)
             return fixed
 
         # The description can be either the payload of the message,
@@ -79,7 +79,7 @@ class PluginInfo:
             raw_description = raw.get_payload()
 
         if raw_description:
-            description = markdown2.markdown(
+            description = CachedLazyString(lambda: markdown2.markdown(
                 raw_description,
                 extras=[
                     'tables',
@@ -87,7 +87,7 @@ class PluginInfo:
                     'fenced-code-blocks',
                     'task_list'
                 ]
-            )
+            ))
         else:
             description = None
 
@@ -98,7 +98,7 @@ class PluginInfo:
             return val
 
         return {
-            'name': get('name', ext.name),
+            'packageName': get('name', ext.name),
             'version': get('version'),
             'summary': get('summary'),
             'homepage': get('home-page'),
