@@ -102,13 +102,13 @@ var plugin_body = Vue.extend({
     components: {
         'plugin-item': plugin_item
     },
-    template: "<ul class=\"list-group list-group-flush\">\n  <plugin-item :plugin=\"plugin\" \n      v-for=\"plugin in plugins\" />\n</ul>\n"
+    template: "<ul class=\"list-group list-group-flush\">\n  <plugin-item :plugin=\"plugin\" \n      v-for=\"plugin in plugins\" :key=\"plugin.name\" />\n</ul>\n"
 });
 var plugin_list = new Vue({
     el: '#plugin-list',
     data: function () {
         return {
-            plugins: {},
+            plugins: [],
             pages: 1,
             page: 0,
             pageSize: 10

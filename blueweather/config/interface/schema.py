@@ -9,25 +9,23 @@ class Choice(Schema):
     enabled = fields.Boolean(missing=True)
 
 
-class Options(Schema):
-    precision = fields.Integer(required=False)
-    range = fields.Tuple((fields.Integer(), fields.Integer()), required=False)
-    hint = fields.String(required=False)
-    choices = fields.Nested(Choice, many=True, required=False)
-    multiple = fields.Boolean(required=False)
-
-
 class SettingItem(Schema):
     name = fields.String(required=True)
     type = fields.String(validate=validate.OneOf(
         ('number', 'select', 'text', 'radio', 'bool'),
     ), required=True)
+
+    title = fields.String(required=False)
     default = fields.String(required=False)
+    hint = fields.String(required=False)
     enabled = fields.Boolean(missing=True)
-    options = fields.Nested(Options, unknown='EXCLUDE', missing=dict)
+    precision = fields.Integer(required=False)
+    range = fields.Tuple((fields.Integer(), fields.Integer()), required=False)
+    choices = fields.Nested(Choice, many=True, required=False)
+    multiple = fields.Boolean(required=False)
 
 
-choices = ('divider', 'header', 'label', 'info', 'setting', 'group')
+choices = ('divider', 'header', 'paragraph', 'info', 'setting', 'group')
 
 
 class Item(Schema):

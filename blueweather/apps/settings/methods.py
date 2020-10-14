@@ -58,7 +58,7 @@ def initialize() -> List[config.Settings]:
     For each config, make sure that the settings object is correctly
     implemented, the settings exist, and are properly migrated
 
-    :return: list of ready 
+    :return: list of ready
     """
     logger = logging.getLogger(__name__)
 

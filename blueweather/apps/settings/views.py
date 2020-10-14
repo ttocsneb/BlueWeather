@@ -7,6 +7,8 @@ from django.http.request import HttpRequest
 from django.http.response import JsonResponse, HttpResponse, Http404
 from django.views.decorators.http import require_POST
 
+from django.apps import registry, AppConfig
+
 from marshmallow import ValidationError
 
 from . import methods
@@ -20,10 +22,18 @@ def index(request: HttpRequest):
 
     interfaces = methods.get_settings_interfaces()
 
+    app_names = dict(
+        (app.label, app.verbose_name)
+        for app in registry.apps.get_app_configs()
+        if hasattr(app, 'verbose_name')
+    )
+
     return render(request, 'settings/settings.html.j2', context={
         'name': 'Settings',
         'interfaces': interfaces,
-        'modified': json.dumps(settings.CONFIG.modified)
+        'modified': json.dumps(settings.CONFIG.modified),
+        'get_settings': methods.get_settings,
+        'verbose_names': app_names
     })
 
 

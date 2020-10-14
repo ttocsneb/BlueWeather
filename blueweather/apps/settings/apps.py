@@ -7,58 +7,90 @@ from blueweather.plugins.apps.config import Settings
 
 
 class TestSettings(Settings):
-    version = 2
+    version = 3
 
     def get_interface(self):
         return {
             'settings': [
                 {
                     'name': 'bar',
+                    'title': 'Bar',
                     'type': 'number'
                 },
                 {
                     'name': 'choice',
+                    'title': 'Choice',
                     'type': 'select',
-                    'options': {
-                        'choices': [
-                            {
-                                'key': 'a',
-                                'value': "A"
-                            },
-                            {
-                                'key': 'b',
-                                'value': 'B'
-                            },
-                            {
-                                'key': 'c',
-                                'value': 'C'
-                            }
-                        ]
-                    }
+                    'choices': [
+                        {
+                            'key': 'a',
+                            'value': "A"
+                        },
+                        {
+                            'key': 'b',
+                            'value': 'B'
+                        },
+                        {
+                            'key': 'c',
+                            'value': 'C'
+                        }
+                    ]
                 },
                 {
                     'name': 'check',
+                    'title': 'Check',
                     'type': 'bool'
                 },
                 {
                     'name': 'radio',
+                    'title': 'Radio',
                     'type': 'radio',
-                    'options': {
-                        'choices': [
-                            {
-                                'key': 'jeff',
-                                'value': 'Jeff'
-                            },
-                            {
-                                'key': 'bar',
-                                'value': 'Bar'
-                            },
-                            {
-                                'key': 'yeet',
-                                'value': 'YEET'
-                            }
-                        ]
-                    }
+                    'choices': [
+                        {
+                            'key': 'jeff',
+                            'value': 'Jeff'
+                        },
+                        {
+                            'key': 'bar',
+                            'value': 'Bar'
+                        },
+                        {
+                            'key': 'yeet',
+                            'value': 'YEET'
+                        }
+                    ]
+                },
+                {
+                    'name': 'many',
+                    'title': 'Many',
+                    'type': 'radio',
+                    'choices': [
+                        {
+                            'key': 'q',
+                            'value': 'Q'
+                        },
+                        {
+                            'key': 'w',
+                            'value': 'W'
+                        },
+                        {
+                            'key': 'e',
+                            'value': 'E'
+                        },
+                        {
+                            'key': 'r',
+                            'value': 'R'
+                        },
+                        {
+                            'key': 't',
+                            'value': 'T',
+                        },
+                        {
+                            'key': 'y',
+                            'value': 'Y'
+                        }
+                    ],
+                    'multiple': True
                 }
             ],
             'items': [
@@ -67,24 +99,12 @@ class TestSettings(Settings):
                     'value': 'Settings Example'
                 },
                 {
-                    'type': 'label',
-                    'value': 'Bar'
-                },
-                {
                     'type': 'setting',
                     'value': 'bar'
                 },
                 {
-                    'type': 'label',
-                    'value': 'Choice'
-                },
-                {
                     'type': 'setting',
                     'value': 'choice'
-                },
-                {
-                    'type': 'label',
-                    'value': 'Check'
                 },
                 {
                     'type': 'setting',
@@ -94,12 +114,12 @@ class TestSettings(Settings):
                     'type': 'divider'
                 },
                 {
-                    'type': 'label',
-                    'value': 'Radio'
+                    'type': 'setting',
+                    'value': 'radio'
                 },
                 {
                     'type': 'setting',
-                    'value': 'radio'
+                    'value': 'many'
                 }
             ]
         }
@@ -113,6 +133,9 @@ class TestSettings(Settings):
         if version == 1:
             version = 2
             data['radio'] = 'jeff'
+        if version == 2:
+            version = 3
+            data['many'] = ['q', 't']
         return data
 
     def ready(self):

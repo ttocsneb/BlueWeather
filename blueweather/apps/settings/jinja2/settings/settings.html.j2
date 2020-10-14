@@ -7,7 +7,7 @@
 {% block content %}
 <div id="app-settings">
     {% for app, interface in interfaces.items() %}
-        <div><setting-card app="{{ app }}" schema="{{ interface | json }}" /></div>
+        <div><setting-card title="{{ verbose_names.get(app, app) }}" app="{{ app }}" schema="{{ interface | json }}" starting_settings="{{ get_settings(app) | json }}" /></div>
     {% endfor %}
 </div>
 {% endblock content %}

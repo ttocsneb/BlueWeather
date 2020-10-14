@@ -10,9 +10,8 @@ def generate_field(setting: dict) -> fields.Field:
     :return: field for the setting
     """
     typ = setting['type']
-    options = setting['options']
     if typ == 'number':
-        precision = options.get('precision')
+        precision = setting.get('precision')
         if precision == 0:
             return fields.Integer(missing=None)
         else:
@@ -22,13 +21,13 @@ def generate_field(setting: dict) -> fields.Field:
         return fields.String(missing=None)
     if typ == 'select':
         return fields.String(validate=validate.OneOf(
-            list(map(lambda x: x['key'], options.get('choices', [])))
+            list(map(lambda x: x['key'], setting.get('choices', [])))
         ))
     if typ == 'radio':
         choices = fields.String(validate=validate.OneOf(
-            list(map(lambda x: x['key'], options.get('choices', [])))
+            list(map(lambda x: x['key'], setting.get('choices', [])))
         ))
-        if options.get('multiple', False):
+        if setting.get('multiple', False):
             return fields.List(choices, missing=None)
         else:
             return choices

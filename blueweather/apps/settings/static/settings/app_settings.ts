@@ -12,19 +12,18 @@ interface Choice {
 interface SettingItem {
     name: string
     type: 'number' | 'select' | 'text' | 'radio' | 'bool'
+    title?: string
     default?: string
     enabled: boolean
-    options: {
-        precision?: number
-        range?: [number, number]
-        hint?: string
-        choices?: Array<Choice>
-        multiple?: boolean
-    }
+    precision?: number
+    range?: [number, number]
+    hint?: string
+    choices?: Array<Choice>
+    multiple?: boolean
 }
 
 interface Item {
-    type: 'divider' | 'header' | 'label' | 'info' | 'setting'
+    type: 'divider' | 'header' | 'paragraph' | 'info' | 'setting'
     value: string
 }
 
@@ -48,24 +47,73 @@ const setting_value = Vue.extend({
         value: {
             default: {},
             type: Object
-        }
+        },
+        app: String
     },
     methods: {
         on_input(event: Event) {
-            let input = this.value as {[key: string]: any}
+            let target = event.target as any
+
+            let input = _.cloneDeep(this.value) as {[key: string]: any}
+            let setting = this.setting as SettingItem
             if(input == null) {
                 input = {}
             }
-            let setting = this.setting as SettingItem
-            let target = event.target as any
 
-            console.log(target)
-            // TODO: Check if the value for the multi-choice options is a string or array
             // TODO: Perform data validation
 
             input[setting.name] = target.value
-            console.log(input)
             this.$emit('input', input)
+        },
+        on_bool(event: Event) {
+            let target = event.target as any
+
+            let input = _.cloneDeep(this.value) as {[key: string]: any}
+            let setting = this.setting as SettingItem
+            if(input == null) {
+                input = {}
+            }
+
+            input[setting.name] = target.checked
+            this.$emit('input', input)
+        },
+        on_radio(event: Event) {
+            let target = event.target as any
+
+            let input = _.cloneDeep(this.value) as {[key: string]: any}
+            let setting = this.setting as SettingItem
+            if(input == null) {
+                input = {}
+            }
+
+            if(setting.multiple) {
+                if(!_.isArray(input[setting.name])) {
+                    input[setting.name] = []
+                }
+                let value = input[setting.name] as Array<string>
+                if(target.checked) {
+                    value.push(target.value)
+                } else {
+                    _.remove(value, (val: string) => {
+                        return val == target.value
+                    })
+                }
+                input[setting.name] = value
+            } else {
+                input[setting.name] = target.value
+            }
+
+            this.$emit('input', input)
+        },
+        is_checked(key: string) {
+            let config = this.config as Array<string> | string
+            if(_.isArray(config)) {
+                let a = _.includes(config, key)
+                return a
+            } else {
+                let a = config == key
+                return a
+            }
         }
     },
     computed: {
@@ -77,16 +125,22 @@ const setting_value = Vue.extend({
             })
             return found
         },
+        config() {
+            let configs = this.value as {[key: string]: any}
+            return configs[this.name]
+        },
         input_type() {
             let setting = this.setting as SettingItem
             if(setting.type == 'number') {
                 return 'number'
             } else if(setting.type == 'text') {
                 return 'text'
-            } else if(setting.type == 'bool') {
-                return 'checkbox'
             }
             return null
+        },
+        is_bool() {
+            let setting = this.setting as SettingItem
+            return setting.type == 'bool'
         },
         is_select() {
             let setting = this.setting as SettingItem
@@ -98,25 +152,42 @@ const setting_value = Vue.extend({
         },
         radio_type() {
             let setting = this.setting as SettingItem
-            if(setting.options.multiple) {
+            if(setting.multiple) {
                 return 'checkbox'
             } else {
                 return 'radio'
             }
+        },
+        id() {
+            return `${this.app}-${this.setting.name}`
         }
     },
-    template: `<div>
-    <input v-if="input_type" :value="setting.value" @input="on_input" :type="input_type" :name="setting.name" :placeholder="setting.options.hint" :disabled="!setting.enabled"
+    template: `<div class="form-group">
+    <label v-if="setting.title != null && (input_type || is_select)" :for="id">{{ setting.title }}</label>
+    <label v-else-if="setting.title != null && is_radio">{{ setting.title }}</label>
+
+    <input v-if="input_type" :value="config" @input="on_input" 
+            :type="input_type" :name="setting.name" :id="id" :placeholder="setting.hint" :disabled="!setting.enabled"
             class="form-control" />
-    <select v-else-if="is_select" :value="setting.value" @input="on_input" :name="setting.name"
+    <div v-else-if="is_bool" class="form-check">
+        <input type="checkbox" :name="setting.name" :id="id" @input="on_bool" :checked="config" :disabled="!setting.enabled" 
+                class="form-check-input" :class="{'position-static': setting.title == null}" :aria-label="setting.name"/>
+        <label v-if="setting.title != null" for="id">{{ setting.title }}</label>
+    </div>
+    <select v-else-if="is_select" :value="config" @input="on_input"
+            :name="setting.name" :id="id"
             class="form-control">
-        <option v-for="opt in setting.options.choices" :key="opt.key" :disabled="!opt.enabled" :value="opt.key">{{ opt.value }}</option>
+        <option v-for="opt in setting.choices" :key="opt.key" :disabled="!opt.enabled" :value="opt.key">
+            {{ opt.value }}
+        </option>
     </select>
-    <div v-else-if="is_radio" v-for="opt in setting.options.choices" :key="opt.key"
-            class="form-group">
-        <input :value="opt.key" @input="on_input" :type="radio_type" :id="opt.key" :name="setting.name" :disabled="!opt.enabled"
-                class="form-control" />
-        <label :for="opt.key">{{ opt.value }}</label>
+    <div v-else-if="is_radio" v-for="opt in setting.choices" :key="opt.key"
+            class="form-check">
+        <input :value="opt.key" @input="on_radio" :type="radio_type" :checked="is_checked(opt.key)"
+                :id="id + '-' + opt.key" :name="setting.name" :disabled="!opt.enabled"
+                class="form-check-input" />
+        <label :for="id + '-' + opt.key"
+                class="form-check-label">{{ opt.value }}</label>
     </div>
     <p v-else>There was an error parsing settings for {{ setting.name }} :/</p>
 </div>`
@@ -127,20 +198,26 @@ const setting_item = Vue.extend({
     props: {
         item: Object,
         settings: Array,
-        value: Object
+        value: Object,
+        app: String
     },
     components: {
         'setting-value': setting_value
     },
-    template: `<div class="form-group">
+    methods: {
+        on_settings_changed(settings: object) {
+            this.$emit('input', settings)
+        }
+    },
+    template: `<div>
     <hr v-if="item.type == 'divider'">
     <h4 v-else-if="item.type == 'header'">{{ item.value }}</h4>
-    <label v-else-if="item.type == 'label'">{{ item.value }}</label>
+    <p v-else-if="item.type == 'paragraph'">{{ item.value }}</p>
     <small v-else-if="item.type == 'info'">{{ item.value }}</small>
-    <setting-value v-else-if="item.type == 'setting'" :settings="settings" :name="item.value"
-            :value="value" @input="$emit('input', $event)" />
-    <setting-item v-else-if="item.type == 'group'" v-for="(i, n) in item.value" :key="n" :settings="settings" :item="i"
-            :value="value" @input="$emit('input', $event)" />
+    <setting-value v-else-if="item.type == 'setting'" :settings="settings" :name="item.value" :app="app"
+            :value="value" @input="on_settings_changed" />
+    <setting-item v-else-if="item.type == 'group'" v-for="(i, n) in item.value" :key="n" :settings="settings" :item="i" :app="app"
+            :value="value" @input="on_settings_changed" />
     <p v-else>An error occurred while parsing the item for <pre>{{ item }}</pre></p>
 </div>`
 })
@@ -149,11 +226,46 @@ const setting_item = Vue.extend({
 const setting_card = Vue.extend({
     props: {
         app: String,
-        schema: String
+        schema: String,
+        starting_settings: {
+            type: String,
+            required: false
+        },
+        title: String
     },
     data() {
         return {
             settings: {},
+            changed: false
+        }
+    },
+    beforeMount() {
+        if(this.starting_settings != null) {
+            this.settings = JSON.parse(this.starting_settings)
+        } else {
+            this.load_settings()
+        }
+    },
+    methods: {
+        load_settings() {
+            let self = this
+            console.log(`Loading settings for ${this.app}`)
+            $.ajax({
+                url: `/api/settings/get/${this.app}`,
+                method: 'GET',
+                success(data: object) {
+                    self.settings = data
+                    self.changed = false
+                    console.log(self.settings)
+                },
+                error() {
+                    console.error(`Could not load settings for '${self.app}'`)
+                }
+            })
+        },
+        on_settings_changed(new_settings: object) {
+            this.settings = new_settings
+            this.changed = true
         }
     },
     computed: {
@@ -162,6 +274,7 @@ const setting_card = Vue.extend({
             if(typeof(schema) === 'string') {
                 return JSON.parse(schema)
             }
+            // TODO parse the schema into form-groups
             return schema
         },
         items() {
@@ -178,13 +291,16 @@ const setting_card = Vue.extend({
     },
     template: `<div class="card">
     <div class="card-header">
-        <h3>{{ app }}</h3>
+        <h3>{{ title }}</h3>
     </div>
-    <div class="card-body">
-        <form>
-            <setting-item v-for="(i, n) in items" :key="n" v-model="settings" :item="i" :settings="config" />
-        </form>
-    </div>
+    <form action="#">
+        <div class="card-body">
+            <setting-item v-for="(i, n) in items" :key="n" :value="settings" @input="on_settings_changed" :item="i" :settings="config" :app="app" />
+        </div>
+        <div class="card-footer">
+            <button type="reset" class="btn btn-danger ml-auto" @click="load_settings" :disabled="!changed">Reset</button>
+        </div>
+    </form>
 </div>`
 })
 
