@@ -85,32 +85,40 @@ def set_settings(request: HttpRequest, app: str):
     """
 
     app = app.replace('-', '.')
-    setting = request.POST.get('setting')
-    value = request.POST.get('value')
 
-    if setting is None or value is None:
-        return JsonResponse({
-            'message': 'setting and app parameters are required'
-        }, status=400)
+    print(request.POST)
+
+    setting = None
 
     try:
-        methods.set_setting(app, setting, value)
+        for k, v in request.POST.items():
+            if '[]' in k:
+                k = k.replace('[]', '')
+            else:
+                v = v[0]
+            setting = k
+            methods.set_setting(app, k, v)
         return JsonResponse(
             methods.get_settings(app)
         )
     except KeyError:
+        methods.revert_settings()
         return JsonResponse({
-            'message': 'setting does not exist'
-        })
+            'message': "setting '{}' does not exist".format(setting)
+        }, status=400)
     except LookupError:
+        methods.revert_settings()
         return JsonResponse({
             'message': 'app does not exist'
         }, status=400)
     except ValidationError as error:
+        methods.revert_settings()
         return JsonResponse({
-            'message': error.messages
+            'message': "could not validate '{}'".format(setting),
+            'validation': error.messages
         }, status=400)
     except Exception:
+        methods.revert_settings()
         logging.getLogger(__name__).exception(
             'An exception occurred while setting a setting'
         )
