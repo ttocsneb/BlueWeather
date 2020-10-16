@@ -152,7 +152,7 @@ const setting_value = Vue.extend({
     <div v-else-if="is_bool" class="form-check">
         <input type="checkbox" :name="setting.name" :id="id" @input="on_bool" :checked="value" :disabled="!setting.enabled" 
                 class="form-check-input" :class="{'position-static': setting.title == null}" :aria-label="setting.name"/>
-        <label v-if="setting.title != null" for="id">{{ setting.title }}</label>
+        <label v-if="setting.title != null" :for="id" class="form-check-label">{{ setting.title }}</label>
     </div>
     <select v-else-if="is_select" :value="value" @input="on_input"
             :name="setting.name" :id="id"
@@ -230,7 +230,7 @@ const setting_card = Vue.extend({
     },
     methods: {
         load_settings() {
-            let self = this
+            const self = this
             $.ajax({
                 url: `/api/settings/get/${this.app}`,
                 method: 'GET',
@@ -250,19 +250,25 @@ const setting_card = Vue.extend({
             this.changed = true
             this.$emit('modified')
         },
-        save() {
+        save(save_next: () => void) {
             if(this.changed) {
-                let self = this
+                const self = this
                 $.ajax({
                     url: `/api/settings/set/${this.app}`,
                     method: 'POST',
-                    data: this.settings,
+                    contentType: 'application/json',
+                    data: JSON.stringify(this.settings),
                     success(data: {[key: string]: any}) {
                         console.log(data)
+                        this.settings = data
+                        save_next()
                     },
                     error(jqXHR: JQuery.jqXHR, status: string, error: string) {
                         console.error(`An error occurred: ${status} - ${error}`)
-                        console.log(jqXHR.responseJSON)
+                        console.log(jqXHR.responseJSON.message)
+                        if(jqXHR.responseJSON.validation != null) {
+                            console.log(jqXHR.responseJSON.validation)
+                        }
                         console.log(self.settings)
                     }
                 })
@@ -292,7 +298,7 @@ const setting_card = Vue.extend({
     },
     template: `<div class="card">
     <div class="card-header">
-        <h3>{{ title }}</h3>
+        <h3 class="mb-0">{{ title }}</h3>
     </div>
     <form action="#">
         <div class="card-body">
@@ -310,14 +316,51 @@ const app_settings = new Vue({
             modified: false
         }
     },
+    beforeMount() {
+        const self = this
+        // Prevent the user from leaving if the settings were modified
+        window.addEventListener('beforeunload', (event: BeforeUnloadEvent) => {
+            let modified = self.modified as boolean
+            if(modified) {
+                let confirmationMessage = `You have unsaved changes. If you leave before saving, your changes will be lost.`
+                event.returnValue = confirmationMessage
+                return confirmationMessage
+            } else {
+                return undefined
+            }
+        })
+    },
     methods: {
         on_modified() {
             this.modified = true
         },
         save() {
             let children = this.$children as Array<any>
+            let i = 0
+            const self = this
+            function save_next() {
+                if(i < children.length) {
+                    children[i].save(save_next)
+                    i++;
+                } else {
+                    // TODO Apply the settings
+                    console.log("Saving Settings")
+                    $.ajax({
+                        url: `/api/settings/apply`,
+                        success(response: object) {
+                            self.modified = false
+                        }
+                    })
+                }
+            }
+            save_next()
+        },
+        undo() {
+            console.log("undo")
+            let children = this.$children as Array<any>
             for(const i in children) {
-                children[i].save()
+                let child = children[i]
+                child.load_settings()
             }
             this.modified = false
         }

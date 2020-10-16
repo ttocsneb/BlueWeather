@@ -2,11 +2,15 @@
     position: fixed;
     bottom: 1em;
     margin-left: 1em;
+}
+
+.bottom .btn {
     opacity: 0.66;
     width: 2.75em;
     height: 2.75em;
+    margin-right: 1em;
 }
 
-.bottom:hover {
+.bottom .btn:hover {
     opacity: 1;
 }

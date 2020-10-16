@@ -96,7 +96,7 @@ var setting_value = Vue.extend({
             return this.app + "-" + this.setting.name;
         }
     },
-    template: "<div class=\"form-group\">\n    <label v-if=\"setting.title != null && (input_type || is_select)\" :for=\"id\">{{ setting.title }}</label>\n    <label v-else-if=\"setting.title != null && is_radio\">{{ setting.title }}</label>\n\n    <input v-if=\"input_type\" :value=\"value\" @input=\"on_input\" \n            :type=\"input_type\" :name=\"setting.name\" :id=\"id\" :placeholder=\"setting.hint\" :disabled=\"!setting.enabled\"\n            class=\"form-control\" />\n    <div v-else-if=\"is_bool\" class=\"form-check\">\n        <input type=\"checkbox\" :name=\"setting.name\" :id=\"id\" @input=\"on_bool\" :checked=\"value\" :disabled=\"!setting.enabled\" \n                class=\"form-check-input\" :class=\"{'position-static': setting.title == null}\" :aria-label=\"setting.name\"/>\n        <label v-if=\"setting.title != null\" for=\"id\">{{ setting.title }}</label>\n    </div>\n    <select v-else-if=\"is_select\" :value=\"value\" @input=\"on_input\"\n            :name=\"setting.name\" :id=\"id\"\n            class=\"form-control\">\n        <option v-for=\"opt in setting.choices\" :key=\"opt.key\" :disabled=\"!opt.enabled\" :value=\"opt.key\">\n            {{ opt.value }}\n        </option>\n    </select>\n    <div v-else-if=\"is_radio\" v-for=\"opt in setting.choices\" :key=\"opt.key\"\n            class=\"form-check\">\n        <input :value=\"opt.key\" @input=\"on_radio\" :type=\"radio_type\" :checked=\"is_checked(opt.key)\"\n                :id=\"id + '-' + opt.key\" :name=\"setting.name\" :disabled=\"!opt.enabled\"\n                class=\"form-check-input\" />\n        <label :for=\"id + '-' + opt.key\"\n                class=\"form-check-label\">{{ opt.value }}</label>\n    </div>\n    <p v-else>There was an error parsing settings for {{ setting.name }} :/</p>\n</div>"
+    template: "<div class=\"form-group\">\n    <label v-if=\"setting.title != null && (input_type || is_select)\" :for=\"id\">{{ setting.title }}</label>\n    <label v-else-if=\"setting.title != null && is_radio\">{{ setting.title }}</label>\n\n    <input v-if=\"input_type\" :value=\"value\" @input=\"on_input\" \n            :type=\"input_type\" :name=\"setting.name\" :id=\"id\" :placeholder=\"setting.hint\" :disabled=\"!setting.enabled\"\n            class=\"form-control\" />\n    <div v-else-if=\"is_bool\" class=\"form-check\">\n        <input type=\"checkbox\" :name=\"setting.name\" :id=\"id\" @input=\"on_bool\" :checked=\"value\" :disabled=\"!setting.enabled\" \n                class=\"form-check-input\" :class=\"{'position-static': setting.title == null}\" :aria-label=\"setting.name\"/>\n        <label v-if=\"setting.title != null\" :for=\"id\" class=\"form-check-label\">{{ setting.title }}</label>\n    </div>\n    <select v-else-if=\"is_select\" :value=\"value\" @input=\"on_input\"\n            :name=\"setting.name\" :id=\"id\"\n            class=\"form-control\">\n        <option v-for=\"opt in setting.choices\" :key=\"opt.key\" :disabled=\"!opt.enabled\" :value=\"opt.key\">\n            {{ opt.value }}\n        </option>\n    </select>\n    <div v-else-if=\"is_radio\" v-for=\"opt in setting.choices\" :key=\"opt.key\"\n            class=\"form-check\">\n        <input :value=\"opt.key\" @input=\"on_radio\" :type=\"radio_type\" :checked=\"is_checked(opt.key)\"\n                :id=\"id + '-' + opt.key\" :name=\"setting.name\" :disabled=\"!opt.enabled\"\n                class=\"form-check-input\" />\n        <label :for=\"id + '-' + opt.key\"\n                class=\"form-check-label\">{{ opt.value }}</label>\n    </div>\n    <p v-else>There was an error parsing settings for {{ setting.name }} :/</p>\n</div>"
 });
 var setting_item = Vue.extend({
     props: {
@@ -163,19 +163,25 @@ var setting_card = Vue.extend({
             this.changed = true;
             this.$emit('modified');
         },
-        save: function () {
+        save: function (save_next) {
             if (this.changed) {
                 var self_1 = this;
                 $.ajax({
                     url: "/api/settings/set/" + this.app,
                     method: 'POST',
-                    data: this.settings,
+                    contentType: 'application/json',
+                    data: JSON.stringify(this.settings),
                     success: function (data) {
                         console.log(data);
+                        this.settings = data;
+                        save_next();
                     },
                     error: function (jqXHR, status, error) {
                         console.error("An error occurred: " + status + " - " + error);
-                        console.log(jqXHR.responseJSON);
+                        console.log(jqXHR.responseJSON.message);
+                        if (jqXHR.responseJSON.validation != null) {
+                            console.log(jqXHR.responseJSON.validation);
+                        }
                         console.log(self_1.settings);
                     }
                 });
@@ -202,7 +208,7 @@ var setting_card = Vue.extend({
     components: {
         'setting-item': setting_item
     },
-    template: "<div class=\"card\">\n    <div class=\"card-header\">\n        <h3>{{ title }}</h3>\n    </div>\n    <form action=\"#\">\n        <div class=\"card-body\">\n            <setting-item v-for=\"(i, n) in items\" :key=\"n\" :value=\"settings\" @input=\"on_settings_changed\" :item=\"i\" :settings=\"config\" :app=\"app\" />\n        </div>\n    </form>\n</div>"
+    template: "<div class=\"card\">\n    <div class=\"card-header\">\n        <h3 class=\"mb-0\">{{ title }}</h3>\n    </div>\n    <form action=\"#\">\n        <div class=\"card-body\">\n            <setting-item v-for=\"(i, n) in items\" :key=\"n\" :value=\"settings\" @input=\"on_settings_changed\" :item=\"i\" :settings=\"config\" :app=\"app\" />\n        </div>\n    </form>\n</div>"
 });
 var app_settings = new Vue({
     el: '#app-settings',
@@ -211,14 +217,51 @@ var app_settings = new Vue({
             modified: false
         };
     },
+    beforeMount: function () {
+        var self = this;
+        window.addEventListener('beforeunload', function (event) {
+            var modified = self.modified;
+            if (modified) {
+                var confirmationMessage = "You have unsaved changes. If you leave before saving, your changes will be lost.";
+                event.returnValue = confirmationMessage;
+                return confirmationMessage;
+            }
+            else {
+                return undefined;
+            }
+        });
+    },
     methods: {
         on_modified: function () {
             this.modified = true;
         },
         save: function () {
             var children = this.$children;
+            var i = 0;
+            var self = this;
+            function save_next() {
+                if (i < children.length) {
+                    children[i].save(save_next);
+                    i++;
+                }
+                else {
+                    console.log("Saving Settings");
+                    $.ajax({
+                        url: "/api/settings/apply",
+                        success: function (response) {
+                            self.modified = false;
+                        }
+                    });
+                }
+            }
+            save_next();
+        },
+        undo: function () {
+            console.log("undo");
+            var children = this.$children;
             for (var i in children) {
-                children[i].save();
+                var child = children[i];
+                child.load_settings();
             }
             this.modified = false;
         }

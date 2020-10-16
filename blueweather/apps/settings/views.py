@@ -4,10 +4,10 @@ import json
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http.request import HttpRequest
-from django.http.response import JsonResponse, HttpResponse, Http404
+from django.http.response import JsonResponse, Http404
 from django.views.decorators.http import require_POST
 
-from django.apps import registry, AppConfig
+from django.apps import registry
 
 from marshmallow import ValidationError
 
@@ -80,23 +80,16 @@ def set_settings(request: HttpRequest, app: str):
     Apply the settings
 
     :param app: app to set the settings to
-    :param setting: name of the setting to change
-    :param value: value of the new setting
     """
 
     app = app.replace('-', '.')
 
-    print(request.POST)
+    post = json.loads(request.body)
 
     setting = None
 
     try:
-        for k, v in request.POST.items():
-            if '[]' in k:
-                k = k.replace('[]', '')
-            else:
-                v = v[0]
-            setting = k
+        for k, v in post.items():
             methods.set_setting(app, k, v)
         return JsonResponse(
             methods.get_settings(app)
@@ -134,7 +127,7 @@ def revert_settings(request: HttpRequest):
 
     methods.revert_settings()
 
-    return HttpResponse('')
+    return JsonResponse({})
 
 
 def apply_settings(request: HttpRequest):
@@ -144,4 +137,4 @@ def apply_settings(request: HttpRequest):
 
     methods.apply_settings()
 
-    return HttpResponse('')
+    return JsonResponse({})

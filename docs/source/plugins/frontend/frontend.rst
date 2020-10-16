@@ -4,10 +4,6 @@ FrontEnd
 The front-end is built with Vue.js. It is a very powerful engine. This allows
 the webpage to change or update seamlessly without having to reload the page.
 
-.. toctree::
-
-    settings
-
 TypeScript
 ----------
 

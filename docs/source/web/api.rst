@@ -31,12 +31,10 @@ will be given, as well as context for more information.
 The return code is used to let the program know what happened, and the context
 is used to let the user know what happened.
 
-.. code-block:: json
+.. code-block:: typescript
 
-    {
-        "success": false,
-        "error": 0,
-        "context": "Some context for the error"
+    interface Error {
+        message: string
     }
 
 Weather API
@@ -53,19 +51,16 @@ Current Weather
 
     :return:
 
-        A json object containing all the weather data
+        A json object containing the latest weather data
 
-        .. code-block:: json
+        .. code-block:: typescript
 
-            {
-                "success": true,
-                "weather": {
-                    "time": "The time when the data was recorded",
-                    "data": {
-                        "tempurature": {
-                            "value": 27.4,
-                            "type": "c"
-                        }
+            interface DataPoint {
+                time: DateTime,
+                data: {
+                    [key: string]: {
+                        value: number,
+                        type: string
                     }
                 }
             }
@@ -116,21 +111,23 @@ Weather history
             /api/weather/history?date='2020-8-28'&days=2
 
     :return:
-        .. code-block:: json
 
-            {
-                "success": true,
-                "history": [
-                    {
-                        "time": "The time when the data was recorded",
-                        "data": {
-                            "tempurature": {
-                                "value": 27.4,
-                                "type": "c"
-                            }
-                        }
+        A Json Object containing all the datapoints for the request
+
+        .. code-block:: typescript
+
+            interface DataPoint {
+                time: DateTime,
+                data: {
+                    [key: string]: {
+                        value: number,
+                        type: string
                     }
-                ]
+                }
+            }
+
+            interface HistoryResponse {
+                history: Array<DataPoint>
             }
 
 Settings
@@ -139,48 +136,49 @@ Settings
 Get
 ^^^
 
-.. function:: /api/settings/get(group: str)
+.. function:: /api/settings/get/<slug:app>
 
     :type: GET
     :permissions: Settings
 
-    Get a list of the settings
+    Get a the settings for an app
 
-    :param group: The optional groupname. If no group is given, all groups are returned
+    :param app: The name of the app
 
-    :return:
+    :return: Settings
 
-        .. code-block:: json
+        .. code-block:: typescript
 
-            {
-                "success": true,
-                "settings": {}
+            interface SetResponse {
+                [key: string]: string | number | Array<string> | boolean
             }
 
-Change
-^^^^^^
+Set
+^^^
 
-.. function:: /api/settings/change(settings: object)
+.. function:: /api/settings/set/<slug:app>
 
     :type: POST
     :permissions: Settings
 
-    Change a setting's value
+    Change an app's settings
 
-    :param settings: An object of key-value pair setings
+    :param app: The name of the app
 
-        .. code-block:: json
+    :body: Settings to apply
 
-            {
-                "group:setting-name": "Whatever-Settings-Object Required"
+        .. code-block:: typescript
+
+            interface SetBody {
+                [key: string]: string | number | Array<string> | boolean
             }
     
-    :return:
+    :return: Settings
 
-        .. code-block:: json
+        .. code-block:: typescript
 
-            {
-                "success": true
+            interface SetResponse {
+                [key: string]: string | number | Array<string> | boolean
             }
 
 Apply
@@ -191,14 +189,14 @@ Apply
     :type: GET
     :permissions: Settings
 
-    Apply the changed settings to disk. This may require a restart of the
-    server to take effect.
+    Apply the changed settings to disk. 
 
-    :return:
+Load
+^^^^
 
-        .. code-block:: json
+.. function:: /api/settings/load
 
-            {
-                "success": true,
-                "restart_required": true
-            }
+    :type: GET
+    :permissions: Settings
+
+    Load the settings from what's stored on disk
