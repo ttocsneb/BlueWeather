@@ -56,7 +56,6 @@ CONFIG.load()
 # because django is set to reload, two instances of extensions will always be
 # loaded. to stop this, use 'manage.py runserver --noreload'
 EXTENSIONS = Extensions(CONFIG)
-# TODO Migrate App Settings
 if CONFIG.modified:
     CONFIG.save()
 

@@ -31,6 +31,7 @@ Contents
    plugins/index
    web/api
    internal/index
+   structure
 
 
 Installation
