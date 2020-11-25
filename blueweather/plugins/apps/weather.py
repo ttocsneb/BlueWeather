@@ -1,21 +1,8 @@
 import abc
 
-from marshmallow import Schema
+from typing import Dict, Tuple
 
-from typing import List, Tuple, Dict
-
-
-class App(metaclass=abc.ABCMeta):
-    """
-    Tells Blueweather where the Django App lives
-    """
-
-    @property
-    @abc.abstractmethod
-    def app_name(self) -> str:
-        """
-        Get the name of the app. This should be the package where the app lives
-        """
+from .. import utils
 
 
 class Weather(metaclass=abc.ABCMeta):
@@ -67,35 +54,22 @@ class Weather(metaclass=abc.ABCMeta):
         """
 
 
-class UnitConversion(metaclass=abc.ABCMeta):
+def getWeather(config: AppConfig) -> Weather:
     """
-    An Extension that can facilitate conversions
+    Get the weather from the config
 
-    This allows for custom conversion between units.
+    :param config: app config
+
+    :return: weather
     """
+    module = utils.load_app_module(config, 'weather')
+    if not module:
+        return None
 
-    @abc.abstractmethod
-    def get_conversion_types(self) -> List[Tuple[str, str]]:
-        """
-        Get a list of available conversions in the form of tuples
-
-        Each conversion is in the form: `from_type -> to_type`
-
-        :return: list of conversions
-        """
-
-    @abc.abstractmethod
-    def conversion_request(self, data: float, from_type: str, to_type: str
-                           ) -> float:
-        """
-        Convert from one type to another.
-
-        When converting values, the first successful conversion will stop
-
-        :param data: value in the unit (`from_type`)
-        :param from_type: type to convert from
-        :param to_type: type to convert to
-
-        :return: converted value (if the conversion is not available, return
-            None)
-        """
+    try:
+        return next(
+            s[1] for s in utils.find_members(module)
+            if isinstance(s[1], Weather)
+        )
+    except StopIteration:
+        return None

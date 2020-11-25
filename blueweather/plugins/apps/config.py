@@ -34,10 +34,13 @@ To add the settings to the app, set the :class:`Settings` class to the
 import abc
 
 from django.conf import settings
+from django.apps import AppConfig
 
 from marshmallow import ValidationError
 
 from blueweather.config import interface
+
+from .. import utils
 
 
 class Settings(metaclass=abc.ABCMeta):
@@ -168,3 +171,24 @@ class Settings(metaclass=abc.ABCMeta):
         """
         settings.CONFIG.apps.settings[self.__app_name] = value
         settings.CONFIG.modified = True
+
+
+def getSettings(config: AppConfig) -> Settings:
+    """
+    Get the settings from the config
+
+    :param config: app config
+
+    :return: settings
+    """
+    module = utils.load_app_module(config, 'config')
+    if not module:
+        return None
+
+    try:
+        return next(
+            s[1] for s in utils.find_members(module)
+            if isinstance(s[1], Settings)
+        )
+    except StopIteration:
+        return None
