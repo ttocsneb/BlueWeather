@@ -1,21 +1,24 @@
 """
 Api Decorators
 """
+from functools import update_wrapper
 
-from typing import Type, Optional
+from . import views
 
 
-class Api:
+def api(**kwargs):
     """
-    Api Handler
+    Create an api view
 
-    :param func: api function
     :param method: allowed request method types
+    :param allow_get_params: whether to allow GET parameters when the method
+        is not GET
     :param schema: result schema
     :param args_schema: request schema
     """
-    def __init__(self, **kwargs):
-        self.func: callable = kwargs.pop('func')
-        self.method: Optional[str] = kwargs.pop('method')
-        self.args_schema: Optional[Type[Schema]] = kwargs.pop('args_schema')
-        self.schema: Optional[Type[Schema]] = kwargs.pop('schema')
+
+    def decorator(func: callable):
+        obj = views.Api(func=func, **kwargs)
+        return update_wrapper(obj, func)
+
+    return decorator

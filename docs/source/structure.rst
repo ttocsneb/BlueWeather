@@ -1,5 +1,5 @@
 Blueweather Structure
-=====================
+#####################
 
 The Blueweather project is a rather large project, and so needs to have a
 solid plan to make it work. This page is where you can find the plan.
