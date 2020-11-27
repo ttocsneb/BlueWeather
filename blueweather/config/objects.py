@@ -190,12 +190,12 @@ class Web(Settings):
 
 
 class Plugins(Settings):
-    def __init__(self, weather_driver: str = None, disabled: list = None):
+    def __init__(self, weather_driver: str = None, enabled: list = None):
         super().__init__()
 
         self.weather_driver = weather_driver or 'dummyWeather'
 
-        self.disabled = disabled or list()
+        self.enabled = enabled or list()
 
 
 class Apps(Settings):

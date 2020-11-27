@@ -12,10 +12,11 @@ class Plugins:
     :param conf: config
     """
     def __init__(self, conf: Config):
-        self.conversions = manager.PluginManager(conversion.getConversions)
-        self.configs = manager.PluginManager(config.getSettings)
+        self.conversions = manager.PluginManager("Conversion", conversion.getConversions)
+        self.configs = manager.PluginManager("Config", config.getSettings)
         self.weather = manager.DriverManager(
             conf.plugins.weather_driver,
+            "Weather",
             weather.getWeather
         )
 

@@ -77,8 +77,8 @@ class Plugins(Schema):
     """
     weather_driver = fields.String()
     '''The weather driver extension'''
-    disabled = fields.List(fields.String())
-    '''A list of disabled plugins'''
+    enabled = fields.List(fields.String())
+    '''A list of enabled plugins'''
 
     @post_load
     def make_plugins(self, data: dict, **kwargs):

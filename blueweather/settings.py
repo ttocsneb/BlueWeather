@@ -14,8 +14,7 @@ import logging.config
 import os
 
 from .config import Config
-from .plugins import Extensions
-from .plugins import dao
+from .plugins import Plugins
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -55,13 +54,9 @@ CONFIG.load()
 
 # because django is set to reload, two instances of extensions will always be
 # loaded. to stop this, use 'manage.py runserver --noreload'
-EXTENSIONS = Extensions(CONFIG)
+PLUGINS = Plugins(CONFIG)
 if CONFIG.modified:
     CONFIG.save()
-
-
-# Unit Conversions
-UNITS = dao.UnitConversion.all_conversions(EXTENSIONS.unitConversion)
 
 
 # Quick-start development settings - unsuitable for production
@@ -88,7 +83,7 @@ INSTALLED_APPS = [
 ]
 
 INSTALLED_APPS.extend(
-    dao.App.get_app_names(EXTENSIONS.apps)
+    CONFIG.plugins.enabled
 )
 
 # A list of apps that should be linked in the sidebar

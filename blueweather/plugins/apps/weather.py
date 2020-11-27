@@ -1,5 +1,7 @@
 import abc
 
+from django.apps import AppConfig
+
 from typing import Dict, Tuple
 
 from .. import utils

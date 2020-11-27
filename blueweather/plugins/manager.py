@@ -39,7 +39,8 @@ class PluginManager(collections.Sized, collections.Iterable):
     """
     The base class for the plugin manager
     """
-    def __init__(self, loader: callable):
+    def __init__(self, name: str, loader: callable):
+        self.name = name
         self.loader = loader
         self.plugins: List[Plugin] = []
         self.logger = logging.getLogger(__name__)
@@ -54,9 +55,9 @@ class PluginManager(collections.Sized, collections.Iterable):
             if not isinstance(plugins, list):
                 plugins = [plugins]
             for plugin in plugins:
-                p = Plugin(p, app)
+                p = Plugin(plugin, app)
                 self.plugins.append(p)
-                self.logger.info("Loaded plugin %s", p)
+                self.logger.info("Loaded %s plugin %s", self.name, p)
 
     def map(self, func: callable):
         """
@@ -73,6 +74,14 @@ class PluginManager(collections.Sized, collections.Iterable):
                     plugin
                 )
 
+    def mapCall(self, func_name, *args, **kwargs):
+        """
+        Map a function to all the plugins this manager manages
+
+        :param func_name: name of the function to call
+        """
+        return self.map(lambda plugin: plugin.call(func_name, *args, **kwargs))
+
     def __len__(self):
         return len(self.apps)
 
@@ -87,8 +96,8 @@ class DriverManager(PluginManager):
     :param app: app to load the plugin from
     :param loader: loader
     """
-    def __init__(self, app: str, loader: callable):
-        super().__init__(loader)
+    def __init__(self, app: str, name: str, loader: callable):
+        super().__init__(name, loader)
         self.app = app
 
     def load(self):
@@ -100,7 +109,8 @@ class DriverManager(PluginManager):
         plugin = self.loader(app)
         if not plugin:
             self.logger.warn(
-                "Could not load Driver from %s",
+                "Could not load %s driver from %s",
+                self.name,
                 repr(self.app)
             )
             return

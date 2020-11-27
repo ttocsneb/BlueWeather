@@ -183,12 +183,12 @@ def getSettings(config: AppConfig) -> Settings:
     """
     module = utils.load_app_module(config, 'config')
     if not module:
-        return None
+        return []
 
     try:
-        return next(
+        return [next(
             s[1] for s in utils.find_members(module)
             if isinstance(s[1], Settings)
-        )
+        )]
     except StopIteration:
-        return None
+        return []

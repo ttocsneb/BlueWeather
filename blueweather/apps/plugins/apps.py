@@ -1,10 +1,6 @@
 from django.apps import AppConfig
 from django.conf import settings
 
-from blueweather.plugins import dao
-
-import logging
-
 
 class ExtensionsConfig(AppConfig):
     name = 'blueweather.apps.plugins'
@@ -17,4 +13,4 @@ class ExtensionsConfig(AppConfig):
     api = 'blueweather.apps.plugins.api'
 
     def ready(self):
-        settings.EXTENSIONS.invoke_all()
+        settings.PLUGINS.load()
