@@ -26,17 +26,19 @@ Then in your :code:`AppConfig` object located in :code:`apps.py`, add the
         api = 'myapp.api'
 
 """
-import inspect
+import logging
 
 from importlib import import_module
 
 from django.urls import path, include
 from django.apps import apps
 
+from blueweather.plugins import utils
+
 from typing import List, Tuple
 
 
-def include_api_patterns(module: str):
+def include_api_patterns(module):
     """
     Load the api views in a module into a urlpattern
 
@@ -48,26 +50,34 @@ def include_api_patterns(module: str):
         The recommended way to make your api views is by using the
         :meth:`blueweather.api.decorators.api` decorator.
 
-    :param module: module path
+    :param module: module or module path
 
     :return: the included api patterns
     """
-    module = import_module(module)
+    if isinstance(module, str):
+        module = import_module(module)
+
+    logger = logging.getLogger(__name__)
+
     # Get all members, ignore private members
-    members = [
-        i for i in inspect.getmembers(module)
-        if not i[0].startswith('__')
-    ]
+    members = utils.find_members(module)
+
     # Get all members that have the 'urlpattern' attr (it is an api view)
     views = [
         member
         for member in members
-        if hasattr(member, 'urlpattern')
+        if hasattr(member[1], 'urlpattern')
     ]
+
+    if views:
+        logger.debug(
+            "Loaded API's: %s",
+            ', '.join(repr(v[1].name) for v in views)
+        )
 
     # Include all the views
     return include([
-        view.urlpattern
+        view[1].urlpattern
         for view in views
     ])
 
@@ -93,9 +103,10 @@ def include_all_api_patterns():
 
     # Get all the apps that are configured for the api
     for config in apps.get_app_configs():
-        if hasattr(config, 'api'):
+        api_module = utils.load_app_module(config, 'api')
+        if api_module:
             all_modules.append(
-                (config.label, config.api)
+                (config.label, api_module)
             )
 
     # Load all the api patterns

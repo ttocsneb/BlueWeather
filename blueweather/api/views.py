@@ -100,7 +100,7 @@ class Api:
         """
         try:
             # Assert the correct method type
-            if self.method is not None and request.method not in self.methods:
+            if self.methods is not None and request.method not in self.methods:
                 apiError = APIError(
                     405,
                     detail="Method Not Allowed"

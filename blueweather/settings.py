@@ -77,7 +77,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'blueweather.apps.weather',
     'blueweather.apps.accounts',
-    'blueweather.apps.plugins',
+    'blueweather.plugins',
     'blueweather.apps.api',
     'blueweather.apps.settings'
 ]
