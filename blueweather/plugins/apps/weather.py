@@ -71,7 +71,7 @@ def getWeather(config: AppConfig) -> Weather:
     try:
         return next(
             s[1] for s in utils.find_members(module)
-            if isinstance(s[1], Weather)
-        )
+            if issubclass(s[1], Weather)
+        )()
     except StopIteration:
         return None

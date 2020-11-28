@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from blueweather.plugins import Extensions, dao
+from blueweather.plugins import Plugins, tools
 
 from typing import List
 
@@ -51,7 +51,7 @@ def plugin_list() -> List[dict]:
             type PluginList = Array<Plugin>
 
     """
-    extensions: Extensions = settings.EXTENSIONS
+    extensions: Plugins = settings.EXTENSIONS
 
     plugins = extensions.getAllExtensions()
 
@@ -61,7 +61,7 @@ def plugin_list() -> List[dict]:
         ext = list(exts.values())[0]
         out.append({
             'pluginName': name,
-            'info': dao.PluginInfo.get_metadata(ext),
+            'info': tools.PluginInfo.get_metadata(ext),
             'enabled': extensions.is_enabled(ext),
             'builtin': ext.builtin,
             'extensions': [

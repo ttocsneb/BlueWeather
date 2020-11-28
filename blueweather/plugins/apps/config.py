@@ -187,8 +187,8 @@ def getSettings(config: AppConfig) -> Settings:
 
     try:
         return [next(
-            s[1] for s in utils.find_members(module)
-            if isinstance(s[1], Settings)
+            s[1](config.label) for s in utils.find_members(module)
+            if issubclass(s[1], Settings)
         )]
     except StopIteration:
         return []

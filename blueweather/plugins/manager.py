@@ -57,7 +57,7 @@ class PluginManager(collections.Sized, collections.Iterable):
             for plugin in plugins:
                 p = Plugin(plugin, app)
                 self.plugins.append(p)
-                self.logger.info("Loaded %s plugin %s", self.name, p)
+                self.logger.info("Loaded %s", p)
 
     def map(self, func: callable):
         """
@@ -116,4 +116,4 @@ class DriverManager(PluginManager):
             return
         p = Plugin(plugin, app)
         self.plugins.append(p)
-        self.logger.info("Loaded plugin %s", p)
+        self.logger.info("Loaded %s", p)

@@ -54,6 +54,6 @@ def getConversions(config: AppConfig) -> List[UnitConversion]:
         return []
 
     return [
-        s[1] for s in utils.find_members(module)
-        if isinstance(s[1], UnitConversion)
+        s[1]() for s in utils.find_members(module)
+        if issubclass(s[1], UnitConversion)
     ]
