@@ -33,7 +33,7 @@ from importlib import import_module
 from django.urls import path, include
 from django.apps import apps
 
-from blueweather.plugins import utils
+from blueweather.plugins.utils import find_members, load_app_module
 
 from typing import List, Tuple
 
@@ -60,7 +60,7 @@ def include_api_patterns(module):
     logger = logging.getLogger(__name__)
 
     # Get all members, ignore private members
-    members = utils.find_members(module)
+    members = find_members(module)
 
     # Get all members that have the 'urlpattern' attr (it is an api view)
     views = [
@@ -103,7 +103,7 @@ def include_all_api_patterns():
 
     # Get all the apps that are configured for the api
     for config in apps.get_app_configs():
-        api_module = utils.load_app_module(config, 'api')
+        api_module = load_app_module(config, 'api')
         if api_module:
             all_modules.append(
                 (config.label, api_module)

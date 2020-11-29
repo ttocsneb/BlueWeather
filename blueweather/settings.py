@@ -78,7 +78,6 @@ INSTALLED_APPS = [
     'blueweather.apps.weather',
     'blueweather.apps.accounts',
     'blueweather.plugins',
-    'blueweather.apps.api',
     'blueweather.apps.settings'
 ]
 

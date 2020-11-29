@@ -12,6 +12,8 @@ from django.http.response import JsonResponse
 from django.utils.log import log_response
 from django.urls import path
 
+from blueweather.utils import JsonEncoder
+
 from .annotate import annotator
 from . import parser
 
@@ -151,7 +153,7 @@ class Api:
                 schema = self.schema()
                 result = schema.dump(result)
 
-            return JsonResponse(result)
+            return JsonResponse(result, encoder=JsonEncoder)
         except Exception:
             self.logger.exception("Internal Error")
             apiError = APIError(

@@ -6,6 +6,7 @@ class DummyWeatherConfig(AppConfig):
     label = 'dummyWeather'
     verbose_name = 'Dummy Weather'
 
-    description = """
-    A fake weather plugin for development of other plugins.
+    description = """A fake weather plugin for development of other plugins.
     """
+
+    summary = description.splitlines()[0]

@@ -3,7 +3,7 @@ import collections.abc
 
 from django.apps import AppConfig, apps
 
-from typing import List
+from typing import List, Iterator
 
 
 class Plugin:
@@ -85,7 +85,7 @@ class PluginManager(collections.Sized, collections.Iterable):
     def __len__(self):
         return len(self.apps)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Plugin]:
         return iter(self.apps)
 
 

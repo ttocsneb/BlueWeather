@@ -1,7 +1,7 @@
 import importlib
 import inspect
 
-from django.apps import AppConfig
+from django.apps import AppConfig, apps
 
 from typing import List, Tuple
 
@@ -34,3 +34,25 @@ def find_members(module) -> List[Tuple[str, object]]:
         m for m in inspect.getmembers(module)
         if not m[0].startswith('__')
     ]
+
+
+def get_app(name: str) -> AppConfig:
+    """
+    Get an app from its name
+
+    :param name: app name
+
+    :return: AppConfig
+    """
+
+    # Check if the app label is the last part of the name
+
+    label = name.split('.')[-1]
+    try:
+        return apps.get_app_config(label)
+    except LookupError:
+        pass
+    for app in apps.get_app_configs():
+        if app.name == name:
+            return app
+    raise LookupError("No app exists with the name %s" % repr(name))

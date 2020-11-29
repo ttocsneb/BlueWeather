@@ -5,7 +5,9 @@ import markdown2
 from stringlike.lazy import CachedLazyString
 import inspect
 
-from .manager import Plugin, DriverManager
+from django.apps import AppConfig
+
+from .manager import DriverManager
 
 try:
     from importlib import metadata
@@ -19,11 +21,11 @@ class PluginInfo:
     Get info about a plugin
     """
     @classmethod
-    def get_metadata(cls, plugin: Plugin) -> dict:
+    def get_metadata(cls, app: AppConfig) -> dict:
         """
         Get the metadata for a plugin
 
-        :param plugin: any extension that belongs to the plugin
+        :param app: the app the plugin belongs to
 
         :return: metadata for the plugin
 
@@ -41,12 +43,12 @@ class PluginInfo:
                 }
 
         """
-        raw = metadata.metadata(plugin.app.name.split('.')[0])
+        raw = metadata.metadata(app.name.split('.')[0])
 
         # The description can be either the payload of the message,
         # or a variable called description
-        if hasattr(plugin.app, 'description'):
-            raw_description = inspect.cleandoc(plugin.app.description)
+        if hasattr(app, 'description'):
+            raw_description = inspect.cleandoc(app.description)
         else:
             raw_description = inspect.cleandoc(raw.get('description', ''))
         if not raw_description:
@@ -67,8 +69,8 @@ class PluginInfo:
 
         def get(key: str, default: str = None):
             default = default or key
-            if hasattr(plugin.app, default):
-                return getattr(plugin.app, default)
+            if hasattr(app, default):
+                return getattr(app, default)
             val = raw.get(key)
             if val == 'UNKNOWN':
                 return None
@@ -76,6 +78,7 @@ class PluginInfo:
 
         return {
             'packageName': get('name', 'packageName'),
+            'label': app.label,
             'version': get('version'),
             'summary': get('summary'),
             'homepage': get('home-page', 'homepage'),
