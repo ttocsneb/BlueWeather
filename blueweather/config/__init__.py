@@ -1,9 +1,11 @@
 import logging
-import os
 
 from ruamel import yaml
 
 from . import objects, schemas
+
+
+default_app_config = "blueweather.config.apps.SettingsConfig"
 
 
 class Config(objects.Config):

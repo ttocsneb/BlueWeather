@@ -6,7 +6,7 @@ config.yml file.
 """
 
 from marshmallow import Schema, fields, post_load, pre_load
-from . import custom_fields, objects, migrations
+from . import custom_fields, objects, migrate
 
 
 class ApiKey(Schema):
@@ -120,7 +120,7 @@ class Config(Schema):
         """
         Migrate the Config from previous versions
         """
-        settings, migrated = migrations.migrate_settings(data)
+        settings, migrated = migrate.migrate_settings(data)
         self._migrated = migrated
         return settings
 

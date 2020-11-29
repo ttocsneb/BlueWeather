@@ -83,10 +83,10 @@ class PluginManager(collections.Sized, collections.Iterable):
         return self.map(lambda plugin: plugin.call(func_name, *args, **kwargs))
 
     def __len__(self):
-        return len(self.apps)
+        return len(self.plugins)
 
     def __iter__(self) -> Iterator[Plugin]:
-        return iter(self.apps)
+        return iter(self.plugins)
 
 
 class DriverManager(PluginManager):

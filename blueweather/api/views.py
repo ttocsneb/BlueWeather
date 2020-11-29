@@ -17,7 +17,7 @@ from blueweather.utils import JsonEncoder
 from .annotate import annotator
 from . import parser
 
-from .exceptions import APIError
+from .exceptions import APIError, ValidateError
 
 
 class Api:
@@ -34,7 +34,7 @@ class Api:
     def __init__(self, **kwargs):
         self.func: callable = kwargs.pop('func')
         self.sig = inspect.signature(self.func)
-        self.methods: Optional[List[str]] = kwargs.pop('method', None)
+        self.methods: Optional[List[str]] = kwargs.pop('methods', None)
         self.allow_get_params: bool = kwargs.pop('allow_get_params', True)
         self.args_schema: Type[Schema] = kwargs.pop('args_schema', None)
         self.schema: Optional[Type[Schema]] = kwargs.pop('schema', None)
@@ -136,9 +136,9 @@ class Api:
                     args['request'] = request
                 bound = self.sig.bind(**args)
             except ValidationError as error:
-                apiError = APIError(
-                    detail="Invalid Parameters",
-                    validation=error.messages
+                apiError = ValidateError.fromMarshmallowError(
+                    error,
+                    detail="Invalid Parameters"
                 )
                 return self._api_error(request, apiError)
 
@@ -152,6 +152,9 @@ class Api:
             if self.schema is not None:
                 schema = self.schema()
                 result = schema.dump(result)
+
+            if result is None:
+                result = {}
 
             return JsonResponse(result, encoder=JsonEncoder)
         except Exception:

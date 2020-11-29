@@ -5,7 +5,7 @@ from . import manager
 from .apps import config, conversion, weather
 
 
-# default_app_config = "blueweather.plugins.apps.ExtensionsConfig"
+default_app_config = "blueweather.plugins.apps.ExtensionsConfig"
 
 
 class Plugins:

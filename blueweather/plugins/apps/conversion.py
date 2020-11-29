@@ -55,5 +55,5 @@ def getConversions(config: AppConfig) -> List[UnitConversion]:
 
     return [
         s[1]() for s in utils.find_members(module)
-        if issubclass(s[1], UnitConversion)
+        if issubclass(s[1], UnitConversion) and s[1] != UnitConversion
     ]

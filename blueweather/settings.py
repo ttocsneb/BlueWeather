@@ -78,7 +78,7 @@ INSTALLED_APPS = [
     'blueweather.apps.weather',
     'blueweather.apps.accounts',
     'blueweather.plugins',
-    'blueweather.apps.settings'
+    'blueweather.config'
 ]
 
 INSTALLED_APPS.extend(
