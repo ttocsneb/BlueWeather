@@ -76,7 +76,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'blueweather.apps.weather',
-    'blueweather.apps.accounts',
+    'blueweather.accounts',
     'blueweather.plugins',
     'blueweather.config'
 ]

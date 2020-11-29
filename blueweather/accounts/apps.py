@@ -3,7 +3,7 @@ from django.http import HttpRequest
 
 
 class AccountsConfig(AppConfig):
-    name = 'blueweather.apps.accounts'
+    name = 'blueweather.accounts'
     label = 'accounts'
     verbose_name = 'Account'
     icon = 'fas fa-user'
