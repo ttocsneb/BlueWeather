@@ -142,7 +142,8 @@ class Web(Settings):
     def __init__(self, debug: bool = False, time_zone: str = None,
                  allowed_hosts: list = None, database: Database = None,
                  secret_key: str = None, sidebar: list = None,
-                 api_keys: list = None, calculate_secret: bool = True):
+                 api_keys: list = None, frontend: str = None,
+                 calculate_secret: bool = True):
         super().__init__()
 
         self.debug = debug or False
@@ -158,29 +159,26 @@ class Web(Settings):
             self.database = Database()
             self._modified = True
 
-        self.allowed_hosts = allowed_hosts or []
+        self.allowed_hosts = allowed_hosts or ['*']
 
         self.api_keys = ApiKeys(**(api_keys or {}))
+
+        self.frontend = frontend or "frontend"
 
         self.sidebar = sidebar
         if self.sidebar is None:
             self.sidebar = [
                 {
                     "category": "item",
-                    "value": "blueweather.apps.weather"
-                },
-                {"category": "divider"},
-                {
-                    "category": "item",
-                    "value": "blueweather.apps.plugins"
+                    "value": "plugins"
                 },
                 {
                     "category": "item",
-                    "value": "blueweather.apps.settings"
+                    "value": "settings"
                 },
                 {
                     "category": "item",
-                    "value": "blueweather.apps.accounts"
+                    "value": "accounts"
                 }
             ]
             self._modified = True
@@ -190,12 +188,12 @@ class Web(Settings):
 
 
 class Plugins(Settings):
-    def __init__(self, weather_driver: str = None, disabled: list = None):
+    def __init__(self, weather_driver: str = None, enabled: list = None):
         super().__init__()
 
         self.weather_driver = weather_driver or 'dummyWeather'
 
-        self.disabled = disabled or list()
+        self.enabled = enabled or ['blueweather.plugins.integrated.dummyWeather']
 
 
 class Apps(Settings):

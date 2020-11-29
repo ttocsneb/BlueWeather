@@ -6,7 +6,7 @@ config.yml file.
 """
 
 from marshmallow import Schema, fields, post_load, pre_load
-from . import custom_fields, objects, migrations
+from . import custom_fields, objects, migrate
 
 
 class ApiKey(Schema):
@@ -50,6 +50,8 @@ class Web(Schema):
     )
     '''The sidebar settings: :class:`custom_fields.NamedList`
     :class:`SidebarItem`'''
+    frontend = fields.String()
+    '''The server's frontend app'''
     api_keys = fields.Dict(fields.String(), fields.Nested(ApiKey))
     '''The api keys that allow access to the api without needing to be logged
     in'''
@@ -77,8 +79,8 @@ class Plugins(Schema):
     """
     weather_driver = fields.String()
     '''The weather driver extension'''
-    disabled = fields.List(fields.String())
-    '''A list of disabled plugins'''
+    enabled = fields.List(fields.String())
+    '''A list of enabled plugins'''
 
     @post_load
     def make_plugins(self, data: dict, **kwargs):
@@ -120,7 +122,7 @@ class Config(Schema):
         """
         Migrate the Config from previous versions
         """
-        settings, migrated = migrations.migrate_settings(data)
+        settings, migrated = migrate.migrate_settings(data)
         self._migrated = migrated
         return settings
 

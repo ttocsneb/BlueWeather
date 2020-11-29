@@ -1,41 +1,45 @@
 {
   "name": "blueweather",
-  "version": "0.4.1",
-  "description": "A web-app for your Personal Weather Station",
+  "version": "0.5.0",
+  "description": "A web-app for your personal weather station",
   "main": "index.js",
-  "dependencies": {
-    "axios": "^0.20.0",
-    "bootstrap": "^4.4.1",
-    "js-cookie": "^2.2.1",
-    "lodash": "^4.17.20",
-    "popper.js": "^1.16.1",
-    "startbootstrap-sb-admin-2": "^4.1.1",
-    "vue": "^2.6.11",
-    "weather-icons": "^1.3.2"
+  "directories": {
+    "doc": "docs"
   },
-  "devDependencies": {
-    "@types/bootstrap": "^4.5.0",
-    "@types/jquery": "^3.3.35",
-    "@types/js-cookie": "^2.2.6",
-    "@types/lodash": "^4.14.150",
-    "typescript": "^3.8.3"
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ttocsneb/BlueWeather.git"
   },
-  "keywords": [
-    "blueweather",
-    "personal",
-    "weather",
-    "station",
-    "pws",
-    "app"
-  ],
   "author": "Benjamin Jacobs",
   "license": "GPL-3.0-or-later",
   "bugs": {
     "url": "https://github.com/ttocsneb/BlueWeather/issues"
   },
-  "homepage": "https://github.com/ttocsneb/BlueWeather#readme"
+  "homepage": "https://github.com/ttocsneb/BlueWeather#readme",
+  "devDependencies": {
+    "@types/bootstrap": "^5.0.0",
+    "@types/jquery": "^3.5.4",
+    "@types/js-cookie": "^2.2.6",
+    "@types/lodash": "^4.14.165",
+    "sass": "^1.29.0",
+    "ts-loader": "^8.0.11",
+    "typescript": "^4.1.2",
+    "vue-loader": "^15.9.5",
+    "vue-template-compiler": "^2.6.12",
+    "webpack": "^5.9.0",
+    "webpack-cli": "^4.2.0"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.1",
+    "axios": "^0.21.0",
+    "bootstrap": "^4.5.3",
+    "jquery": "^3.5.1",
+    "js-cookie": "^2.2.1",
+    "lodash": "^4.17.20",
+    "moment": "^2.29.1",
+    "vue": "^2.6.12"
+  }
 }

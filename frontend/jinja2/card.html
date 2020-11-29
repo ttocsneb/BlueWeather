@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block body %}
+<body id="page-top">
+
+  <div id="wrapper">
+    <!-- Sidebar -->
+    <ul class="navbar-nav sidebar sidebar-primary accordion transition transition-1 transition--ease-out" id="accordionSidebar">
+
+      {% block sidebar %}
+        {% from "defaults.jinja2" import sidebarDefault %}
+        {{ sidebarDefault(request, True) }}
+      {% endblock %}
+
+      <!-- Sidebar Toggler (Sidebar) -->
+      <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+      </div>
+
+    </ul>
+    <!-- End of Sidebar -->
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column bg-gradient-primary">
+      <div id="content">
+
+        <!-- TopBar -->
+        <nav class="navbar navbar-expand navbar-light bg-light topbar static-top shadow">
+
+          <!-- Sidebar Toggle (TopBar) -->
+          <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+            <i class="fa fa-bars"></i>
+          </button>
+
+          {% block topBar %}
+          {% endblock %}
+
+        </nav>
+        <!-- End of TopBar -->
+
+        <div class="container-fluid px-0 px-sm-3">
+          <!-- Outer Row -->
+          <div class="row justify-content-center">
+
+            {% block content %}
+            {% if not card_class %}
+              {% set card_class = "col-10" %}
+            {% endif %}
+            <div class="{{ card_class }}">
+
+              <div class="card o-hidden border-0 shadow-lg my-5">
+                <div class="card-body p-0">
+                  {% block card %}
+                  {% endblock %}
+                </div>
+              </div>
+
+            </div>
+            {% endblock content %}
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End of Content Wrapper -->
+
+  </div>
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="{{ static("jquery/dist/jquery.min.js") }}"></script>
+  <script src="{{ static("popper.js/dist/popper.min.js") }}"></script>
+  <script src="{{ static("bootstrap/dist/js/bootstrap.min.js") }}"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="{{ static("jquery.easing/jquery.easing.min.js") }}"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="{{ static("startbootstrap-sb-admin-2/js/sb-admin-2.min.js") }}"></script>
+
+  {% block scripts %}
+  {% endblock %}
+
+</body>
+{% endblock body %}

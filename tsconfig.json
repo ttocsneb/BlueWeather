@@ -1,25 +1,18 @@
 {
-  "compileOnSave": true,
-  "compilerOptions": {
-    "noImplicitAny": true,
-    "noEmitOnError": true,
-    "removeComments": true,
-    "sourceMap": false,
-    "target": "ES5",
-    "allowSyntheticDefaultImports": true,
-    "module": "none",
-    "moduleResolution": "node",
-    "typeRoots": [
-      "node_modules/vue/types/",
-      "node_modules/@types",
-      "typescript"
+    "compilerOptions": {
+        "outDir": "./static/js",
+        "sourceMap": true,
+        "noImplicitAny": true,
+        "module": "ES6",
+        "target": "ES5",
+        "allowJs": true,
+        "moduleResolution": "node",
+        "types": ["vue/types"],
+        "typeRoots": ["./typings"],
+        "allowSyntheticDefaultImports": true
+    },
+    "exclude": [
+        "./venv",
+        "./node_modules"
     ]
-  },
-  "exclude": [
-    "node_modules",
-    "venv"
-  ],
-  "include": [
-    "**/*"
-  ]
 }

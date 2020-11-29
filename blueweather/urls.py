@@ -13,34 +13,15 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 
-from .plugins import dao
+from django.conf import settings
 
-handler404 = 'blueweather.views.pageNotFound'
-handler403 = 'blueweather.views.forbidden'
-handler400 = 'blueweather.views.badRequest'
-handler500 = 'blueweather.views.internalServerError'
+from .api import include_all_api_patterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('blueweather.apps.accounts.urls')),
-    path('', include(
-        ('blueweather.apps.weather.urls', 'weather'),
-        namespace='weather'
-    )),
-    path('plugins/', include(
-        ('blueweather.apps.plugins.urls', 'plugins'),
-        namespace='plugins'
-    )),
-    path('settings/', include(
-        ('blueweather.apps.settings.urls', 'settings'),
-        namespace='settings'
-    )),
-    path('api/', include(
-        ('blueweather.apps.api.urls', 'api'),
-        namespace='api'
-    ))
+    path('api/', include_all_api_patterns()),
+    path('', include(settings.CONFIG.web.frontend + ".urls"))
 ]
