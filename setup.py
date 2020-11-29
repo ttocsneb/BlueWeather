@@ -30,12 +30,10 @@ def package_data_dirs(source, sub_folders):
 
 INSTALL_REQUIRES = [
     'django==3.0.7',
-    'django-npm==1.0.0',
     'django-htmlmin==0.11.0',
     'Jinja2==2.11.1',
     'ruamel.yaml==0.16.10',
     'marshmallow==3.5.1',
-    'stevedore==1.32.0',
     'markdown2==2.3.9',
     'stringlike==0.3.3'
 ]
@@ -44,7 +42,7 @@ EXTRAS_REQUIRE = {}
 
 setup(
     name="BlueWeather",
-    version='0.4.1-alpha',
+    version='0.5.0-alpha',
 
     description="A web-app for your Personal Weather Staion",
     long_description=description(),
@@ -63,6 +61,7 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: Implementation :: CPython"
     ],
+    liscense='GPLv3',
 
     author='Benjamin Jacobs',
     author_email='benjammin1100@gmail.com',
@@ -73,14 +72,4 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-
-    entry_points={
-        'blueweather.plugins.unitconv': [
-            'imperialConverter = blueweather.plugins.integrated.converters:ImperialConversion',
-            'metricConverter = blueweather.plugins.integrated.converters:MetricConversion'
-        ],
-        'blueweather.plugins.weather': [
-            'dummyWeather = blueweather.plugins.integrated.dummyWeather:DummyWeather'
-        ]
-    }
 )

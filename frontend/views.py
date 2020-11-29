@@ -43,3 +43,7 @@ def pageNotFound(request, exception: Resolver404 = None):
     return render(
         request, "error.html", context=context, status=404
     )
+
+
+def index(request):
+    return render(request, "main.html")

@@ -13,8 +13,11 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import logging.config
 import os
 
+import importlib
+
 from .config import Config
 from .plugins import Plugins
+from .plugins.utils import find_members
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -75,10 +78,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'blueweather.apps.weather',
-    'blueweather.accounts',
     'blueweather.plugins',
-    'blueweather.config'
+    'blueweather.accounts',
+    'blueweather.config',
+    CONFIG.web.frontend
 ]
 
 INSTALLED_APPS.extend(
@@ -106,26 +109,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'blueweather.urls'
-
-NPM_FILE_PATERNS = {
-    'startbootstrap-sb-admin-2': [
-        'css/*.min.css',
-        'js/*.min.js',
-        'scss/*'
-    ]
-}
-
-STATIC_ROOT = "dist"
-
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static")
-]
-
-STATICFILES_FINDERS = [
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'npm.finders.NpmFinder'
-]
 
 TEMPLATES = [
     {
@@ -205,4 +188,44 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
+STATIC_ROOT = "static"
+
+STATICFILES_DIRS = []
+
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder'
+]
+
 STATIC_URL = '/static/'
+
+
+# Load the frontend settings
+
+
+def load_member(name: str, member):
+    # Apply the setting
+    members = globals()
+    if name not in members:
+        members[name] = member
+        return
+    # join the setting with the existing setting
+    m = members[name]
+    if isinstance(m, dict) and isinstance(member, dict):
+        m.update(member)
+    elif isinstance(m, str) and isinstance(member, str):
+        members[name] = member
+    elif isinstance(m, list) and isinstance(member, str):
+        m.extend(member)
+    else:
+        members[name] = member
+
+
+settings_module = importlib.import_module(
+    '.settings',
+    package=CONFIG.web.frontend
+)
+
+for name, member in find_members(settings_module):
+    if name.upper() == name:
+        load_member(name, member)

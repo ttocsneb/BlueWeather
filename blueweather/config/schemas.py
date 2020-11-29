@@ -50,6 +50,8 @@ class Web(Schema):
     )
     '''The sidebar settings: :class:`custom_fields.NamedList`
     :class:`SidebarItem`'''
+    frontend = fields.String()
+    '''The server's frontend app'''
     api_keys = fields.Dict(fields.String(), fields.Nested(ApiKey))
     '''The api keys that allow access to the api without needing to be logged
     in'''

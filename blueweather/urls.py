@@ -16,19 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-from .api import include_all_api_patterns
+from django.conf import settings
 
-handler404 = 'blueweather.views.pageNotFound'
-handler403 = 'blueweather.views.forbidden'
-handler400 = 'blueweather.views.badRequest'
-handler500 = 'blueweather.views.internalServerError'
+from .api import include_all_api_patterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('blueweather.apps.accounts.urls')),
-    path('', include(
-        ('blueweather.apps.weather.urls', 'weather'),
-        namespace='weather'
-    )),
-    path('api/', include_all_api_patterns())
+    path('api/', include_all_api_patterns()),
+    path('', include(settings.CONFIG.web.frontend + ".urls"))
 ]
