@@ -1,0 +1,43 @@
+.theme-transition
+  .card,
+  .modal-content,
+  .modal-header,
+  .modal-footer,
+  .close,
+  .hr,
+  h1,h2,h3,h4,h5,
+  .card .list-group,
+  .card .list-group .list-group-item
+    transition: $dark-transition
+  transition: background $dark-transition
+
+[data-theme="dark"]
+  background-color: $dark-bg
+  color: $dark-text
+
+  .card
+    border: $card-border-width $dark-border
+    background-color: $dark-bg
+  
+    .list-group
+      background-color: $dark-bg
+
+      .list-group-item
+        background-color: $dark-bg
+
+  .modal-content
+    background-color: $dark-bg
+    border: $modal-content-border-width $dark-border
+  
+  .modal-header
+    border-bottom: $modal-header-border-width $dark-border
+  
+  .modal-footer
+    border-top: $modal-footer-border-width $dark-border
+  
+  .close
+    color: $dark-text
+    transition: $dark-transition
+  
+  hr
+    border-top: 1px solid rgba(255, 255, 255, 0.2)

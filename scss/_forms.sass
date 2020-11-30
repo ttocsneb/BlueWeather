@@ -1,0 +1,12 @@
+
+.theme-transition
+  .form-control
+    transition: $dark-transition
+
+[data-theme="dark"]
+  .form-control
+    &:disabled,
+    &[readonly]
+      background-color: $dark-input-disabled-bg
+      color: $dark-input-disabled-text
+      border: $dark-input-disabled-border

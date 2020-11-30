@@ -1,5 +1,8 @@
-Settings
-========
+Config
+======
+
+.. automodule:: blueweather.config
+    :members:
 
 Schemas
 -------

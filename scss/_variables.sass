@@ -1,0 +1,17 @@
+$dark-text-color: $light
+$dark-bg-color: $dark
+$dark-border-color: $gray-700
+$dark-transition: 1s
+
+
+$dark-bg: $dark-bg-color !important
+$dark-text: $dark-text-color
+$dark-border: solid $dark-border-color !important
+
+
+$dark-input-disabled-bg: lighten($dark-bg-color, 10%) !important
+$dark-input-disabled-text: darken($dark-text-color, 10%) !important
+$dark-input-disabled-border: $input-border-width solid lighten($dark-border-color, 10%) !important
+
+$dark-select-indicator: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'><path fill='#{$dark-text-color}' d='M2 0L0 2h4zm0 5L0 3h4z'/></svg>")
+$dark-select-background: escape-svg($dark-select-indicator) no-repeat right $custom-select-padding-x center / $custom-select-bg-size

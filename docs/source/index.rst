@@ -27,13 +27,10 @@ Contents
 
 .. toctree::
    :maxdepth: 1
+   :glob:
 
-   plugins/index
-   web/api
-   internal/index
-   structure
-   api
-
+   internal/*
+   *
 
 Installation
 ------------

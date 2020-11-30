@@ -5,21 +5,33 @@ Plugins
 
 .. autosummary::
 
-    Extensions
-    dao.PluginInfo
-    dao.App
-    dao.Weather
-    dao.UnitConversion
+    Plugins
+    manager.Plugin
+    manager.PluginManager
+    manager.DriverManager
+    tools.PluginInfo
+    tools.Weather
 
 
-Extensions
-------------------
+Plugins
+-------
 
-.. autoclass:: Extensions
+.. autoclass:: Plugins
     :members:
 
-DAO
----
+Manager
+-------
 
-.. automodule:: blueweather.plugins.dao
+.. automodule:: blueweather.plugins.manager
     :members:
+
+Tools
+-----
+
+.. automodule:: blueweather.plugins.tools
+    :members:
+
+Utils
+-----
+
+.. automodule:: blueweather.plugins.utils
