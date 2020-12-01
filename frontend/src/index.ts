@@ -1,6 +1,9 @@
 import Vue from 'vue'
-import Login from './login/login.vue'
-import {modal, navbar} from 'vue-strap'
+import app from './app.vue'
+import {BootstrapVue} from 'bootstrap-vue'
+
+
+Vue.use(BootstrapVue)
 
 
 new Vue({
@@ -18,13 +21,11 @@ new Vue({
                 
             }
         },
-        onPage(page: string) {
-
+        changePage(page: string) {
+            this.page = page
         }
     },
     components: {
-        navbar: navbar,
-        login: Login,
-        modal: modal
+        app
     }
 })

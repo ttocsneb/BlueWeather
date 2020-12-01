@@ -5,11 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  {% if name %}
-    <title>{{ title }} - {{ name }}</title>
-  {% else %}
-    <title>{{ title }}</title>
-  {% endif %}
+  <title>BlueWeather</title>
 
   <!-- Custom fonts for this template-->
   <link href="{{ static('fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
@@ -18,13 +14,7 @@
 </head>
 <body>
   <div id="app">
-    <div>
-      <navbar @users="onUser" @page="onPage"/>
-    </div>
-
-    <div class="modal fade" v-if="" tabindex="-1" aria-hidden="true">
-      <compenent :is="modal" />
-    </div>
+    <app />
   </div>
 
   <script>
