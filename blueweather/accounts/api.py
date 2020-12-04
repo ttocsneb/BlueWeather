@@ -11,22 +11,22 @@ from django.core.exceptions import ValidationError
 from blueweather.api.decorators import api
 from blueweather.api.exceptions import NotFoundError, ValidateError
 
+from . import methods
+
 
 @api(name="login", methods=['POST'], allow_get_params=False)
 def login_view(request: HttpRequest, username: str, password: str):
     user = authenticate(request, username=username, password=password)
     if user:
         login(request, user)
-        return {
-            'username': user.get_username(),
-            'name': user.get_full_name()
-        }
+        return methods.get_user_data(user)
     raise NotFoundError(400, "Invalid username or password")
 
 
 @api(name="logout")
 def logout_view(request: HttpRequest):
     logout(request)
+    return methods.get_user_data(request.user)
 
 
 @api(methods=['POST'], allow_get_params=False)

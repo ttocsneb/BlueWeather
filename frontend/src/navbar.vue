@@ -26,8 +26,12 @@
 <script lang="ts">
 import Vue from 'vue'
 import _ from 'lodash'
+import axios from 'axios'
+
 import state from './appState'
-import login from './pages/login.vue'
+import login from './popups/login.vue'
+
+import {User} from './types/user'
 
 export default Vue.extend({
     data() {
@@ -37,10 +41,15 @@ export default Vue.extend({
     },
     methods: {
         login() {
-            state.change_page(login, 'login')
+            state.change_popup(login)
+            this.$bvModal.show('login')
         },
         logout() {
-
+            const self = this
+            axios.get('/api/accounts/logout').then(res => {
+                let data = res.data as User
+                self.shared.user = data
+            })
         }
     }
 })

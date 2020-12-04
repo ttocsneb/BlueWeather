@@ -19,6 +19,7 @@
 
   <script>
     var __user__ = JSON.parse(`{{ user_data | json | safe }}`);
+    var __token__ = `{{ csrf_token }}`;
   </script>
 
   <script src="{{ static('index.bundle.js') }}"></script>

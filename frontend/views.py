@@ -3,6 +3,8 @@ from django.http.request import HttpRequest
 from django.shortcuts import render
 from django.urls import Resolver404
 
+from blueweather.accounts.methods import get_user_data
+
 
 def badRequest(request: HttpRequest, exception=None):
     context = dict(
@@ -49,14 +51,5 @@ def pageNotFound(request: HttpRequest, exception: Resolver404 = None):
 
 def index(request: HttpRequest):
     return render(request, "base.html", context={
-        'user_data': {
-            'username': request.user.get_username(),
-            'name': None if request.user.is_anonymous else request.user.get_full_name(),
-            'is_active': request.user.is_active,
-            'is_anonymous': request.user.is_anonymous,
-            'is_authenticated': request.user.is_authenticated,
-            'is_staff': request.user.is_staff,
-            'is_superuser': request.user.is_superuser,
-            'last_login': None if request.user.is_anonymous else request.user.last_login 
-        }
+        'user_data': get_user_data(request.user)
     })

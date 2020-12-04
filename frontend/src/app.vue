@@ -4,6 +4,9 @@
         <div class="container">
             <component :is="shared.page" />
         </div>
+        <div>
+            <component :is="shared.popup" />
+        </div>
     </div>
 </template>
 <script lang="ts">
