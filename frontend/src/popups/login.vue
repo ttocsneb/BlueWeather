@@ -75,9 +75,8 @@ export default Vue.extend({
             }
             const self = this
             axios.post('/api/accounts/login/', this.form, {
-                headers: {
-                    'X-CSRFTOKEN': this.shared.token
-                }
+                xsrfCookieName: 'csrftoken',
+                xsrfHeaderName: 'X-CSRFTOKEN'
             }).then(resp => {
                 let error = resp.data as InvalidResponse
                 let data = resp.data as User
@@ -89,6 +88,8 @@ export default Vue.extend({
                 console.log(`Welcome ${data.name}`)
                 self.shared.user = data
                 self.onCancel()
+            }).catch(err => {
+                state.handleHttpError(err)
             })
         },
         onCancel() {

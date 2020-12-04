@@ -4,9 +4,12 @@
         <div class="container">
             <component :is="shared.page" />
         </div>
-        <div>
+        <template>
             <component :is="shared.popup" />
-        </div>
+        </template>
+        <template>
+            <disconect />
+        </template>
     </div>
 </template>
 <script lang="ts">
@@ -14,6 +17,7 @@ import Vue from 'vue'
 import navbar from './navbar.vue'
 import login from './pages/login.vue'
 import state from './appState'
+import Disconect from './popups/disconect.vue'
 
 export default Vue.extend({
     data() {
@@ -22,7 +26,8 @@ export default Vue.extend({
         }
     },
     components: {
-        navbar
-    }
+        navbar,
+        Disconect
+    },
 })
 </script>

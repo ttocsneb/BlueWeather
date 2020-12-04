@@ -1,16 +1,33 @@
 <template>
     <b-navbar toggleable="sm" type="dark" variant="info">
-        <b-navbar-brand href="#">BlueWeather</b-navbar-brand>
+        <b-navbar-brand
+            href="#"
+            @click="home">
+            BlueWeather
+        </b-navbar-brand>
 
-        <b-navbar-toggle target="navbar-collapse"></b-navbar-toggle>
+        <b-navbar-toggle
+            target="navbar-collapse">
+        </b-navbar-toggle>
 
-        <b-collapse id="navbar-collapse" is-nav>
-            <b-navbar-nav>
+        <b-collapse
+            id="navbar-collapse"
+            is-nav>
+            <b-navbar-nav
+                class="w-100">
+                <b-nav-item
+                    v-if="shared.user.is_authenticated"
+                    @click="settings"
+                    :class="{active: shared.page_name == 'settings'}"
+                    class="mr-sm-auto">
+                    Settings
+                </b-nav-item>
                 <b-nav-item
                     v-if="shared.user.is_anonymous"
                     @click="login"
                     :disabled="shared.page_name == 'login'"
-                    :class="{active: shared.page_name == 'login'}">
+                    :class="{active: shared.page_name == 'login'}"
+                    class="ml-sm-auto">
                     Login
                 </b-nav-item>
                 <b-nav-item
@@ -49,7 +66,15 @@ export default Vue.extend({
             axios.get('/api/accounts/logout').then(res => {
                 let data = res.data as User
                 self.shared.user = data
+            }).catch(err => {
+                state.handleHttpError(err)
             })
+        },
+        home() {
+            state.change_page(null, null)
+        },
+        settings() {
+
         }
     }
 })

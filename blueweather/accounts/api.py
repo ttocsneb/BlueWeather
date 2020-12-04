@@ -29,6 +29,11 @@ def logout_view(request: HttpRequest):
     return methods.get_user_data(request.user)
 
 
+@api()
+def status(request: HttpRequest):
+    return methods.get_user_data(request.user)
+
+
 @api(methods=['POST'], allow_get_params=False)
 def password_change(request: HttpRequest, password: str, new_password: str):
     user = authenticate(
