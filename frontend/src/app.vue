@@ -2,7 +2,7 @@
     <div>
         <navbar />
         <div class="container">
-            <component :is="page" />
+            <component :is="shared.page" />
         </div>
     </div>
 </template>
@@ -10,11 +10,12 @@
 import Vue from 'vue'
 import navbar from './navbar.vue'
 import login from './pages/login.vue'
+import state from './appState'
 
 export default Vue.extend({
     data() {
         return {
-            page: login
+            shared: state.state
         }
     },
     components: {
