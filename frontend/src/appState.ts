@@ -16,15 +16,20 @@ function log(name: string, data: any = undefined) {
 
 type Events = {[key: string]: Array<CallableFunction>}
 
+type Pages = {[key: string]: any}
 
-export default {
+const params = new URLSearchParams(window.location.search)
+
+
+var state = {
     debug: true,
     state: {
         user: __user__,
         token: __token__,
-        page: null,
-        page_name: null as string,
-        popup: null
+        page: params.get('page') as string,
+        popup: null as any,
+        pages: {} as Pages,
+        params: params
     },
     events: {} as Events,
     /**
@@ -33,10 +38,11 @@ export default {
      * @param page page component
      * @param name name of the page
      */
-    change_page(page: any, name: string) {
-        if(this.debug) log('change_page', {page, name})
+    change_page(page: string) {
+        if(this.debug) log('change_page', page)
+        this.state.params.set('page', page)
+        window.history.pushState({page: page}, '', `?${this.state.params.toString()}`)
         this.state.page = page
-        this.state.page_name = name
     },
     /**
      * Change the active popup, note that this will not open the popup
@@ -94,5 +100,18 @@ export default {
         } else {
             // Something happened in setting up the request
         }
+    },
+    register_page(name: string, page: any) {
+        if(this.debug) log('register_page', {name})
+        this.state.pages[name] = page
     }
 }
+
+window.addEventListener('popstate', (ev) => {
+    if(ev.state.page != undefined) {
+        state.state.page = ev.state.page
+        state.state.params.set('page', state.state.page)
+    }
+})
+
+export default state

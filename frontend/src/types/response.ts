@@ -13,3 +13,10 @@ export interface Validation {
 export interface ValidateResponse extends InvalidResponse {
     validation: Validation
 }
+
+export interface PagifyResponse {
+    page: number
+    size: number
+    pages: number
+    total: number
+}

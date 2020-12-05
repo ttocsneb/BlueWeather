@@ -25,15 +25,12 @@
                 <b-nav-item
                     v-if="shared.user.is_anonymous"
                     @click="login"
-                    :disabled="shared.page_name == 'login'"
-                    :class="{active: shared.page_name == 'login'}"
                     class="ml-sm-auto">
                     Login
                 </b-nav-item>
                 <b-nav-item
                     v-if="shared.user.is_authenticated"
-                    @click="logout"
-                    :class="{active: shared.page_name == 'login'}">
+                    @click="logout">
                     Logout
                 </b-nav-item>
             </b-navbar-nav>
@@ -71,10 +68,10 @@ export default Vue.extend({
             })
         },
         home() {
-            state.change_page(null, null)
+            state.change_page("home")
         },
         settings() {
-
+            state.change_page("settings")
         }
     }
 })
