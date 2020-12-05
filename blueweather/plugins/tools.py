@@ -12,8 +12,7 @@ from .manager import DriverManager
 try:
     from importlib import metadata
 except ImportError:
-    print("warning: Could not import importlib")
-    metadata = None
+    import importlib_metadata as metadata
 
 
 class PluginInfo:

@@ -3,8 +3,8 @@ The Settings Object allows for apps to integrate with settings for blueweather
 
 The settings are very restrictive on what can be used for settings
 
-To add the settings to the app, set the :class:`Settings` class to the
-:code:`settings` variable in your AppConfig.
+To create a settings object, place your Settings class in the :code:`config.py`
+module
 
 .. code-block:: python
 
@@ -16,19 +16,6 @@ To add the settings to the app, set the :class:`Settings` class to the
 
         def migrate(self, data, version):
             return data
-
-
-    class MyConfig(AppConfig):
-        name = 'myapp'
-        label = 'myapp'
-
-        settings = MySettings
-
-.. note::
-
-    Keep in mind that the :code:`settings` variable must be a class, not an
-    object. If you want to use an object instead, set :code:`settings_obj` to
-    the object.
 
 """
 import abc

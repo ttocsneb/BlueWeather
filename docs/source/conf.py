@@ -12,7 +12,10 @@
 #
 import os
 import sys
+from django.conf import settings
 sys.path.insert(0, os.path.abspath('.'))
+
+settings.configure()
 
 # -- Project information -----------------------------------------------------
 
@@ -21,7 +24,7 @@ copyright = '2020, Benjamin Jacobs'
 author = 'Benjamin Jacobs'
 
 # The full version, including alpha/beta/rc tags
-release = '0.4.1-alpha'
+release = '0.5.0-alpha'
 
 
 # -- General configuration ---------------------------------------------------

@@ -10,6 +10,12 @@ Decorators
 .. automodule:: blueweather.api.decorators
     :members:
 
+Exceptions
+==========
+
+.. automodule:: blueweather.api.exceptions
+    :members:
+
 Views
 =====
 

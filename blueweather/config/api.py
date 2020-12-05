@@ -1,3 +1,8 @@
+"""
+ReST API for accessing the settings
+
+Config api prefix: :code:`/api/config/`
+"""
 from marshmallow import ValidationError
 
 from django.http.request import HttpRequest
@@ -12,6 +17,8 @@ from . import methods
 def interfaces(request: HttpRequest):
     """
     Get the settings interface
+
+    :method: any
     """
     return methods.get_settings_interfaces()
 
@@ -21,7 +28,11 @@ def get_settings(request: HttpRequest, label: str):
     """
     Get the current settings
 
-    :param app: app to get the settings from
+    :method: any
+
+    :name: get
+
+    :param str label: plugin label
     """
 
     try:
@@ -36,6 +47,16 @@ def get_settings(request: HttpRequest, label: str):
 
 @api(name="set", methods=['POST'])
 def set_settings(request: HttpRequest, label: str, settings: dict):
+    """
+    Set the Settings
+
+    :method: POST
+
+    :name: set
+
+    :param str label: plugin label
+    :param dict settings: settings
+    """
     setting = None
     try:
         for k, v in settings.items():
@@ -61,9 +82,19 @@ def set_settings(request: HttpRequest, label: str, settings: dict):
 
 @api()
 def load(request: HttpRequest):
+    """
+    Load the settings from disk
+
+    :method: any
+    """
     methods.revert_settings()
 
 
 @api()
 def apply(request: HttpRequest):
+    """
+    Apply the settings to disk
+
+    :method: any
+    """
     methods.apply_settings()

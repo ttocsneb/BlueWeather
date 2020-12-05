@@ -1,3 +1,8 @@
+"""
+Access the Plugin data from the ReST API.
+
+Plugins api prefix: :code:`/api/plugins/`
+"""
 from django.http.request import HttpRequest
 from django.conf import settings
 
@@ -11,6 +16,11 @@ from . import utils, tools
 def info(request: HttpRequest, page: int = 0, size: int = 10):
     """
     Get the info of all the enabled plugins
+
+    :method: any
+
+    :param int page: page number
+    :param int size: size of pages
     """
     plugin_infos = []
 

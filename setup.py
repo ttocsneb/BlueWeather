@@ -1,4 +1,5 @@
 import os
+import sys
 from os import path
 from setuptools import setup, find_packages
 
@@ -38,6 +39,12 @@ INSTALL_REQUIRES = [
     'stringlike==0.3.3'
 ]
 
+# Require importlib-metadata if version is less than 3.8
+if sys.version_info < (3, 8):
+    INSTALL_REQUIRES.append(
+        'importlib-metadata==3.1.1'
+    )
+
 EXTRAS_REQUIRE = {}
 
 setup(
@@ -61,7 +68,7 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: Implementation :: CPython"
     ],
-    liscense='GPLv3',
+    license='GPLv3',
 
     author='Benjamin Jacobs',
     author_email='benjammin1100@gmail.com',

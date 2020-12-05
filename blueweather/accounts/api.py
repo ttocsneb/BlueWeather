@@ -1,3 +1,8 @@
+"""
+ReST API for accessing the user account
+
+Accounts api prefix: :code:`/api/accounts/`
+"""
 from django.http.request import HttpRequest
 
 from django.contrib.auth import authenticate, login, logout
@@ -16,6 +21,16 @@ from . import methods
 
 @api(name="login", methods=['POST'], allow_get_params=False)
 def login_view(request: HttpRequest, username: str, password: str):
+    """
+    Login a user
+
+    :name: login
+
+    :method: POST
+
+    :param str username: username
+    :param str password: password
+    """
     user = authenticate(request, username=username, password=password)
     if user:
         login(request, user)
@@ -25,17 +40,37 @@ def login_view(request: HttpRequest, username: str, password: str):
 
 @api(name="logout")
 def logout_view(request: HttpRequest):
+    """
+    Logout the user
+
+    :name: logout
+
+    :method: any
+    """
     logout(request)
     return methods.get_user_data(request.user)
 
 
 @api()
 def status(request: HttpRequest):
+    """
+    Get the status of the logged in user
+
+    :method: any
+    """
     return methods.get_user_data(request.user)
 
 
 @api(methods=['POST'], allow_get_params=False)
 def password_change(request: HttpRequest, password: str, new_password: str):
+    """
+    Change the password of the current user
+
+    :method: POST
+
+    :param str str password: current password
+    :param str str new_password: new password
+    """
     user = authenticate(
         request,
         username=request.user.get_username(),
@@ -63,6 +98,15 @@ def password_change(request: HttpRequest, password: str, new_password: str):
 
 @api(methods=['POST'], allow_get_params=False)
 def register(request: HttpRequest, username: str, password: str, name: str):
+    """
+    Register a new user
+
+    :method: POST
+
+    :param str username: username
+    :param str password: password
+    :param str name: name of the user
+    """
     first_name, last_name = name.strip().split(' ', maxsplit=1)
 
     try:

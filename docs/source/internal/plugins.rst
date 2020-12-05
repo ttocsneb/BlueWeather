@@ -11,7 +11,14 @@ Plugins
     manager.DriverManager
     tools.PluginInfo
     tools.Weather
+    api.info
 
+
+.. toctree::
+    :maxdepth: 2
+    :glob:
+
+    plugins/*
 
 Plugins
 -------
@@ -35,3 +42,12 @@ Utils
 -----
 
 .. automodule:: blueweather.plugins.utils
+    :members:
+
+API
+---
+
+.. automodule:: blueweather.plugins.api
+    :members:
+
+    .. automethod:: blueweather.plugins.api.info

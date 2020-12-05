@@ -14,17 +14,9 @@ To get started, create an :code:`api.py` file in your app folder:
             "success": True
         }
 
-Then in your :code:`AppConfig` object located in :code:`apps.py`, add the
-:code:`api` attribute to show where the api view is.
 
-.. code-block:: python
-
-    class MyAppConfig(AppConfig):
-        name = 'myapp'
-        label = 'myapp'
-
-        api = 'myapp.api'
-
+Each app will get their own prefix. The api path will look like
+:code:`/api/<app_label>/<api_method_name>/`
 """
 import logging
 

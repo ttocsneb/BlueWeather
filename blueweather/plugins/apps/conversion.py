@@ -1,3 +1,10 @@
+"""
+.. note::
+
+    Currently the conversion plugin is disabled. I don't know if I will
+    continue supporting it in the future.
+
+"""
 import abc
 
 from django.apps import AppConfig
