@@ -1,7 +1,7 @@
 {
-  "name": "blueweather",
+  "name": "blueweather-frontend",
   "version": "0.5.0",
-  "description": "A web-app for your personal weather station",
+  "description": "The front-end for the blueweather server",
   "main": "index.js",
   "directories": {
     "doc": "docs"

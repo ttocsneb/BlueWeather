@@ -1,7 +1,7 @@
 
 from pathlib import Path
 
-STATIC_DIR = Path(__file__).resolve().parent.parent
+STATIC_DIR = Path(__file__).resolve().parent
 
 
 # Include the static files for the frontend

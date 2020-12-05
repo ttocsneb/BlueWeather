@@ -1,10 +1,18 @@
 <template>
     <div>
-        <b-pagination
-            v-model="selected_page"
-            :total-rows="pages"
-            :per-page="pageSize">
-        </b-pagination>
+        <div class="d-flex flex-row">
+            <b-form-select
+                v-model="form.size"
+                :options="sizes"
+                class="w-auto ml-auto mr-3" />
+            <b-pagination
+                v-model="form.page"
+                :total-rows="pages"
+                :per-page="pageSize"
+                :disabled="!loaded"
+                class="mb-0">
+            </b-pagination>
+        </div>
         <hr>
         <b-list-group flush>
             <b-list-group-item
@@ -32,7 +40,8 @@
                         {{ plugin[badge.name] }}
                     </div>
                     <a class="badge badge-success p-1"
-                        :href="plugin.homepage">
+                        :href="plugin.homepage"
+                        target="_blank">
                         <i class="fas fa-home"></i>
                         Homepage
                     </a>
@@ -61,12 +70,15 @@ export default Vue.extend({
         return {
             plugins: [],
             shared: state.state,
-            page: 0,
+            page: 1,
             pageSize: 10,
             total: 0,
             pages: 0,
             loaded: false,
-            selected_page: 1,
+            form: {
+                page: 1,
+                size: 10
+            },
             badges: [
                 {
                     name: 'version',
@@ -84,7 +96,23 @@ export default Vue.extend({
                     variant: 'secondary'
                 }
             ],
+            sizes: [
+                {value: -1, text: 'all'},
+                10, 20, 50, 100
+            ],
             toggled_descs: []
+        }
+    },
+    watch: {
+        form: {
+            deep: true,
+            handler(val, oldval) {
+                this.loadPlugins()
+            }
+        },
+        selected_page(newPage: number, oldPage: number) {
+            this.page = newPage
+            this.loadPlugins()
         }
     },
     beforeMount() {
@@ -92,15 +120,17 @@ export default Vue.extend({
     },
     methods: {
         loadPlugins() {
-            this.loaded = true
+            this.loaded = false
             let params = new URLSearchParams()
-            params.set('page', this.page)
-            params.set('size', this.pageSize)
+            params.set('page', String(this.form.page - 1))
+            params.set('size', this.form.size)
             let self = this
             axios.get(`/api/plugins/info/?${params.toString()}`).then(response => {
                 let data = response.data as InfoResponse
                 self.page = data.page
+                self.form.page = data.page + 1
                 self.pageSize = data.size
+                self.form.size = data.size
                 self.total = data.total
                 self.pages = data.pages
                 self.plugins = data.info

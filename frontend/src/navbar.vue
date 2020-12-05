@@ -18,7 +18,8 @@
                 <b-nav-item
                     v-if="shared.user.is_authenticated"
                     @click="settings"
-                    :class="{active: shared.page_name == 'settings'}"
+                    :class="{active: shared.page == 'settings'}"
+                    :disabled="shared.page == 'settings'"
                     class="mr-sm-auto">
                     Settings
                 </b-nav-item>

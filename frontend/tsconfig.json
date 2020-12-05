@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "outDir": "./static/js",
+        "outDir": "./dist/js",
         "sourceMap": true,
         "noImplicitAny": true,
         "module": "ES6",
@@ -12,7 +12,6 @@
         "allowSyntheticDefaultImports": true
     },
     "exclude": [
-        "./venv",
         "./node_modules",
         "./dist"
     ]
