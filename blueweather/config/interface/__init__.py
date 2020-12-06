@@ -1,4 +1,4 @@
-from .schema import Settings
+from .schema import Interface
 from . import validator
 
 from typing import Union, Any
@@ -15,9 +15,9 @@ def validate_interface(interface: Union[dict, list]):
     :raises: marshmallow.ValidationError
     """
     if isinstance(interface, list):
-        schema = Settings(many=True)
+        schema = Interface(many=True)
         return schema.load(interface)
-    schema = Settings()
+    schema = Interface()
     return schema.load(interface)
 
 

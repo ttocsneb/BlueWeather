@@ -91,13 +91,14 @@ def get_settings_interfaces() -> dict:
 
         try:
             return interface.validate_interface(conf.get_interface())
-        except ValidationError:
+        except ValidationError as error:
             logging.getLogger(__name__).exception(
                 "Could not validate interface for '%s'",
                 label
             )
             return {
-                'error': 'app improperly configured'
+                'error': 'app improperly configured',
+                'validate': error.normalized_messages()
             }
 
     return dict(

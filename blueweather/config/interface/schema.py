@@ -1,4 +1,4 @@
-from marshmallow import Schema, fields, validate
+from marshmallow import Schema, fields
 
 from . import custom_fields
 
@@ -9,37 +9,66 @@ class Choice(Schema):
     enabled = fields.Boolean(missing=True)
 
 
-class SettingItem(Schema):
+class Setting(Schema):
     name = fields.String(required=True)
-    type = fields.String(validate=validate.OneOf(
-        ('number', 'select', 'text', 'radio', 'bool'),
-    ), required=True)
-
     title = fields.String(required=False)
-    default = fields.String(required=False)
     hint = fields.String(required=False)
     enabled = fields.Boolean(missing=True)
-    precision = fields.Integer(required=False)
-    range = fields.Tuple((fields.Integer(), fields.Integer()), required=False)
-    choices = fields.Nested(Choice, many=True, required=False)
-    multiple = fields.Boolean(required=False)
+    type = fields.String(required=True)
 
 
-choices = ('divider', 'header', 'paragraph', 'info', 'setting', 'group')
+class Choices(Setting):
+    choices = fields.Nested(Choice, required=True, many=True)
+    many = fields.Boolean(missing=False)
+    default = fields.String(required=False)
+
+
+class Input(Setting):
+    default = fields.String(required=False)
+
+
+class Number(Setting):
+    default = fields.Number(required=False)
+    step = fields.Integer(required=False)
+    range = fields.Tuple((fields.Number(), fields.Number()), required=False)
+
+
+class DateTime(Setting):
+    default = fields.DateTime(required=False)
+
+
+class Time(Setting):
+    default = fields.Time(required=False)
+
+
+class Date(Setting):
+    default = fields.Date(required=False)
+
+
+class TimeDelta(Setting):
+    default = fields.TimeDelta(required=False)
 
 
 class Item(Schema):
-    type = fields.String(validate=validate.OneOf(choices))
-    value = custom_fields.Typed(
-        'type', {
-            'group': fields.Nested(lambda: Item())
-        },
-        fields.String(),
-        fields.String(validate=validate.OneOf(choices)),
-        required=False
-    )
+    type = fields.String(required=True)
+    value = fields.String(required=True)
 
 
-class Settings(Schema):
-    settings = fields.Nested(SettingItem, many=True, missing=list)
-    items = fields.Nested(Item, many=True, missing=list)
+class Divider(Schema):
+    type = fields.String(required=True)
+
+
+class Interface(Schema):
+    settings = custom_fields.Combine([
+        (('choices', 'select'), Choice),
+        (('textarea', 'text', 'email', 'password', 'url'), Input),
+        (('number', 'spin', 'range'), Number),
+        ('datetime', DateTime),
+        ('date', Date),
+        ('time', Time),
+        ('timedelta', TimeDelta)
+    ], key="type", key_field=fields.String(required=True), many=True)
+    items = custom_fields.Combine([
+        ('divider', Divider),
+        (('setting', 'header', 'paragraph', 'info'), Item)
+    ], key="type", key_field=fields.String(required=True), many=True)
