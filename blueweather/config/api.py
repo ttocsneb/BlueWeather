@@ -7,8 +7,8 @@ from marshmallow import ValidationError
 
 from django.http.request import HttpRequest
 
-from blueweather.api.decorators import api
-from blueweather.api.exceptions import APIError, NotFoundError, ValidateError
+from dresta.decorators import api
+from dresta.exceptions import APIError, NotFoundError, ValidateError
 
 from . import methods
 

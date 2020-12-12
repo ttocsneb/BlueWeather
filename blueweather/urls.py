@@ -18,7 +18,7 @@ from django.urls import include, path
 
 from django.conf import settings
 
-from .api import include_all_api_patterns
+from dresta import include_all_api_patterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),

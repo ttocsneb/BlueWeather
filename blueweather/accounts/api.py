@@ -13,8 +13,8 @@ from django.db.utils import IntegrityError
 
 from django.core.exceptions import ValidationError
 
-from blueweather.api.decorators import api
-from blueweather.api.exceptions import NotFoundError, ValidateError
+from dresta.decorators import api
+from dresta.exceptions import NotFoundError, ValidateError
 
 from . import methods
 

@@ -6,8 +6,8 @@ Plugins api prefix: :code:`/api/plugins/`
 from django.http.request import HttpRequest
 from django.conf import settings
 
-from blueweather.api.decorators import api
-from blueweather.api.utils import pagify
+from dresta.decorators import api
+from dresta.utils import pagify
 
 from . import utils, tools
 
