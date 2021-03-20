@@ -26,7 +26,7 @@ INSTALL_REQUIRES = [
     'django==3.0.7',
     'django-npm==1.0.0',
     'django-htmlmin==0.11.0',
-    'Jinja2==2.11.1',
+    'Jinja2==2.11.3',
     'ruamel.yaml==0.16.10',
     'marshmallow==3.5.1',
     'stevedore==1.32.0'
