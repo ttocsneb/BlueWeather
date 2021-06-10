@@ -23,7 +23,7 @@ def package_data_dirs(source, sub_folders):
 
 
 INSTALL_REQUIRES = [
-    'django==3.0.7',
+    'django==3.1.12',
     'django-npm==1.0.0',
     'django-htmlmin==0.11.0',
     'Jinja2==2.11.1',
